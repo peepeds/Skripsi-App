@@ -1,0 +1,149 @@
+skripsi-web/
+│
+├── 📄 package.json
+├── 📄 vite.config.js
+├── 📄 jsconfig.json
+├── 📄 eslint.config.js
+├── 📄 components.json
+├── 📄 index.html
+├── 📄 README.md
+│
+├── 📚 Documentation (NEW)
+│   ├── PROJECT_STRUCTURE.md          ← Detailed structure explanation
+│   ├── STRUKTUR_BARU.md              ← Visual overview
+│   ├── COMPLETION_SUMMARY.md         ← What was done
+│   └── QUICK_REFERENCE.md            ← Quick guide
+│
+├── 📁 public/
+│   └── ...
+│
+├── 📁 src/
+│   │
+│   ├── 🎨 components/
+│   │   │
+│   │   ├── 📁 common/                ⭐ REORGANIZED
+│   │   │   ├── Navbar.jsx             (moved from ../Navbar.jsx)
+│   │   │   ├── Logo.jsx               (moved from ../navbar-components/logo.jsx)
+│   │   │   ├── SearchBar.jsx          (moved from ../navbar-components/SearchBar.jsx)
+│   │   │   ├── ThemeToggle.jsx        (moved from ../navbar-components/theme-toggle.jsx)
+│   │   │   └── index.js               (NEW - clean exports)
+│   │   │
+│   │   ├── 📁 cards/                  ⭐ REORGANIZED
+│   │   │   ├── CompanyCard.jsx        (moved from ../landing/card/)
+│   │   │   ├── ReviewCard.jsx         (moved from ../landing/card/)
+│   │   │   └── index.js               (NEW - clean exports)
+│   │   │
+│   │   ├── 📁 layout/                 ⭐ READY FOR EXPANSION
+│   │   │   └── (future layout components)
+│   │   │
+│   │   ├── 📁 ui/
+│   │   │   ├── avatar.jsx
+│   │   │   ├── button.jsx
+│   │   │   ├── card.jsx
+│   │   │   ├── dropdown-menu.jsx
+│   │   │   ├── field.jsx
+│   │   │   ├── input-group.jsx
+│   │   │   ├── input.jsx
+│   │   │   ├── label.jsx
+│   │   │   ├── select.jsx
+│   │   │   ├── separator.jsx
+│   │   │   ├── textarea.jsx
+│   │   │   ├── toggle.jsx
+│   │   │   └── ...
+│   │   │
+│   │   ├── 📁 landing/                (LEGACY - can be deleted)
+│   │   │   └── card/
+│   │   │       └── ...
+│   │   │
+│   │   ├── 📁 navbar-components/      (LEGACY - can be deleted)
+│   │   │   └── ...
+│   │   │
+│   │   ├── Navbar.jsx                 (LEGACY - can be deleted)
+│   │   └── SearchBar.jsx              (LEGACY - can be deleted)
+│   │
+│   ├── 📁 hooks/                      ⭐ NEW
+│   │   ├── useAuth.js                 (NEW - custom auth hook)
+│   │   └── index.js                   (NEW - clean exports)
+│   │
+│   ├── 📁 pages/
+│   │   ├── 📁 auth/
+│   │   │   ├── 📁 login/
+│   │   │   │   ├── Login.jsx
+│   │   │   │   └── LoginForm.jsx
+│   │   │   └── 📁 register/
+│   │   │       ├── Register.jsx
+│   │   │       ├── StepAccount.jsx
+│   │   │       ├── StepAcademic.jsx
+│   │   │       └── StepPersonal.jsx
+│   │   │
+│   │   ├── 📁 home/
+│   │   │   ├── Home.jsx
+│   │   │   ├── HeroSection.jsx
+│   │   │   ├── TopCompanies.jsx       (UPDATED - new imports)
+│   │   │   ├── HighlightReview.jsx    (UPDATED - new imports)
+│   │   │   └── CallToAction.jsx
+│   │   │
+│   │   ├── PingPage.jsx
+│   │   └── TestPage.jsx
+│   │
+│   ├── 📁 context/
+│   │   └── userContext.jsx            (UPDATED - used by useAuth hook)
+│   │
+│   ├── 📁 api/
+│   │   ├── authApi.js
+│   │   ├── axiosInstance.js
+│   │   ├── majorApi.js
+│   │   ├── pingApi.js
+│   │   └── regionApi.js
+│   │
+│   ├── 📁 lib/
+│   │   └── utils.js
+│   │
+│   ├── 📁 helpers/
+│   │   └── validations.js
+│   │
+│   ├── 📁 utils/
+│   │   └── history.js
+│   │
+│   ├── 📁 assets/
+│   │
+│   ├── App.jsx                        (UPDATED - new imports)
+│   ├── App.css
+│   ├── main.jsx
+│   ├── index.css
+│   └── context/
+│
+└── .gitignore
+   package-lock.json
+   node_modules/
+
+════════════════════════════════════════════════════════════════
+
+⭐ = REORGANIZED / NEW STRUCTURE
+🔄 = UPDATED (imports fixed)
+📝 = LEGACY (can be deleted)
+
+════════════════════════════════════════════════════════════════
+
+FILES CREATED:
+✨ src/components/common/Navbar.jsx
+✨ src/components/common/Logo.jsx
+✨ src/components/common/SearchBar.jsx
+✨ src/components/common/ThemeToggle.jsx
+✨ src/components/common/index.js
+✨ src/components/cards/CompanyCard.jsx
+✨ src/components/cards/ReviewCard.jsx
+✨ src/components/cards/index.js
+✨ src/hooks/useAuth.js
+✨ src/hooks/index.js
+✨ PROJECT_STRUCTURE.md
+✨ STRUKTUR_BARU.md
+✨ COMPLETION_SUMMARY.md
+✨ QUICK_REFERENCE.md
+
+FILES UPDATED:
+🔄 src/App.jsx
+🔄 src/pages/home/HighlightReview.jsx
+🔄 src/pages/home/TopCompanies.jsx
+
+════════════════════════════════════════════════════════════════
