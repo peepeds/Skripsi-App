@@ -6,9 +6,46 @@ Berikut adalah struktur folder yang telah dirapikan untuk project ini:
 
 ```
 src/
+├── features/                 # Domain/feature modules (logic + UI per fitur)
+│   ├── auth/
+│   │   ├── login/
+│   │   │   ├── components/
+│   │   │   │   └── LoginForm.jsx
+│   │   │   ├── hooks/
+│   │   │   │   └── useLoginForm.js
+│   │   │   └── pages/
+│   │   │       └── LoginPage.jsx
+│   │   └── register/
+│   │       ├── hooks/
+│   │       │   └── useRegisterWizard.js
+│   │       └── pages/
+│   │           └── RegisterPage.jsx
+│   │
+│   ├── home/
+│   │   ├── pages/
+│   │   │   └── HomePage.jsx
+│   │   └── sections/
+│   │       ├── HeroSection.jsx
+│   │       ├── TopCompanies.jsx
+│   │       ├── HighlightReview.jsx
+│   │       └── CallToAction.jsx
+│   │
+│   └── inbox/
+│       ├── components/       # UI khusus inbox (presentational)
+│       │   ├── InboxDetailSkeleton.jsx
+│       │   ├── InboxDetailView.jsx
+│       │   └── InboxDropdown.jsx
+│       ├── hooks/            # Business logic inbox (state, effects, API orchestration)
+│       │   ├── useInboxDetail.js
+│       │   └── useInboxNotifications.js
+│       ├── pages/            # Container page khusus fitur
+│       │   └── InboxDetailPage.jsx
+│       └── utils/            # Utility/transformation khusus inbox
+│           └── activityLog.js
+│
 ├── components/               # Semua UI components
 │   ├── common/              # Components yang sering digunakan (shared)
-│   │   ├── Navbar.jsx       # Navigation bar (with auth logic)
+│   │   ├── Navbar.jsx       # Navigation bar (layout/auth; inbox logic dipisah ke feature)
 │   │   ├── Logo.jsx         # Logo component
 │   │   ├── SearchBar.jsx    # Search bar component
 │   │   ├── ThemeToggle.jsx  # Dark mode toggle
@@ -93,6 +130,21 @@ src/
 - `import Navbar from "./components/Navbar"` → `import { Navbar } from "@/components/common"`
 - `import { ReviewCard } from "../../components/landing/card/ReviewCard"` → `import { ReviewCard } from "@/components/cards"`
 - `import { CompanyCard } from "../../components/landing/card/CompanyCard"` → `import { CompanyCard } from "@/components/cards"`
+
+### 5. **Feature-first Separation (Inbox)**
+- `src/pages/inbox/InboxDetail.jsx` sekarang hanya wrapper agar route lama tetap kompatibel.
+- Logic data-fetch/action dipindahkan ke `src/features/inbox/hooks/useInboxDetail.js`.
+- UI detail dipisah di `src/features/inbox/components/InboxDetailView.jsx`.
+- Transformasi timeline/audit log dipusatkan di `src/features/inbox/utils/activityLog.js`.
+- Logic inbox dropdown navbar dipisah ke `useInboxNotifications` + `InboxDropdown`.
+
+### 6. **Feature-first Separation (Auth + Home)**
+- Route login/register sekarang mengarah ke `src/features/auth/**`.
+- Logic login dipisah ke `useLoginForm` agar form UI tetap presentational.
+- Logic wizard register dipisah ke `useRegisterWizard`.
+- Komposisi halaman home dipindah ke `src/features/home/pages/HomePage.jsx`.
+- Section home (`HeroSection`, `TopCompanies`, `HighlightReview`, `CallToAction`) dipusatkan di `src/features/home/sections`.
+- File lama di `src/pages/**` dan `src/components/**` dipertahankan sebagai wrapper kompatibilitas.
 
 ## Benefits
 

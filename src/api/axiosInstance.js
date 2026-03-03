@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Read API base URL from Vite env variable `VITE_API_BASE_URL`, fallback to localhost
-const API_BASE_URL = import.meta.env.API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -12,12 +12,6 @@ const axiosInstance = axios.create({
 });
 
 const AUTH_EXCEPTION_ENDPOINTS = ["/auth/login"];
-
-// const redirectToLogin = () => {
-//   localStorage.removeItem("accessToken");
-//   console.info("Redirecting to login page...");
-//   setTimeout(() => (window.location.href = "/login"), 875);
-// };
 
 const refreshAccessToken = async () => {
   const res = await axios.post(
@@ -42,7 +36,11 @@ const refreshAccessToken = async () => {
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
-    if (token) config.headers.Authorization = `Bearer ${token}`;
+    // Exclude auth endpoints from automatic token attachment
+    const isAuthEndpoint = config.url === "/auth/login" || config.url === "/auth/register";
+    if (token && !isAuthEndpoint) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => Promise.reject(error)

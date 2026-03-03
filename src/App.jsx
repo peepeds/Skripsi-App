@@ -18,7 +18,6 @@ const NavigatorSetup = () => {
 
 function Layout({ children }) {
   const location = useLocation();
-  console.log(location);
   const matches = matchRoutes(appRoutes, location);
   const hideNavbar = matches?.some((match) => match.route.showNavbar === false) ?? false;
 

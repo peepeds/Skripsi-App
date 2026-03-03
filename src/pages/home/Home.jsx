@@ -1,18 +1,23 @@
-import { CallToAction } from "@/pages/home/CallToAction";
-import { HeroSection } from "@/pages/home/HeroSection";
-import { HighlightReview } from "@/pages/home/HighlightReview";
-import { TopCompanies } from "@/pages/home/TopCompanies";
+/**
+ * Home Page (Legacy Wrapper)
+ * 
+ * Purpose: Backward compatibility wrapper that re-exports the actual HomePage
+ *          component from the new feature module structure.
+ * 
+ * Why this file exists: Allows existing code and routes to import from
+ *                       @/pages/home/Home without breaking changes.
+ * 
+ * The actual implementation lives in: @/features/home/pages/HomePage
+ * 
+ * Structure: src/features/home/
+ *   - pages/HomePage.jsx (main page component)
+ *   - sections/ (reusable page sections)
+ *     - HeroSection.jsx
+ *     - TopCompanies.jsx
+ *     - HighlightReview.jsx
+ *     - CallToAction.jsx
+ */
 
-import { SearchBar } from "@/components/SearchBar";
+import HomePage from "@/features/home/pages/HomePage";
 
-
-export default function HomePage() {
-  return (
-   <main className="w-full">
-      <HeroSection />
-      <TopCompanies />
-      <HighlightReview />
-      <CallToAction />
-    </main>
-  )
-}
+export default HomePage;
