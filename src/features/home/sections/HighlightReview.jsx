@@ -26,18 +26,20 @@ export default function HighlightReview() {
   ];
 
   return (
-    <section className="bg-white px-8 md:px-20 py-16">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-semibold">Highlight Review</h2>
-        <a href="#" className="text-green-600 hover:underline">
-          Baca review lengkap
-        </a>
-      </div>
+    <section className="bg-white py-16">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-2xl font-semibold">Highlight Review</h2>
+          <a href="#" className="text-green-600 hover:underline">
+            Baca review lengkap
+          </a>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {reviews.map((review) => (
-          <ReviewCard key={review.name} {...review} />
-        ))}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {reviews.map((review) => (
+            <ReviewCard key={review.name} {...review} />
+          ))}
+        </div>
       </div>
     </section>
   );

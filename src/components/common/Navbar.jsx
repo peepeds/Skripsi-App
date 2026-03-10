@@ -2,7 +2,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import Logo from "@/components/common/Logo";
 import { Button } from "@/components/ui/button";
-import { SearchBar } from "@/components/common/SearchBar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SkeletonCircle } from "@/components/ui/skeleton";
 import {
@@ -77,13 +76,6 @@ export default function Navbar() {
             <Logo />
           </a>
         </div>
-        {/* Middle area */}
-        <div className="grow max-sm:hidden">
-          {/* Search form */}
-          <div className="relative mx-auto w-full max-w-xs">
-            <SearchBar />
-          </div>
-        </div>
         {/* Right side */}
         <div className="flex flex-1 items-center justify-end gap-2">
           {loading ? (
@@ -92,6 +84,12 @@ export default function Navbar() {
             </div>
           ) : isAuthenticated ? (
             <>
+              <Button asChild variant="ghost" size="sm" className="text-sm">
+                <a href="/categories">Categories</a>
+              </Button>
+              <Button asChild variant="ghost" size="sm" className="text-sm">
+                <a href="/companies">Companies</a>
+              </Button>
               <InboxDropdown
                 isOpen={isInboxOpen}
                 onOpenChange={handleOpenChange}
@@ -129,10 +127,10 @@ export default function Navbar() {
             <>
               {/* Guest Links */}
               <Button asChild variant="ghost" size="sm" className="text-sm">
-                <a href="#">Companies</a>
+                <a href="/categories">Categories</a>
               </Button>
               <Button asChild variant="ghost" size="sm" className="text-sm">
-                <a href="#">Categories</a>
+                <a href="/companies">Companies</a>
               </Button>
               <Button asChild size="sm" className="text-sm">
                 <a href="/login">Get Started</a>

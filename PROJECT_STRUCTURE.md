@@ -16,6 +16,10 @@ src/
 │   │   │   └── pages/
 │   │   │       └── LoginPage.jsx
 │   │   └── register/
+│   │       ├── components/
+│   │       │   ├── StepAccount.jsx
+│   │       │   ├── StepPersonal.jsx
+│   │       │   └── StepAcademic.jsx
 │   │       ├── hooks/
 │   │       │   └── useRegisterWizard.js
 │   │       └── pages/
@@ -43,6 +47,39 @@ src/
 │       └── utils/            # Utility/transformation khusus inbox
 │           └── activityLog.js
 │
+│   ├── categories/
+│   │   └── pages/
+│   │       └── CategoriesPage.jsx
+│
+│   ├── companies/
+│   │   └── pages/
+│   │       └── CompaniesPage.jsx
+│
+│   ├── profile/
+│   │   └── pages/
+│   │       └── ProfilePage.jsx
+│
+│   ├── ping/
+│   │   └── pages/
+│   │       └── PingPage.jsx
+│
+│   ├── test/
+│   │   └── pages/
+│   │       └── TestPage.jsx
+│
+│   ├── minio/
+│   │   └── pages/
+│   │       └── MinioUploadTestPage.jsx
+│
+│   ├── storage/
+│   │   └── pages/
+│   │       └── StorageFilePage.jsx
+│
+│   └── not-found/
+│       └── pages/
+│           ├── NotFound.jsx
+│           └── not-found.css
+│
 ├── components/               # Semua UI components
 │   ├── common/              # Components yang sering digunakan (shared)
 │   │   ├── Navbar.jsx       # Navigation bar (layout/auth; inbox logic dipisah ke feature)
@@ -55,27 +92,11 @@ src/
 │   │   ├── ReviewCard.jsx   # Review card component
 │   │   └── index.js         # Export all card components
 │   ├── layout/              # Layout wrapper components
+│   │   ├── Container.jsx    # Content width boundary wrapper
+│   │   ├── Section.jsx      # Section with auto container
+│   │   └── index.js         # Export all layout components
 │   ├── ui/                  # Base UI components (button, input, avatar, etc.)
 │   └── landing/             # Legacy - to be cleaned up
-│
-├── pages/                    # Page components / Views
-│   ├── auth/                # Authentication pages
-│   │   ├── login/
-│   │   │   ├── Login.jsx
-│   │   │   └── LoginForm.jsx
-│   │   └── register/
-│   │       ├── Register.jsx
-│   │       ├── StepAccount.jsx
-│   │       ├── StepAcademic.jsx
-│   │       └── StepPersonal.jsx
-│   ├── home/                # Home page
-│   │   ├── Home.jsx
-│   │   ├── HeroSection.jsx
-│   │   ├── TopCompanies.jsx
-│   │   ├── HighlightReview.jsx
-│   │   └── CallToAction.jsx
-│   ├── PingPage.jsx
-│   └── TestPage.jsx
 │
 ├── hooks/                    # Custom React hooks
 │   ├── useAuth.js           # Auth hook (user context wrapper)
@@ -110,35 +131,95 @@ src/
 
 ## Key Changes
 
-### 1. **components/common/** - Shared Components
+### 1. **Layout Guidelines** - Container & Section Components
+
+**ATURAN UTAMA**: Semua halaman harus mengikuti pola layout konsisten dimana:
+- **Background styling** (warna, gradient) = full-width
+- **Konten** (teks, card, form, dll) = dibatasi dengan container
+
+#### Komponen yang tersedia:
+
+**Container** - Wrapper untuk membatasi lebar konten
+```jsx
+import { Container } from "@/components/layout";
+
+<section className="bg-gray-50 py-12">
+  <Container>
+    <h1>Judul</h1>
+    <p>Konten dengan batas kiri-kanan konsisten</p>
+  </Container>
+</section>
+```
+
+**Section** - Shortcut section + container otomatis
+```jsx
+import { Section } from "@/components/layout";
+
+<Section className="bg-gray-50 py-12">
+  <h1>Judul</h1>
+  <p>Konten otomatis dibatasi</p>
+</Section>
+```
+
+#### Standar Layout:
+- Max width: `max-w-7xl` (1280px)
+- Horizontal padding: `px-6` (24px)
+- Centered: `mx-auto`
+
+#### Contoh Penggunaan:
+```jsx
+// ❌ SALAH - Background ikut terbatas
+<section className="bg-gray-50 py-12 max-w-7xl mx-auto px-6">
+  <h1>Judul</h1>
+</section>
+
+// ✅ BENAR - Background full-width, konten terbatas
+<section className="bg-gray-50 py-12">
+  <Container>
+    <h1>Judul</h1>
+  </Container>
+</section>
+
+// ✅ BENAR - Menggunakan Section component
+<Section className="bg-gray-50 py-12">
+  <h1>Judul</h1>
+</Section>
+```
+
+### 2. **components/common/** - Shared Components
 - Memindahkan `Navbar.jsx` ke `components/common/`
 - Memindahkan `logo.jsx` → `Logo.jsx`
 - Memindahkan `SearchBar.jsx` dari `navbar-components/`
 - Memindahkan `theme-toggle.jsx` → `ThemeToggle.jsx`
 - Membuat `index.js` untuk clean exports
 
-### 2. **components/cards/** - Card Components
+### 3. **components/layout/** - Layout Components
+- Membuat `Container.jsx` untuk wrapper konten dengan batas konsisten
+- Membuat `Section.jsx` untuk section dengan container otomatis
+- Membuat `index.js` untuk clean exports
+
+### 4. **components/cards/** - Card Components
 - Memindahkan `CompanyCard.jsx` dan `ReviewCard.jsx`
 - Membuat `index.js` untuk clean exports
 
-### 3. **hooks/** - Custom Hooks
+### 5. **hooks/** - Custom Hooks
 - Membuat `useAuth.js` hook untuk wrap UserContext
 - Menghilangkan repetisi penggunaan `useContext(UserContext)`
 - Membuat `index.js` untuk clean exports
 
-### 4. **Updated Imports**
+### 6. **Updated Imports**
 - `import Navbar from "./components/Navbar"` → `import { Navbar } from "@/components/common"`
 - `import { ReviewCard } from "../../components/landing/card/ReviewCard"` → `import { ReviewCard } from "@/components/cards"`
 - `import { CompanyCard } from "../../components/landing/card/CompanyCard"` → `import { CompanyCard } from "@/components/cards"`
 
-### 5. **Feature-first Separation (Inbox)**
+### 7. **Feature-first Separation (Inbox)**
 - `src/pages/inbox/InboxDetail.jsx` sekarang hanya wrapper agar route lama tetap kompatibel.
 - Logic data-fetch/action dipindahkan ke `src/features/inbox/hooks/useInboxDetail.js`.
 - UI detail dipisah di `src/features/inbox/components/InboxDetailView.jsx`.
 - Transformasi timeline/audit log dipusatkan di `src/features/inbox/utils/activityLog.js`.
 - Logic inbox dropdown navbar dipisah ke `useInboxNotifications` + `InboxDropdown`.
 
-### 6. **Feature-first Separation (Auth + Home)**
+### 8. **Feature-first Separation (Auth + Home)**
 - Route login/register sekarang mengarah ke `src/features/auth/**`.
 - Logic login dipisah ke `useLoginForm` agar form UI tetap presentational.
 - Logic wizard register dipisah ke `useRegisterWizard`.
@@ -162,4 +243,5 @@ Untuk cleaning up lebih lanjut:
 - [ ] Hapus folder `components/landing/` (sudah dipindahkan)
 - [ ] Hapus `components/Navbar.jsx` dan `components/SearchBar.jsx` (sudah dipindahkan)
 - [ ] Reorganisasi `pages/auth/` untuk structure yang lebih konsisten
-- [ ] Buat layout components di `components/layout/` (jika diperlukan)
+- [x] Buat layout components di `components/layout/` - **SELESAI**
+- [ ] Refactor semua existing sections untuk menggunakan Container/Section components

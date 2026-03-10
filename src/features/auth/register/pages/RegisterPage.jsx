@@ -6,9 +6,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import StepAccount from "@/pages/auth/register/StepAccount";
-import StepPersonal from "@/pages/auth/register/StepPersonal";
-import StepAcademic from "@/pages/auth/register/StepAcademic";
+import StepAccount from "@/features/auth/register/components/StepAccount";
+import StepPersonal from "@/features/auth/register/components/StepPersonal";
+import StepAcademic from "@/features/auth/register/components/StepAcademic";
 import { useRegisterWizard } from "@/features/auth/register/hooks/useRegisterWizard";
 
 export default function RegisterPage() {
