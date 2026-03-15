@@ -2,37 +2,28 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## 📚 Documentation
+## Guidelines
+please ensure node and pnpm is install before running this project
 
-- **[Project Structure](PROJECT_STRUCTURE.md)** - Struktur folder dan organisasi kode
-- **[Layout Guidelines](LAYOUT_GUIDELINES.md)** - **WAJIB DIBACA** - Aturan layout dan penggunaan Container/Section
+``` bash
+# Download and install nvm:
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
 
-## 🎨 Layout Rules (PENTING)
+# in lieu of restarting the shell
+\. "$HOME/.nvm/nvm.sh"
 
-**Semua halaman harus mengikuti aturan layout konsisten:**
+# Download and install Node.js:
+nvm install 24
 
-- Background styling (warna, gradient) = **Full-width**
-- Konten (teks, card, form) = **Dibatasi dengan Container**
+# Verify the Node.js version:
+node -v # Should print "v24.14.0".
 
-```jsx
-import { Container, Section } from "@/components/layout";
+# Download and install pnpm:
+corepack enable pnpm
 
-// ✅ BENAR
-<section className="bg-gray-50 py-12">
-  <Container>
-    <h1>Konten</h1>
-  </Container>
-</section>
-
-// Atau
-<Section className="bg-gray-50 py-12">
-  <h1>Konten</h1>
-</Section>
+# Verify pnpm version:
+pnpm -v
 ```
-
-📖 **Baca detail lengkap di [LAYOUT_GUIDELINES.md](LAYOUT_GUIDELINES.md)**
-
----
 
 ## React + Vite Setup
 
