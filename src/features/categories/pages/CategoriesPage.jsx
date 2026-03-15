@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getCategories } from '@/api/categoryApi';
 
-const CategoriesPage = () => {
+export const CategoriesPage = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -84,5 +84,3 @@ const CategoriesPage = () => {
     </div>
   );
 };
-
-export default CategoriesPage;

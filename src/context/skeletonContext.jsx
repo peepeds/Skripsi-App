@@ -18,5 +18,3 @@ export function SkeletonProvider({ children, defaultPrefer = true }) {
 export function useSkeletonPreferences() {
   return useContext(SkeletonContext);
 }
-
-export default SkeletonContext;

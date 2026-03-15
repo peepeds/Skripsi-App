@@ -1,17 +1,26 @@
-import axiosInstance from "./axiosInstance";
+/**
+ * Certificate API Module
+ *
+ * Handles certificate request operations and verification
+ * Returns standardized response format: { success, message, result }
+ *
+ * @module api/certificateApi
+ */
 
-const getCertificateRequest = async (id) => {
-  try {
-    const response = await axiosInstance.get(`/user/certificate/request/${id}`);
+import { axiosInstance } from "./axiosInstance";
 
-    return {
-      data: response.data,
-    };
-  } catch (error) {
-    return {
-      data: error.response?.data || { success: false, message: "Failed to fetch certificate request" }
-    };
-  }
+/**
+ * Get certificate request details by ID
+ *
+ * @async
+ * @param {string|number} id - Certificate request identifier
+ * @returns {Promise<Object>} - Certificate request details with status
+ * @throws {Error} - Axios will throw if response status is not 2xx (404 if not found)
+ *
+ * @example
+ * const response = await getCertificateRequest("cert-123");
+ */
+export const getCertificateRequest = async (id) => {
+  const response = await axiosInstance.get(`/user/certificate/request/${id}`);
+  return response.data;
 };
-
-export { getCertificateRequest };

@@ -19,7 +19,7 @@ export const useFileUpload = () => {
     try {
       const extension = requestedFileName.split('.').pop();
       const presignedResponse = await getPresignedUrl(requestedFileName, extension);
-      const presignedData = presignedResponse?.data;
+      const presignedData = presignedResponse;
 
       if (!presignedData?.success) {
         setSignedPayload(null);
@@ -145,7 +145,7 @@ export const useFileUpload = () => {
 
       console.log("useFileUpload: Uploading to MinIO...");
       const uploadResponse = await uploadFileToPresignedUrl(activeSignedPayload.uploadUrl, selectedFile);
-      const uploadData = uploadResponse?.data;
+      const uploadData = uploadResponse;
       console.log("useFileUpload: Upload response:", uploadData);
 
       const uploadResult = {

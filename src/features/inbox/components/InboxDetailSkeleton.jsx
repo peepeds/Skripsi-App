@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SkeletonLine } from "@/components/ui/skeleton";
 
-export default function InboxDetailSkeleton() {
+export function InboxDetailSkeleton() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <Card>

@@ -1,5 +1,5 @@
-export { default as HomePage } from "./pages/HomePage";
-export { default as HeroSection } from "./sections/HeroSection";
-export { default as TopCompanies } from "./sections/TopCompanies";
-export { default as HighlightReview } from "./sections/HighlightReview";
-export { default as CallToAction } from "./sections/CallToAction";
+export { HomePage } from "./pages/HomePage";
+export { HeroSection } from "./sections/HeroSection";
+export { TopCompanies } from "./sections/TopCompanies";
+export { HighlightReview } from "./sections/HighlightReview";
+export { CallToAction } from "./sections/CallToAction";

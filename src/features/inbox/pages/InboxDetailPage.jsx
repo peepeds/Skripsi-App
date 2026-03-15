@@ -3,11 +3,11 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { UserContext } from "@/context/userContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import InboxDetailSkeleton from "@/features/inbox/components/InboxDetailSkeleton";
-import InboxDetailView from "@/features/inbox/components/InboxDetailView";
+import { InboxDetailSkeleton } from "@/features/inbox/components/InboxDetailSkeleton";
+import { InboxDetailView } from "@/features/inbox/components/InboxDetailView";
 import { useInboxDetail } from "@/features/inbox/hooks/useInboxDetail";
 
-export default function InboxDetailPage() {
+export function InboxDetailPage() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const type = searchParams.get('type');

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
 
-export default function AcademicDetailsCard({ user }) {
+export function AcademicDetailsCard({ user }) {
   return (
     <Card>
       <CardHeader>

@@ -1,8 +1,17 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { getCompanies, searchCompanies } from "@/api/companyApi";
 import { isValidSearchQuery } from "@/helpers/validations";
+import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
 
-const useCompanies = (searchQuery) => {
+/**
+ * Custom hook untuk fetch dan manage companies data
+ * Mendukung pagination untuk list dan search functionality
+ * Implements standardized error handling per BASELINE API contract
+ *
+ * @param {string} searchQuery - Query string untuk search
+ * @returns {Object} - { companies, loading, hasMore, error, fetchCompanies, setPage, page }
+ */
+export const useCompanies = (searchQuery) => {
   const [companies, setCompanies] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -12,60 +21,70 @@ const useCompanies = (searchQuery) => {
   const lastFetchedPage = useRef(-1);
 
   const fetchCompanies = useCallback(async (currentPage) => {
-    if (loading || (!hasMore && !isValidSearchQuery(searchQuery)) || currentPage <= lastFetchedPage.current) return;
+    // Guard: prevent duplicate requests
+    if (currentPage <= lastFetchedPage.current) {
+      return;
+    }
 
     setLoading(true);
+    setError(null);
 
     try {
-      let response;
+      const response = isValidSearchQuery(searchQuery)
+        ? await searchCompanies(searchQuery)
+        : await getCompanies(currentPage, 15);
+
+      // Use standardized response validation
+      const { success, message, data } = handleApiResponse(response);
+
+      if (!success) {
+        setError(message);
+        setCompanies([]);
+        return;
+      }
+
+      const newCompanies = data || [];
+
       if (isValidSearchQuery(searchQuery)) {
-        response = await searchCompanies(searchQuery);
+        // Search: replace all companies
+        setCompanies(newCompanies);
+        setHasMore(false);
       } else {
-        response = await getCompanies(currentPage, 15);
+        // Pagination: append companies, avoid duplicates
+        setCompanies((prev) => {
+          const existingIds = new Set(prev.map((c) => c.companyId));
+          const uniqueNew = newCompanies.filter(
+            (c) => !existingIds.has(c.companyId)
+          );
+          return [...prev, ...uniqueNew];
+        });
+        setHasMore(response.meta?.hasNext ?? true);
       }
 
-      if (response.data.success) {
-        const newCompanies = response.data.result;
-
-        if (isValidSearchQuery(searchQuery)) {
-          // For search, replace all companies
-          setCompanies(newCompanies);
-          setHasMore(false); // No pagination for search
-        } else {
-          // For normal fetch, append
-          setCompanies((prev) => {
-            const existingIds = new Set(prev.map((c) => c.companyId));
-            const filteredNew = newCompanies.filter(
-              (c) => !existingIds.has(c.companyId)
-            );
-            return [...prev, ...filteredNew];
-          });
-          setHasMore(response.data.meta.hasNext);
-        }
-        lastFetchedPage.current = currentPage;
-      } else {
-        setError("Failed to fetch companies");
-      }
-    } catch (error) {
-      console.error("Error fetching companies:", error);
-      setError("Failed to fetch companies");
+      lastFetchedPage.current = currentPage;
+    } catch (err) {
+      const errorMessage = normalizeErrorMessage(err, "Failed to fetch companies");
+      console.error("Error fetching companies:", err);
+      setError(errorMessage);
+      setCompanies([]);
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, loading, hasMore]);
+  }, [searchQuery]);
 
   const resetCompanies = useCallback(() => {
     setCompanies([]);
     setPage(0);
-    setHasMore(!isValidSearchQuery(searchQuery));
+    setHasMore(true);
     lastFetchedPage.current = -1;
     setError(null);
-  }, [searchQuery]);
+  }, []);
 
+  // Reset dan refetch saat search query berubah
   useEffect(() => {
     resetCompanies();
     fetchCompanies(0);
-  }, [searchQuery]);
+  }, [searchQuery]); // Only depend on searchQuery, not on fetchCompanies
 
   return {
     companies,
@@ -77,5 +96,3 @@ const useCompanies = (searchQuery) => {
     page,
   };
 };
-
-export default useCompanies;

@@ -1,7 +1,10 @@
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const CompanyCardSkeleton = () => (
+/**
+ * Skeleton/loading placeholder untuk CompanyCardHorizontal
+ */
+export const CompanyCardSkeleton = () => (
   <div className="bg-white shadow-sm rounded-lg p-4 flex items-center space-x-4">
     <Skeleton className="w-10 h-10 rounded flex-shrink-0" />
     <div className="flex-1">
@@ -12,5 +15,3 @@ const CompanyCardSkeleton = () => (
     </div>
   </div>
 );
-
-export default CompanyCardSkeleton;

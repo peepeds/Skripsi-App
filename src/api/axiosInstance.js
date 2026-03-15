@@ -3,7 +3,7 @@ import axios from "axios";
 // Read API base URL from Vite env variable `VITE_API_BASE_URL`, fallback to localhost
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
 
-const axiosInstance = axios.create({
+export const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
@@ -80,5 +80,3 @@ axiosInstance.interceptors.response.use(
     }
   }
 );
-
-export default axiosInstance;

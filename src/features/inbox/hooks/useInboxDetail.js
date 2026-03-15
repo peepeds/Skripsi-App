@@ -8,8 +8,21 @@ import { getCertificateRequest } from "@/api/certificateApi";
 import { markAsRead } from "@/api/inboxApi";
 import { getAuditLog } from "@/api/auditApi";
 import { toast } from "sonner";
+import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
 import { buildActivityTimeline } from "@/features/inbox/utils/activityLog";
 
+/**
+ * Custom hook untuk manage inbox request details dengan API calls
+ * Implements standardized error handling per BASELINE API contract
+ *
+ * @param {Object} props - Hook configuration
+ * @param {string} props.id - Request ID
+ * @param {string} props.type - Request type (COMPANY_REQUEST, UPLOAD_CERTIFICATES)
+ * @param {Object} props.user - Current user object
+ * @param {boolean} props.userLoading - User loading state
+ * @param {Function} props.navigate - Navigation function
+ * @returns {Object} - Request data and action handlers
+ */
 export const useInboxDetail = ({ id, type, user, userLoading, navigate }) => {
   const [requestData, setRequestData] = useState(null);
   const [reviewInformation, setReviewInformation] = useState(null);
@@ -18,37 +31,42 @@ export const useInboxDetail = ({ id, type, user, userLoading, navigate }) => {
   const [reviewNote, setReviewNote] = useState("");
   const [auditLog, setAuditLog] = useState([]);
   const [auditLoading, setAuditLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const fetchRequestData = useCallback(async () => {
     setLoading(true);
+    setError(null);
 
     try {
-      let result;
+      let response;
       if (type === "COMPANY_REQUEST") {
-        result = await getCompanyRequest(id);
+        response = await getCompanyRequest(id);
       } else if (type === "UPLOAD_CERTIFICATES") {
-        result = await getCertificateRequest(id);
+        response = await getCertificateRequest(id);
       } else {
         throw new Error("Unsupported request type");
       }
 
-      if (result.data?.success) {
-        setRequestData(result.data.result.requestDetails);
-        setReviewInformation(result.data.result.reviewInformation);
+      // Use standardized response validation
+      const { success, message, data } = handleApiResponse(response);
 
-        try {
-          // Note: markAsRead should use inboxId, but we don't have it here
-          // For now, skip marking as read
-          // await markAsRead(inboxId);
-        } catch (error) {
-          console.log("Could not mark as read:", error);
-        }
-      } else {
-        toast.error(result.data?.message || "Failed to fetch inbox details");
+      if (!success) {
+        setError(message);
+        toast.error(message);
+        setRequestData(null);
+        setReviewInformation(null);
+        return;
       }
-    } catch (error) {
-      console.error("Error fetching inbox details:", error);
-      toast.error("An error occurred while fetching inbox details");
+
+      setRequestData(data?.requestDetails || null);
+      setReviewInformation(data?.reviewInformation || null);
+    } catch (err) {
+      const errorMessage = normalizeErrorMessage(err, "Failed to fetch request details");
+      setError(errorMessage);
+      console.error("Error fetching request data:", err);
+      toast.error(errorMessage);
+      setRequestData(null);
+      setReviewInformation(null);
     } finally {
       setLoading(false);
     }
@@ -58,14 +76,20 @@ export const useInboxDetail = ({ id, type, user, userLoading, navigate }) => {
     setAuditLoading(true);
 
     try {
-      const auditType = type;
-      const result = await getAuditLog(auditType, id);
-      if (result.data?.success) {
-        setAuditLog(result.data.result || []);
-      } else {
+      const response = await getAuditLog(type, id);
+
+      // Use standardized response validation
+      const { success, message, data } = handleApiResponse(response);
+
+      if (!success) {
+        console.warn("Failed to fetch audit log:", message);
         setAuditLog([]);
+        return;
       }
+
+      setAuditLog(data || []);
     } catch (error) {
+      const errorMessage = normalizeErrorMessage(error, "Failed to fetch audit log");
       console.error("Error fetching audit log:", error);
       setAuditLog([]);
     } finally {
@@ -86,17 +110,23 @@ export const useInboxDetail = ({ id, type, user, userLoading, navigate }) => {
     setActionLoading(true);
 
     try {
-      const result = await approveCompanyRequest(id, reviewNote);
-      if (result.data?.success) {
-        toast.success("Request approved successfully");
-        setReviewNote("");
-        await refreshAll();
-      } else {
-        toast.error(result.data?.message || "Failed to approve request");
+      const response = await approveCompanyRequest(id, reviewNote);
+
+      // Use standardized response validation
+      const { success, message } = handleApiResponse(response);
+
+      if (!success) {
+        toast.error(message);
+        return;
       }
+
+      toast.success(message || "Request approved successfully");
+      setReviewNote("");
+      await refreshAll();
     } catch (error) {
+      const errorMessage = normalizeErrorMessage(error, "Failed to approve request");
       console.error("Error approving request:", error);
-      toast.error("An error occurred while approving request");
+      toast.error(errorMessage);
     } finally {
       setActionLoading(false);
     }
@@ -111,17 +141,23 @@ export const useInboxDetail = ({ id, type, user, userLoading, navigate }) => {
     setActionLoading(true);
 
     try {
-      const result = await rejectCompanyRequest(id, reviewNote);
-      if (result.data?.success) {
-        toast.success("Request rejected");
-        setReviewNote("");
-        await refreshAll();
-      } else {
-        toast.error(result.data?.message || "Failed to reject request");
+      const response = await rejectCompanyRequest(id, reviewNote);
+
+      // Use standardized response validation
+      const { success, message } = handleApiResponse(response);
+
+      if (!success) {
+        toast.error(message);
+        return;
       }
+
+      toast.success(message || "Request rejected successfully");
+      setReviewNote("");
+      await refreshAll();
     } catch (error) {
+      const errorMessage = normalizeErrorMessage(error, "Failed to reject request");
       console.error("Error rejecting request:", error);
-      toast.error("An error occurred while rejecting request");
+      toast.error(errorMessage);
     } finally {
       setActionLoading(false);
     }
@@ -158,5 +194,6 @@ export const useInboxDetail = ({ id, type, user, userLoading, navigate }) => {
     timeline,
     handleApprove,
     handleReject,
+    error,
   };
 };

@@ -6,12 +6,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import StepAccount from "@/features/auth/register/components/StepAccount";
-import StepPersonal from "@/features/auth/register/components/StepPersonal";
-import StepAcademic from "@/features/auth/register/components/StepAcademic";
+import { StepAccount } from "@/features/auth/register/components/StepAccount";
+import { StepPersonal } from "@/features/auth/register/components/StepPersonal";
+import { StepAcademic } from "@/features/auth/register/components/StepAcademic";
 import { useRegisterWizard } from "@/features/auth/register/hooks/useRegisterWizard";
 
-export default function RegisterPage() {
+export function RegisterPage() {
   const { step, form, onNext, onBack, onSubmit, isLastStep } = useRegisterWizard();
 
   const steps = [
@@ -46,7 +46,10 @@ export default function RegisterPage() {
                   <div />
                 )}
 
-                <Button onClick={isLastStep ? onSubmit : onNext}>
+                <Button 
+                  onClick={isLastStep ? onSubmit : onNext}
+                  disabled={!form.formState.isValid}
+                >
                   {isLastStep ? "Submit" : "Next"}
                 </Button>
               </div>

@@ -15,7 +15,7 @@ const certificateSchema = z.object({
   certificateName: z.string().min(1, "Certificate name is required"),
 });
 
-export default function CertificateModal({
+export function CertificateModal({
   isOpen,
   onClose,
   onSubmit,

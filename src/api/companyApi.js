@@ -1,95 +1,120 @@
-import axiosInstance from "./axiosInstance";
+/**
+ * Company API Module
+ *
+ * Handles all company-related API calls including listing, searching, and approval workflows
+ * Returns standardized response format: { success, message, result }
+ *
+ * @module api/companyApi
+ */
 
-const getCompanyRequest = async (requestId) => {
-  try {
-    const response = await axiosInstance.get(`/company/request/${requestId}`);
+import { axiosInstance } from "./axiosInstance";
 
-    return {
-      data: response.data,
-    };
-  } catch (error) {
-    return {
-      data: error.response?.data || { success: false, message: "Failed to fetch company request" }
-    };
-  }
+/**
+ * Get company registration request details
+ *
+ * @async
+ * @param {string|number} requestId - Unique company request identifier
+ * @returns {Promise<Object>} - Company request details
+ * @throws {Error} - Axios will throw if response status is not 2xx
+ *
+ * @example
+ * const response = await getCompanyRequest("req-123");
+ */
+export const getCompanyRequest = async (requestId) => {
+  const response = await axiosInstance.get(`/company/request/${requestId}`);
+  return response.data;
 };
 
-const approveCompanyRequest = async (requestId, reviewNote = "") => {
-  try {
-    const response = await axiosInstance.patch(`/company/request/${requestId}/approve`, {
-      reviewNote
-    });
-
-    return {
-      data: response.data,
-    };
-  } catch (error) {
-    return {
-      data: error.response?.data || { success: false, message: "Failed to approve request" }
-    };
-  }
+/**
+ * Approve a company registration request
+ *
+ * @async
+ * @param {string|number} requestId - Company request ID to approve
+ * @param {string} [reviewNote=""] - Optional review notes from reviewer
+ * @returns {Promise<Object>} - Updated request with approval details
+ * @throws {Error} - Axios will throw if response status is not 2xx (e.g., 403 Forbidden if not authorized)
+ *
+ * @example
+ * const response = await approveCompanyRequest("req-123", "Looks good");
+ */
+export const approveCompanyRequest = async (requestId, reviewNote = "") => {
+  const response = await axiosInstance.patch(`/company/request/${requestId}/approve`, {
+    reviewNote
+  });
+  return response.data;
 };
 
-const rejectCompanyRequest = async (requestId, reviewNote = "") => {
-  try {
-    const response = await axiosInstance.patch(`/company/request/${requestId}/reject`, {
-      reviewNote
-    });
-
-    return {
-      data: response.data,
-    };
-  } catch (error) {
-    return {
-      data: error.response?.data || { success: false, message: "Failed to reject request" }
-    };
-  }
+/**
+ * Reject a company registration request
+ *
+ * @async
+ * @param {string|number} requestId - Company request ID to reject
+ * @param {string} [reviewNote=""] - Optional rejection reason
+ * @returns {Promise<Object>} - Updated request with rejection details
+ * @throws {Error} - Axios will throw if response status is not 2xx (e.g., 403 Forbidden if not authorized)
+ *
+ * @example
+ * const response = await rejectCompanyRequest("req-123", "Invalid documentation");
+ */
+export const rejectCompanyRequest = async (requestId, reviewNote = "") => {
+  const response = await axiosInstance.patch(`/company/request/${requestId}/reject`, {
+    reviewNote
+  });
+  return response.data;
 };
 
-const getCompanies = async (page = 0, size = 15) => {
-  try {
-    const response = await axiosInstance.get("/company", {
-      params: { page, size }
-    });
-
-    return {
-      data: response.data,
-    };
-  } catch (error) {
-    return {
-      data: error.response?.data || error.message
-    };
-  }
+/**
+ * Get paginated list of companies
+ *
+ * @async
+ * @param {number} [page=0] - Page number (0-indexed)
+ * @param {number} [size=15] - Number of results per page
+ * @returns {Promise<Object>} - Paginated list with { data: [...], pagination: { ... } }
+ * @throws {Error} - Axios will throw if response status is not 2xx
+ *
+ * @example
+ * const response = await getCompanies(0, 20);
+ * // Returns: { success: true, message: "...", result: { data: [...], pagination: {...} } }
+ */
+export const getCompanies = async (page = 0, size = 15) => {
+  const response = await axiosInstance.get("/company", {
+    params: { page, size }
+  });
+  return response.data;
 };
 
-const searchCompanies = async (query) => {
-  try {
-    const response = await axiosInstance.get("/company", {
-      params: { search: query }
-    });
-
-    return {
-      data: response.data,
-    };
-  } catch (error) {
-    return {
-      data: error.response?.data || { success: false, message: "Failed to search companies" }
-    };
-  }
+/**
+ * Search companies by query string
+ *
+ * @async
+ * @param {string} query - Search query (company name, keywords, etc.)
+ * @returns {Promise<Object>} - Array of matching companies
+ * @throws {Error} - Axios will throw if response status is not 2xx
+ *
+ * @example
+ * const response = await searchCompanies("tech company");
+ * // Returns: { success: true, message: "...", result: [...companies] }
+ */
+export const searchCompanies = async (query) => {
+  const response = await axiosInstance.get("/company", {
+    params: { search: query }
+  });
+  return response.data;
 };
 
-const getCompanyBySlug = async (slug) => {
-  try {
-    const response = await axiosInstance.get(`/company/${slug}`);
-
-    return {
-      data: response.data,
-    };
-  } catch (error) {
-    return {
-      data: error.response?.data || { success: false, message: "Failed to fetch company details" }
-    };
-  }
+/**
+ * Get company details by slug
+ *
+ * @async
+ * @param {string} slug - Company URL slug (unique identifier)
+ * @returns {Promise<Object>} - Complete company details with reviews and ratings
+ * @throws {Error} - Axios will throw if response status is not 2xx (404 if not found)
+ *
+ * @example
+ * const response = await getCompanyBySlug("google-indonesia");
+ * // Returns: { success: true, message: "...", result: { id, name, slug, ...details } }
+ */
+export const getCompanyBySlug = async (slug) => {
+  const response = await axiosInstance.get(`/company/${slug}`);
+  return response.data;
 };
-
-export { getCompanyRequest, approveCompanyRequest, rejectCompanyRequest, getCompanies, searchCompanies, getCompanyBySlug };

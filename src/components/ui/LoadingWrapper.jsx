@@ -29,5 +29,3 @@ export function LoadingWrapper({ loading, skeleton = null, children, className =
   // Fallback text spinner if skeleton preference disabled
   return <div className="text-muted-foreground">Loading...</div>;
 }
-
-export default LoadingWrapper;

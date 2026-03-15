@@ -1,6 +1,6 @@
 import { CompanyCard } from "@/components/cards";
 
-export default function TopCompanies() {
+export function TopCompanies() {
   const companies = [
     "Tokopedia",
     "Shopee",

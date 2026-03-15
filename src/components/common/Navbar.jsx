@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import Logo from "@/components/common/Logo";
+import { Logo } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SkeletonCircle } from "@/components/ui/skeleton";
@@ -10,10 +10,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import InboxDropdown from "@/features/inbox/components/InboxDropdown";
+import { InboxDropdown } from "@/features/inbox/components/InboxDropdown";
 import { useInboxNotifications } from "@/features/inbox/hooks/useInboxNotifications";
 
-export default function Navbar() {
+export function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout, isAuthenticated, loading } = useAuth();

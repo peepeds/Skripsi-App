@@ -9,7 +9,7 @@ import {
   FieldGroup,
 } from "@/components/ui/field";
 
-export default function CampusLocationCard({ user }) {
+export function CampusLocationCard({ user }) {
   return (
     <Card>
       <CardHeader>

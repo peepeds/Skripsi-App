@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
-export default function ProfileHeader({ user, onSubmitCertificate }) {
+export function ProfileHeader({ user, onSubmitCertificate }) {
   // Helper function: create user initials for avatar (e.g. "John Doe" → "JD")
   const getInitials = () => {
     const first = user?.firstName?.charAt(0)?.toUpperCase() || "";

@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { UserContext } from "@/context/userContext";
 import { SkeletonLine } from "@/components/ui/skeleton";
 
-export default function TestPage() {
+export function TestPage() {
   const { user, loading } = useContext(UserContext);
 
   return (

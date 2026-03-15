@@ -103,19 +103,22 @@ export const useRegisterWizard = () => {
     const { confirmPassword, ...payload } = form.getValues();
 
     try {
-      const res = await register(payload);
-      const data = res.data;
+      const data = await register(payload);
 
       if (!data.success) {
-        toast.error(data.message || "Registration failed");
+        toast.error(data.message);
         return;
       }
 
-      toast.success("Registration Successful!");
+      toast.success(data.message);
       await sleep(2000);
       navigate("/login");
     } catch (error) {
-      toast.error(error.message || "Registration Failed! Server error.");
+      const errorMessage = 
+        error.response?.data?.message || 
+        error.message || 
+        "Registration Failed! Server error.";
+      toast.error(errorMessage);
     }
   };
 

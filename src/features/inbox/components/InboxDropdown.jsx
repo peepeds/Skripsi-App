@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export default function InboxDropdown({
+export function InboxDropdown({
   isOpen,
   onOpenChange,
   onTriggerHover,

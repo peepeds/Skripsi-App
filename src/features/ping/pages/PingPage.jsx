@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { UserContext } from "@/context/userContext";
 
-export default function PingPage() {
+export function PingPage() {
   // State: Track if ping is in progress
   const [loading, setLoading] = useState(false);
   

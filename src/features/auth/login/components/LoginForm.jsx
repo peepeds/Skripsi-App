@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Controller } from "react-hook-form";
 import { useLoginForm } from "@/features/auth/login/hooks/useLoginForm";
 
-export default function LoginForm({ className, ...props }) {
+export function LoginForm({ className, ...props }) {
   const { form, handleLogin } = useLoginForm();
 
   return (

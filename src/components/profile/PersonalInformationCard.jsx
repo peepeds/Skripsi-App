@@ -19,7 +19,7 @@ const profileSchema = z.object({
   phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
 });
 
-export default function PersonalInformationCard({ user }) {
+export function PersonalInformationCard({ user }) {
   // Set up form with validation using react-hook-form and Zod
   const form = useForm({
     resolver: zodResolver(profileSchema),

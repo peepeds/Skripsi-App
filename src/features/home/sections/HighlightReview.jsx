@@ -1,6 +1,6 @@
 import { ReviewCard } from "@/components/cards";
 
-export default function HighlightReview() {
+export function HighlightReview() {
   const reviews = [
     {
       name: "Tuti — B24",

@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { SkeletonLine } from "@/components/ui/skeleton";
 import { getRequestStatusClass } from "@/features/inbox/utils/activityLog";
 
-export default function InboxDetailView({
+export function InboxDetailView({
   requestId,
   requestData,
   reviewInformation,

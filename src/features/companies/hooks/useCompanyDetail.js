@@ -1,7 +1,15 @@
 import { useState, useEffect } from "react";
 import { getCompanyBySlug } from "@/api/companyApi";
+import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
 
-const useCompanyDetail = (slug) => {
+/**
+ * Custom hook untuk fetch company detail berdasarkan slug
+ * Implements standardized error handling per BASELINE API contract
+ *
+ * @param {string} slug - Company slug identifier
+ * @returns {Object} - { company, loading, error }
+ */
+export const useCompanyDetail = (slug) => {
   const [company, setCompany] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -16,26 +24,21 @@ const useCompanyDetail = (slug) => {
       try {
         const response = await getCompanyBySlug(slug);
 
-        if (response.data.success) {
-          // Handle dummy response where result is just the slug string
-          if (typeof response.data.result === 'string') {
-            setCompany({
-              companySlug: response.data.result,
-              companyName: response.data.result.charAt(0).toUpperCase() + response.data.result.slice(1),
-              companyAbbreviation: response.data.result.toUpperCase(),
-              website: `${response.data.result}.com`,
-              isPartner: false,
-              companyId: 999 // dummy ID
-            });
-          } else {
-            setCompany(response.data.result);
-          }
-        } else {
-          setError(response.data.message || "Failed to fetch company details");
+        // Use standardized response validation
+        const { success, message, data } = handleApiResponse(response);
+
+        if (!success) {
+          setError(message);
+          setCompany(null);
+          return;
         }
+
+        setCompany(data);
       } catch (err) {
+        const errorMessage = normalizeErrorMessage(err, "Failed to fetch company details");
         console.error("Error fetching company details:", err);
-        setError("Failed to fetch company details");
+        setError(errorMessage);
+        setCompany(null);
       } finally {
         setLoading(false);
       }
@@ -46,5 +49,3 @@ const useCompanyDetail = (slug) => {
 
   return { company, loading, error };
 };
-
-export default useCompanyDetail;

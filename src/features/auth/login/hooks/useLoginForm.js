@@ -27,21 +27,24 @@ export const useLoginForm = () => {
 
   const handleLogin = async (payload) => {
     try {
-      const res = await login(payload);
-      const data = res.data;
+      const response = await login(payload);
 
-      if (!data.success) {
-        toast.error(data.message);
+      // Check response success per BASELINE contract
+      if (!response.success) {
+        toast.error(response.message);
         return;
       }
 
-      localStorage.setItem("accessToken", data.result.accessToken);
+      // Store token and load user
+      localStorage.setItem("accessToken", response.result?.accessToken);
       await loadUser();
 
-      toast.success(data.message);
+      toast.success(response.message || "Login successful");
       navigate("/");
-    } catch {
-      toast.error("Login failed. Please try again.");
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || "Login failed. Please try again.";
+      toast.error(errorMessage);
+      console.error("Login error:", error);
     }
   };
 

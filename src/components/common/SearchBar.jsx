@@ -45,8 +45,8 @@ export function SearchBar() {
       setIsLoading(true);
       try {
         const response = await searchCompanies(query);
-        if (response.data.success) {
-          setSearchResults(response.data.result.slice(0, 5)); // Limit to 5 results
+        if (response.success) {
+          setSearchResults(response.result.slice(0, 5)); // Limit to 5 results
           setIsDropdownOpen(true);
         } else {
           setSearchResults([]);

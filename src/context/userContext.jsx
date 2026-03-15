@@ -46,7 +46,7 @@ export function UserProvider({ children }) {
       setLoading(true);
       console.info("Fetching user profile from API...");
       const res = await getMe();
-      const data = res?.data;
+      const data = res;
 
       if (data.success) {
         setUser(data.result);

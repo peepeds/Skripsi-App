@@ -6,14 +6,14 @@ import { Separator } from "@/components/ui/separator";
 import { submitCertificate } from "@/api/userApi";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { toast } from "sonner";
-import ProfileHeader from "@/components/profile/ProfileHeader";
-import PersonalInformationCard from "@/components/profile/PersonalInformationCard";
-import AcademicDetailsCard from "@/components/profile/AcademicDetailsCard";
-import CampusLocationCard from "@/components/profile/CampusLocationCard";
-import CertificateModal from "@/components/profile/CertificateModal";
-import CertificateCard from "@/components/profile/CertificateCard";
+import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { PersonalInformationCard } from "@/components/profile/PersonalInformationCard";
+import { AcademicDetailsCard } from "@/components/profile/AcademicDetailsCard";
+import { CampusLocationCard } from "@/components/profile/CampusLocationCard";
+import { CertificateModal } from "@/components/profile/CertificateModal";
+import { CertificateCard } from "@/components/profile/CertificateCard";
 
-export default function ProfilePage() {
+export function ProfilePage() {
   // Get user info and loading state from UserContext
   const { user, loading } = useContext(UserContext);
   const navigate = useNavigate();

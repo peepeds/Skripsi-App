@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 
-export default function CertificateCard({ user }) {
+export function CertificateCard({ user }) {
   const certificates = user?.certificate || [];
 
   return (

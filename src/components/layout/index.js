@@ -1,2 +1,2 @@
-export { default as Container } from "./Container";
-export { default as Section } from "./Section";
+export { Container } from "./Container";
+export { Section } from "./Section";

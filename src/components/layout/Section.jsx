@@ -1,4 +1,4 @@
-import Container from "./Container";
+import { Container } from "./Container";
 
 /**
  * Section Component
@@ -20,7 +20,7 @@ import Container from "./Container";
  * </Section>
  */
 
-export default function Section({ 
+export function Section({ 
   children, 
   className = "", 
   containerClassName = "" 

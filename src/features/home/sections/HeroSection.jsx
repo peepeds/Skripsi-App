@@ -1,6 +1,6 @@
 import { SearchBar } from "@/components/common/SearchBar";
 
-export default function HeroSection() {
+export function HeroSection() {
   return (
     <section className="py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-6">

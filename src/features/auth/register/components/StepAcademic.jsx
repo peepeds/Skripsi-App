@@ -2,23 +2,15 @@ import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton, SkeletonLine } from "@/components/ui/skeleton";
 import { getRegions } from "@/api/regionApi";
 import { getMajors } from "@/api/majorApi";
 
-export default function StepAcademic({ form }) {
-  const [regions, setRegions] = useState([
-    { regionId: 1, regionName: "Region 1" },
-    { regionId: 2, regionName: "Region 2" },
-  ]);
-  const [allMajors, setAllMajors] = useState([
-    { regionId: 1, majorId: 1, majorName: "Major 1" },
-    { regionId: 1, majorId: 2, majorName: "Major 2" },
-    { regionId: 1, majorId: 3, majorName: "Major 3" },
-    { regionId: 1, majorId: 4, majorName: "Major 4" },
-    { regionId: 1, majorId: 5, majorName: "Major 5" },
-  ]);
+export function StepAcademic({ form }) {
+  const [regions, setRegions] = useState([]);
+  const [allMajors, setAllMajors] = useState([]);
   const [majors, setMajors] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const selectedRegion = form.watch("regionId");
 
@@ -27,24 +19,25 @@ export default function StepAcademic({ form }) {
       const filtered = allMajors.filter(major => major.regionId === parseInt(selectedRegion));
       setMajors(filtered);
     } else {
-      setMajors(allMajors);
+      setMajors([]);
     }
   }, [selectedRegion, allMajors]);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const regionsRes = await getRegions();
-        if (regionsRes.data && regionsRes.data.success && regionsRes.data.result && regionsRes.data.result.length > 0) {
-          setRegions(regionsRes.data.result);
+        if (regionsRes.success && regionsRes.result && Array.isArray(regionsRes.result)) {
+          setRegions(regionsRes.result);
         }
+        
         const majorsRes = await getMajors();
-        if (majorsRes.data && majorsRes.data.success && majorsRes.data.result && majorsRes.data.result.length > 0) {
-          setAllMajors(majorsRes.data.result);
+        if (majorsRes.success && majorsRes.result && Array.isArray(majorsRes.result)) {
+          setAllMajors(majorsRes.result);
         }
       } catch (error) {
         console.error("Error fetching regions or majors:", error);
-        // Keep default data
       } finally {
         setLoading(false);
       }
@@ -53,7 +46,24 @@ export default function StepAcademic({ form }) {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="registerId">Student ID</Label>
+          <SkeletonLine className="h-10 w-full" />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="regionId">Region</Label>
+          <SkeletonLine className="h-10 w-full" />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="majorId">Major</Label>
+          <SkeletonLine className="h-10 w-full" />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -72,8 +82,11 @@ export default function StepAcademic({ form }) {
 
       <div className="space-y-2">
         <Label htmlFor="regionId">Region</Label>
-        <Select onValueChange={(value) => form.setValue("regionId", value)}>
-          <SelectTrigger>
+        <Select onValueChange={(value) => {
+          form.setValue("regionId", value);
+          form.trigger("regionId");
+        }}>
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Select region" />
           </SelectTrigger>
           <SelectContent>
@@ -91,8 +104,11 @@ export default function StepAcademic({ form }) {
 
       <div className="space-y-2">
         <Label htmlFor="majorId">Major</Label>
-        <Select onValueChange={(value) => form.setValue("majorId", value)}>
-          <SelectTrigger>
+        <Select onValueChange={(value) => {
+          form.setValue("majorId", value);
+          form.trigger("majorId");
+        }}>
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Select major" />
           </SelectTrigger>
           <SelectContent>

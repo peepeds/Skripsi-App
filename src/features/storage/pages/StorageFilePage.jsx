@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axiosInstance from "@/api/axiosInstance";
+import { axiosInstance } from "@/api/axiosInstance";
 
-export default function StorageFilePage() {
+export function StorageFilePage() {
   const { "*": filename } = useParams(); // Since route is /storage/*
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

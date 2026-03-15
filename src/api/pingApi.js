@@ -1,17 +1,26 @@
-import axiosInstance from "./axiosInstance";
+/**
+ * Ping API Module
+ *
+ * Health check endpoint for server connectivity
+ * Returns standardized response format: { success, message, result }
+ *
+ * @module api/pingApi
+ */
 
-const pingServer = async () => {
-  try {
-    const response = await axiosInstance.get("/ping");
+import { axiosInstance } from "./axiosInstance";
 
-    return {
-      data: response.data,
-    };
-  } catch (error) {
-    return {
-      data: error.response.data
-    };
-  }
+/**
+ * Health check - verify server is running
+ *
+ * @async
+ * @returns {Promise<Object>} - Server status confirmation
+ * @throws {Error} - Axios will throw if response status is not 2xx
+ *
+ * @example
+ * const response = await pingServer();
+ * // Returns: { success: true, message: "Server is running", result: {...} }
+ */
+export const pingServer = async () => {
+  const response = await axiosInstance.get("/ping");
+  return response.data;
 };
-
-export { pingServer };
