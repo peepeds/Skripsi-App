@@ -5,7 +5,8 @@ import React from "react";
  * Displays 5 separate rating categories with star ratings (1-5) each
  * Categories: Work Culture, Learning Opportunities, Mentorship, Benefits, Work-Life Balance
  */
-export const Section2Rating = ({ company, formData, onFormDataChange }) => {
+export const Section2Rating = ({ company, formData, onFormDataChange, lookupData }) => {
+
   const handleRatingChange = (categoryKey, rating) => {
     onFormDataChange({
       ratings: {
@@ -81,7 +82,7 @@ export const Section2Rating = ({ company, formData, onFormDataChange }) => {
             {formData.year} | {formData.duration}
           </p>
           <p className="text-sm text-gray-600">
-            {formData.internshipType} | {formData.workScheme} | {formData.position}
+            {lookupData.INTERNSHIP_TYPE?.find(opt => opt.value === formData.internshipType)?.label || formData.internshipType} | {lookupData.SCHEME?.find(opt => opt.value === formData.workScheme)?.label || formData.workScheme} | {formData.jobTitle}
           </p>
         </div>
       </div>

@@ -1,10 +1,11 @@
 import { createContext, useState, useEffect, useRef } from "react";
 import { getMe } from "@/api/userApi";
+import { logout as apiLogout } from "@/api/authApi";
 
 export const UserContext = createContext({
   user: null,
   loadUser: async () => {},
-  logout: () => {},
+  logout: async () => {},
   loading: false
 });
 
@@ -69,11 +70,11 @@ export function UserProvider({ children }) {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
     setUser(null);
     isFetching.current = false;
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("userProfile");
+    // Call API logout which handles clearing cookies and localStorage
+    await apiLogout();
   };
 
   useEffect(() => {

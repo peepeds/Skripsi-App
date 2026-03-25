@@ -4,7 +4,7 @@ import React from "react";
  * Section 3: Pengalaman Magang
  * Displays: Recruitment Process, Interview Difficulty, Testimony, Duration Statement, and Weaknesses
  */
-export const Section3Pengalaman = ({ formData, onFormDataChange }) => {
+export const Section3Experience = ({ formData, onFormDataChange, lookupData }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     onFormDataChange({ [name]: value });
@@ -27,14 +27,7 @@ export const Section3Pengalaman = ({ formData, onFormDataChange }) => {
     onFormDataChange({ interviewDifficulty: rating });
   };
 
-  const recruitmentOptions = [
-    { value: "CV Screening", label: "CV Screening" },
-    { value: "HR Interview", label: "HR Interview" },
-    { value: "Case Study", label: "Case Study" },
-    { value: "Presentation", label: "Presentation" },
-    { value: "Technical Test", label: "Technical Test" },
-    { value: "Final Interview", label: "Final Interview" },
-  ];
+  const recruitmentOptions = lookupData?.RECRUITMENT_STEPS ?? [];
 
   const renderStars = (rating) => {
     return (
@@ -69,9 +62,9 @@ export const Section3Pengalaman = ({ formData, onFormDataChange }) => {
               <input
                 type="checkbox"
                 id={`recruitment-${option.value}`}
-                value={option.value}
+                value={option.label}
                 checked={
-                  formData.recruitmentProcess?.includes(option.value) || false
+                  formData.recruitmentProcess?.includes(option.label) || false
                 }
                 onChange={handleCheckboxChange}
                 className="w-4 h-4 text-orange-500 rounded focus:ring-orange-500 border-gray-300"
@@ -122,13 +115,13 @@ export const Section3Pengalaman = ({ formData, onFormDataChange }) => {
 
       {/* Duration Statement */}
       <div>
-        <label htmlFor="durationStatement" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="pros" className="block text-sm font-medium text-gray-700 mb-2">
           Selama Magang
         </label>
         <textarea
-          id="durationStatement"
-          name="durationStatement"
-          value={formData.durationStatement || ""}
+          id="pros"
+          name="pros"
+          value={formData.pros || ""}
           onChange={handleInputChange}
           placeholder="Jelaskan apa yang Anda alami dan pelajari selama periode magang..."
           rows="4"
@@ -136,19 +129,19 @@ export const Section3Pengalaman = ({ formData, onFormDataChange }) => {
           required
         />
         <p className="text-xs text-gray-500 mt-1">
-          {(formData.durationStatement || "").length}/1500 karakter
+          {(formData.pros || "").length}/1500 karakter
         </p>
       </div>
 
       {/* Weaknesses */}
       <div>
-        <label htmlFor="weaknesses" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="cons" className="block text-sm font-medium text-gray-700 mb-2">
           Kelemahan Perusahaan Selama Magang
         </label>
         <textarea
-          id="weaknesses"
-          name="weaknesses"
-          value={formData.weaknesses || ""}
+          id="cons"
+          name="cons"
+          value={formData.cons || ""}
           onChange={handleInputChange}
           placeholder="Sebutkan area atau hal yang perlu ditingkatkan di perusahaan ini..."
           rows="4"
@@ -156,7 +149,7 @@ export const Section3Pengalaman = ({ formData, onFormDataChange }) => {
           required
         />
         <p className="text-xs text-gray-500 mt-1">
-          {(formData.weaknesses || "").length}/1000 karakter
+          {(formData.cons || "").length}/1000 karakter
         </p>
       </div>
     </div>

@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container } from "@/components/layout/Container";
+import { useLookup } from "@/hooks/useLookup";
+import { getCategories } from "@/api/categoryApi";
 import { ReviewStepTabs } from "./ReviewStepTabs";
-import { Section1InformasiMagang } from "./review-sections/Section1InformasiMagang";
+import { Section1InternshipInfo } from "./review-sections/Section1InternshipInfo";
 import { Section2Rating } from "./review-sections/Section2Rating";
-import { Section3Pengalaman } from "./review-sections/Section3Pengalaman";
+import { Section3Experience } from "./review-sections/Section3Experience";
 import { Section4Submit } from "./review-sections/Section4Submit";
 
 /**
@@ -22,7 +24,23 @@ export const ReviewFormTabsPanel = ({
   onCancel,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [completedSteps, setCompletedSteps] = useState([]);
+  const [highestReachedStep, setHighestReachedStep] = useState(1);
+  const [categories, setCategories] = useState([]);
+  const { data: lookupData } = useLookup("INTERNSHIP_REVIEW");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getCategories().then((res) => {
+      if (!cancelled && res.success) {
+        setCategories(res.result);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Validate current step fields before allowing next
   const validateCurrentStep = () => {
@@ -32,8 +50,8 @@ export const ReviewFormTabsPanel = ({
           formData.internshipType &&
           formData.workScheme &&
           formData.duration &&
-          formData.year &&
-          formData.position
+          /^\d{4}$/.test(formData.year) &&
+          formData.jobTitle?.trim()
         );
       case 2:
         return (
@@ -48,8 +66,8 @@ export const ReviewFormTabsPanel = ({
           formData.recruitmentProcess?.length > 0 &&
           formData.interviewDifficulty > 0 &&
           formData.testimony?.trim() &&
-          formData.durationStatement?.trim() &&
-          formData.weaknesses?.trim()
+          formData.pros?.trim() &&
+          formData.cons?.trim()
         );
       case 4:
         return true;
@@ -59,17 +77,17 @@ export const ReviewFormTabsPanel = ({
   };
 
   const handleStepChange = (stepNumber) => {
-    // User can only go back to previous steps
-    if (stepNumber < currentStep) {
+    // User can revisit any step that has already been reached
+    if (stepNumber >= 1 && stepNumber <= highestReachedStep) {
       setCurrentStep(stepNumber);
     }
   };
 
   const handleNextStep = () => {
     if (validateCurrentStep()) {
-      const newCompleted = [...completedSteps, currentStep];
-      setCompletedSteps(newCompleted);
-      setCurrentStep(currentStep + 1);
+      const nextStep = Math.min(currentStep + 1, 4);
+      setHighestReachedStep((prev) => Math.max(prev, nextStep));
+      setCurrentStep(nextStep);
     }
   };
 
@@ -84,10 +102,12 @@ export const ReviewFormTabsPanel = ({
             <p className="text-sm text-gray-600 mb-6">
               Isi informasi dasar tentang pengalaman magang Anda
             </p>
-            <Section1InformasiMagang
+            <Section1InternshipInfo
               company={company}
               formData={formData}
+              lookupData={lookupData}
               onFormDataChange={onFormDataChange}
+              categories={categories}
             />
           </>
         );
@@ -103,6 +123,7 @@ export const ReviewFormTabsPanel = ({
             </p>
             <Section2Rating
               company={company}
+              lookupData={lookupData}
               formData={formData}
               onFormDataChange={onFormDataChange}
             />
@@ -118,9 +139,10 @@ export const ReviewFormTabsPanel = ({
             <p className="text-sm text-gray-600 mb-6">
               Jelaskan pengalaman, proses rekrutmen, dan saran Anda
             </p>
-            <Section3Pengalaman
+            <Section3Experience
               formData={formData}
               onFormDataChange={onFormDataChange}
+              lookupData={lookupData}
             />
           </>
         );
@@ -135,10 +157,12 @@ export const ReviewFormTabsPanel = ({
               Periksa kembali semua detail sebelum mengirim review
             </p>
             <Section4Submit
+              lookupData={lookupData}
               company={company}
               formData={formData}
               onSubmit={onSubmit}
               loading={loading}
+              categories={categories}
             />
           </>
         );
@@ -154,7 +178,7 @@ export const ReviewFormTabsPanel = ({
       <ReviewStepTabs
         currentStep={currentStep}
         onStepChange={handleStepChange}
-        completedSteps={completedSteps}
+        highestReachedStep={highestReachedStep}
       />
 
       {/* Step Content in Container */}
@@ -168,7 +192,7 @@ export const ReviewFormTabsPanel = ({
             {currentStep !== 4 && (
               <div className="flex gap-3 pt-6 border-t border-gray-200">
                 <button
-                  onClick={() => setCurrentStep(currentStep - 1)}
+                  onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 1))}
                   disabled={currentStep === 1}
                   className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >

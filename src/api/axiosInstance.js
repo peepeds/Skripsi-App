@@ -1,4 +1,5 @@
 import axios from "axios";
+import { clearAuthSession } from "./authUtils";
 
 // Read API base URL from Vite env variable `VITE_API_BASE_URL`, fallback to localhost
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
@@ -75,7 +76,9 @@ axiosInstance.interceptors.response.use(
       return axiosInstance(originalRequest);
     } catch (err) {
       console.error("Refresh token failed:", err.message);
-      //redirectToLogin();
+      // Clear all auth data and redirect to login
+      clearAuthSession();
+      window.location.href = "/login";
       return Promise.reject(err);
     }
   }

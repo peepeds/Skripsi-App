@@ -4,7 +4,8 @@ import React from "react";
  * Section 4: Submit with Summary
  * Displays complete review summary and submit button
  */
-export const Section4Submit = ({ company, formData, onSubmit, loading }) => {
+export const Section4Submit = ({ company, formData, onSubmit, loading, lookupData, categories }) => {
+
   const ratingCategories = [
     { key: "workCulture", label: "Budaya Kerja" },
     { key: "learningOpp", label: "Kesempatan Belajar" },
@@ -66,13 +67,13 @@ export const Section4Submit = ({ company, formData, onSubmit, loading }) => {
             <div>
               <p className="text-gray-600 mb-1">Tipe Internship</p>
               <p className="font-semibold text-gray-900">
-                {formData.internshipType || "-"}
+                {lookupData?.INTERNSHIP_TYPE?.find(opt => opt.value === formData.internshipType)?.label || formData.internshipType || "-"}
               </p>
             </div>
             <div>
               <p className="text-gray-600 mb-1">Skema Kerja</p>
               <p className="font-semibold text-gray-900">
-                {formData.workScheme || "-"}
+                {lookupData?.SCHEME?.find(opt => opt.value === formData.workScheme)?.label || formData.workScheme || "-"}
               </p>
             </div>
             <div>
@@ -90,8 +91,29 @@ export const Section4Submit = ({ company, formData, onSubmit, loading }) => {
             <div className="col-span-2">
               <p className="text-gray-600 mb-1">Posisi</p>
               <p className="font-semibold text-gray-900">
-                {formData.position || "-"}
+                {formData.jobTitle || "-"}
               </p>
+            </div>
+            <div className="col-span-2">
+              <p className="text-gray-600 mb-2">Subkategori</p>
+              <div className="flex flex-wrap gap-1">
+                {formData.subcategories?.length > 0
+                  ? formData.subcategories.map((id) => {
+                      const sub = categories
+                        .flatMap((c) => c.subCategories)
+                        .find((s) => s.subCategoryId === Number(id));
+                      return (
+                        <span
+                          key={id}
+                          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800"
+                        >
+                          {sub?.subCategoryName || id}
+                        </span>
+                      );
+                    })
+                  : <span className="text-gray-500 text-sm">-</span>
+                }
+              </div>
             </div>
           </div>
         </div>
@@ -169,7 +191,7 @@ export const Section4Submit = ({ company, formData, onSubmit, loading }) => {
         <div className="border border-gray-200 rounded-lg p-4">
           <h4 className="font-semibold text-gray-700 mb-2">Selama Magang</h4>
           <p className="text-sm text-gray-700 whitespace-pre-wrap">
-            {formData.durationStatement || "-"}
+            {formData.pros || "-"}
           </p>
         </div>
 
@@ -178,7 +200,7 @@ export const Section4Submit = ({ company, formData, onSubmit, loading }) => {
             Kelemahan Perusahaan Selama Magang
           </h4>
           <p className="text-sm text-gray-700 whitespace-pre-wrap">
-            {formData.weaknesses || "-"}
+            {formData.cons || "-"}
           </p>
         </div>
       </div>

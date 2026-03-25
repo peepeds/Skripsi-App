@@ -8,6 +8,7 @@
  */
 
 import { axiosInstance } from "./axiosInstance";
+import { clearAuthSession } from "./authUtils";
 
 /**
  * User login
@@ -51,14 +52,22 @@ export const register = async (payload) => {
  * User logout and clear local session
  *
  * @async
- * @returns {Promise<void>} - Clears localStorage and invalidates session
+ * @returns {Promise<void>} - Notifies backend, clears all cookies and localStorage
  * @throws {Error} - Axios will throw if response status is not 2xx
  *
  * @example
  * await logout();
- * // Clears accessToken and other stored data
+ * // Clears accessToken and other stored data, cookies cleared by server
  */
 export const logout = async () => {
-  await axiosInstance.post("/auth/logout");
-  localStorage.clear();
+  try {
+    // Notify backend to invalidate session and clear server-side cookies
+    await axiosInstance.post("/auth/logout");
+  } catch (error) {
+    console.error("Logout API call failed:", error.message);
+    // Continue with client-side cleanup even if API call fails
+  } finally {
+    // Clear all authentication tokens and cookies
+    clearAuthSession();
+  }
 };

@@ -11,11 +11,10 @@ import { NotFound } from "@/features/not-found/pages/NotFound";
 import { ProfilePage } from "@/features/profile/pages/ProfilePage";
 import { InboxDetailPage } from "@/features/inbox/pages/InboxDetailPage";
 import { StorageFilePage } from "@/features/storage/pages/StorageFilePage";
-import { CategoriesPage } from "@/features/categories";
+import { CategoriesPage, SubCategoryCompaniesPage } from "@/features/categories";
 import { CompaniesPage } from "@/features/companies/pages/CompaniesPage";
 import { CompanyDetailPage } from "@/features/companies/pages/CompanyDetailPage";
-import { ReviewWritePage } from "@/features/companies/pages/ReviewWritePage";
-import { ReviewWriteSlugPage } from "@/features/companies/pages/ReviewWriteSlugPage";
+import { ReviewWritePage } from "@/features/reviews";
 
 export const appRoutes = [
   { path: "/", element: <HomePage />, showNavbar: true },
@@ -24,10 +23,10 @@ export const appRoutes = [
   { path: "/profile", element: <ProfilePage />, showNavbar: true },
   { path: "/inbox/:id", element: <InboxDetailPage />, showNavbar: true },
   { path: "/categories", element: <CategoriesPage />, showNavbar: true },
+  { path: "/subcategory/:id/companies", element: <SubCategoryCompaniesPage />, showNavbar: true },
   { path: "/companies", element: <CompaniesPage />, showNavbar: true },
   { path: "/company/:companySlug", element: <CompanyDetailPage />, showNavbar: true },
-  { path: "/review/:companySlug", element: <ReviewWriteSlugPage />, showNavbar: true },
-  { path: "/company/:companyId/review/new", element: <ReviewWritePage />, showNavbar: true },
+  { path: "/review/:companySlug", element: <ReviewWritePage />, showNavbar: true },
   { path: "/test", element: <TestPage />, showNavbar: false },
   { path: "/ping", element: <PingPage />, showNavbar: true },
   { path: "/test-minio", element: <MinioUploadTestPage />, showNavbar: true },

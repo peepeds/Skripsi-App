@@ -118,3 +118,23 @@ export const getCompanyBySlug = async (slug) => {
   const response = await axiosInstance.get(`/company/${slug}`);
   return response.data;
 };
+
+/**
+ * Get companies filtered by subcategory
+ *
+ * @async
+ * @param {number} subcategoryId - Subcategory ID to filter by
+ * @param {number} [page=0] - Page number (0-indexed)
+ * @param {number} [size=20] - Number of results per page
+ * @returns {Promise<Object>} - Paginated list with { result: [...companies], meta: { page, size, totalElements, ... } }
+ * @throws {Error} - Axios will throw if response status is not 2xx
+ *
+ * @example
+ * const response = await getCompaniesBySubcategory(5, 0, 20);
+ */
+export const getCompaniesBySubcategory = async (subcategoryId, page = 0, size = 20) => {
+  const response = await axiosInstance.get(`/subcategory/${subcategoryId}/companies`, {
+    params: { page, size }
+  });
+  return response.data;
+};

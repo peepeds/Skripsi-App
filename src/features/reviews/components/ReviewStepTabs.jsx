@@ -7,17 +7,17 @@ import { Container } from "@/components/layout/Container";
  * Visual step indicator with tab navigation
  * - Full-width section with step connectors
  * - Numbered steps (1, 2, 3, 4) with labels
- * - User can only go backward (revert to previous steps)
- * - Completed steps show checkmark
- * 
+ * - User can revisit any unlocked step
+ * - Locked steps remain inaccessible until reached via Next
+ *
  * @param {number} currentStep - Current active step (1-4)
  * @param {Function} onStepChange - Callback when user clicks a step
- * @param {Array} completedSteps - Array of completed step numbers
+ * @param {number} highestReachedStep - Highest step that user has reached
  */
 export const ReviewStepTabs = ({
   currentStep = 1,
   onStepChange,
-  completedSteps = [],
+  highestReachedStep = 1,
 }) => {
   const steps = [
     { number: 1, label: "Informasi Magang" },
@@ -27,8 +27,7 @@ export const ReviewStepTabs = ({
   ];
 
   const handleStepClick = (stepNumber) => {
-    // User can only go back to previous steps, not forward
-    if (stepNumber < currentStep) {
+    if (stepNumber >= 1 && stepNumber <= highestReachedStep) {
       onStepChange(stepNumber);
     }
   };
@@ -40,8 +39,8 @@ export const ReviewStepTabs = ({
         <div className="flex items-center justify-between">
           {steps.map((step, index) => {
             const isActive = step.number === currentStep;
-            const isCompleted = step.number < currentStep;
-            const canClick = step.number < currentStep;
+            const isUnlocked = step.number <= highestReachedStep;
+            const canClick = isUnlocked;
 
             return (
               <React.Fragment key={step.number}>
@@ -55,27 +54,27 @@ export const ReviewStepTabs = ({
                   aria-current={isActive ? "step" : undefined}
                   title={
                     canClick
-                      ? `Go back to ${step.label}`
+                      ? `Go to ${step.label}`
                       : `Step ${step.number}: ${step.label}`
                   }
                 >
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-xs transition-all ${
-                      isCompleted
-                        ? "bg-orange-500 text-white"
-                        : isActive
+                      isActive
                         ? "bg-orange-500 text-white ring-2 ring-orange-300"
+                        : isUnlocked
+                        ? "bg-orange-100 text-orange-600 border border-orange-300"
                         : "bg-gray-300 text-gray-600"
                     }`}
                   >
-                    {isCompleted ? "✓" : step.number}
+                    {step.number}
                   </div>
                   <p
                     className={`text-xs mt-1 text-center font-medium transition-colors ${
                       isActive
                         ? "text-orange-600 font-semibold"
-                        : isCompleted
-                        ? "text-orange-600"
+                        : isUnlocked
+                        ? "text-orange-500"
                         : "text-gray-500"
                     }`}
                   >
@@ -88,7 +87,7 @@ export const ReviewStepTabs = ({
                   <div className="flex-1 flex items-center justify-center px-2">
                     <div
                       className={`flex-1 h-1 transition-colors ${
-                        step.number < currentStep
+                        step.number < highestReachedStep
                           ? "bg-orange-500"
                           : "bg-gray-300"
                       }`}

@@ -56,10 +56,13 @@ export function Navbar() {
     return parts[0].slice(0, 2).toUpperCase();
   };
 
-  const handleLogout = () => {
-    logout();
-    // Optional: redirect to home or login page
-    window.location.href = "/";
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      // Redirect after logout completes (or fails)
+      window.location.href = "/";
+    }
   };
 
   const handleInboxItemClick = (item) => {

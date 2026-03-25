@@ -3,7 +3,7 @@ import React from "react";
 /**
  * StepIndicator Component
  * Visual progress indicator showing current step and completion status
- * 
+ *
  * @param {number} currentStep - Current active step (1-4)
  * @param {number} totalSteps - Total number of steps
  */

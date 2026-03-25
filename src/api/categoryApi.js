@@ -13,14 +13,17 @@ import { axiosInstance } from './axiosInstance';
  * Get all categories with subcategories
  *
  * @async
+ * @param {string} type - Category type: 'jobs' or 'companies' (default: 'jobs')
  * @returns {Promise<Object>} - Hierarchical list of categories and subcategories
  * @throws {Error} - Axios will throw if response status is not 2xx
  *
  * @example
- * const response = await getCategories();
+ * const response = await getCategories('jobs');
  * // Returns: { success: true, message: "...", result: [...] }
  */
-export const getCategories = async () => {
-  const response = await axiosInstance.get('/category?IncludeSubCategories=1');
+export const getCategories = async (type = 'jobs') => {
+  const response = await axiosInstance.get('/category', {
+    params: { IncludeSubCategories: 1, type },
+  });
   return response.data;
 };

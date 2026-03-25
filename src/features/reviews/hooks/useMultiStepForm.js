@@ -3,7 +3,7 @@ import { useState, useCallback } from "react";
 /**
  * Custom hook untuk manage multi-step form state
  * Tracks current step, form data, dan navigation antara steps
- * 
+ *
  * @param {number} totalSteps - Total number of steps
  * @param {Object} initialData - Initial form data
  * @param {function} onSubmit - Callback function saat submit
@@ -18,7 +18,7 @@ export const useMultiStepForm = (totalSteps = 4, initialData = {}, onSubmit) => 
     duration: "",
     year: "",
     position: "",
-    
+
     // Section 2: Ratings (5 categories)
     ratings: {
       workCulture: 0,
@@ -27,14 +27,14 @@ export const useMultiStepForm = (totalSteps = 4, initialData = {}, onSubmit) => 
       benefit: 0,
       workLifeBalance: 0,
     },
-    
+
     // Section 3: Pengalaman & Recruitment
     recruitmentProcess: [],
     interviewDifficulty: 0,
     testimony: "",
     durationStatement: "",
     weaknesses: "",
-    
+
     ...initialData,
   };
 

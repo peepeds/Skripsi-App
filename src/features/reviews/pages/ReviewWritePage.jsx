@@ -1,20 +1,22 @@
 import React, { useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { UnauthenticatedModal } from "@/components/common/UnauthenticatedModal";
-import { useCompanyDetail } from "../hooks/useCompanyDetail";
+import { useCompanyDetail } from "@/features/companies/hooks/useCompanyDetail";
 import { LoadingWrapper } from "@/components/ui/LoadingWrapper";
 import { Container } from "@/components/layout/Container";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ReviewWriteForm } from "../components/ReviewWriteForm";
 import { ReviewHeroSection } from "../components/ReviewHeroSection";
+import { buildReviewPayload, submitReview } from "@/api/reviewApi";
 
 /**
- * ReviewWriteSlugPage
+ * ReviewWritePage
  * Halaman untuk menulis review dengan route berbasis slug perusahaan
  * Route: /review/:companySlug
  */
-export const ReviewWriteSlugPage = () => {
+export const ReviewWritePage = () => {
   const { companySlug } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,17 +33,16 @@ export const ReviewWriteSlugPage = () => {
     setLoading(true);
 
     try {
-      // TODO: Implement API call to submit review
-      console.log("Review submission:", {
-        companyId: company?.companyId,
-        companySlug,
-        ...formData,
-      });
+      const payload = buildReviewPayload(formData);
+      await submitReview(companySlug, payload);
+      toast.success("Review berhasil dikirim");
       // After successful submission
       navigate(`/company/${companySlug}`);
     } catch (error) {
       console.error("Error submitting review:", error);
-      // TODO: Add error handling/toast notification
+      const errorMessage =
+        error.response?.data?.message || "Gagal mengirim review. Silakan coba lagi.";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
