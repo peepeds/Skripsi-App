@@ -67,6 +67,9 @@ const isRequiredDate = () =>
         })
     .or(isRequiredString())
 
+const isValidSearchQuery = (query) => {
+    return query && query.trim().length > 3;
+};
 
 export {
     isString,
@@ -81,5 +84,6 @@ export {
     isRequiredOptions,
     isRequiredPhoneNumber,
     isRequiredDate,
-    isRequiredStringOptional
+    isRequiredStringOptional,
+    isValidSearchQuery
 };

@@ -1,4 +1,5 @@
-export { default as Navbar } from "./Navbar";
-export { default as Logo } from "./Logo";
+export { Navbar } from "./Navbar";
+export { Logo } from "./Logo";
 export { SearchBar } from "./SearchBar";
-export { default as ThemeToggle } from "./ThemeToggle";
+export { ThemeToggle } from "./ThemeToggle";
+export { UnauthenticatedModal } from "./UnauthenticatedModal";

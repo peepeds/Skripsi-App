@@ -4,7 +4,7 @@ import { useNavigate, BrowserRouter as Router, useLocation, matchRoutes } from "
 import { Navbar } from "@/components/common";
 import { Toaster } from "sonner";
 import { setNavigator } from '@/utils/history'; // Sesuaikan path jika perlu
-import AppRoutes, { appRoutes } from "@/routes/AppRoutes";
+import { AppRoutes, appRoutes } from "@/routes/AppRoutes";
 import { SkeletonProvider } from "@/context/skeletonContext";
 
 const NavigatorSetup = () => {
@@ -18,7 +18,6 @@ const NavigatorSetup = () => {
 
 function Layout({ children }) {
   const location = useLocation();
-  console.log(location);
   const matches = matchRoutes(appRoutes, location);
   const hideNavbar = matches?.some((match) => match.route.showNavbar === false) ?? false;
 
@@ -30,7 +29,7 @@ function Layout({ children }) {
   );
 }
 
-function App() {
+export function App() {
   return (
     <Router>
       <SkeletonProvider defaultPrefer={true}>
@@ -43,5 +42,3 @@ function App() {
     </Router>
   );
 }
-
-export default App;

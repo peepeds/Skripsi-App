@@ -1,9 +1,7 @@
-import { useId } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import Logo from "@/components/common/Logo";
+import { Logo } from "@/components/common";
 import { Button } from "@/components/ui/button";
-import { SearchBar } from "@/components/common/SearchBar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SkeletonCircle } from "@/components/ui/skeleton";
 import {
@@ -12,31 +10,64 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { InboxDropdown } from "@/features/inbox/components/InboxDropdown";
+import { useInboxNotifications } from "@/features/inbox/hooks/useInboxNotifications";
 
-export default function Navbar() {
-  const id = useId();
+export function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, logout, isAuthenticated, loading } = useAuth();
+  const {
+    inboxData,
+    inboxLoading,
+    isInboxOpen,
+    handleOpenChange,
+    fetchInbox,
+  } = useInboxNotifications();
 
   // Exclude paths for /register and /login
   if (location.pathname === "/register" || location.pathname === "/login") {
     return null;
   }
 
-  // Get user initials
-  const getInitials = () => {
-    if (!user?.name) return "U";
-    const names = user.name.split(" ");
-    if (names.length >= 2) {
-      return (names[0][0] + names[names.length - 1][0]).toUpperCase();
-    }
-    return user.name.substring(0, 2).toUpperCase();
+  const getDisplayName = () => {
+    const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim();
+    if (fullName) return fullName;
+    if (user?.name) return user.name;
+    if (user?.username) return user.username;
+    if (user?.email) return user.email;
+    return "User";
   };
 
-  const handleLogout = () => {
-    logout();
-    // Optional: redirect to home or login page
-    window.location.href = "/";
+  const getInitials = () => {
+    const firstName = user?.firstName?.trim();
+
+    if (firstName) {
+      return (firstName[0]).toUpperCase();
+    }
+
+    const source = firstName || user?.name || user?.username || user?.email || "U";
+    const parts = source.trim().split(/\s+/).filter(Boolean);
+
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    return parts[0].slice(0, 2).toUpperCase();
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      // Redirect after logout completes (or fails)
+      window.location.href = "/";
+    }
+  };
+
+  const handleInboxItemClick = (item) => {
+    handleOpenChange(false);
+    navigate(`/inbox/${item.referenceId}?type=${item.type}`);
   };
 
   return (
@@ -48,13 +79,6 @@ export default function Navbar() {
             <Logo />
           </a>
         </div>
-        {/* Middle area */}
-        <div className="grow max-sm:hidden">
-          {/* Search form */}
-          <div className="relative mx-auto w-full max-w-xs">
-            <SearchBar />
-          </div>
-        </div>
         {/* Right side */}
         <div className="flex flex-1 items-center justify-end gap-2">
           {loading ? (
@@ -63,6 +87,21 @@ export default function Navbar() {
             </div>
           ) : isAuthenticated ? (
             <>
+              <Button asChild variant="ghost" size="sm" className="text-sm">
+                <a href="/categories">Categories</a>
+              </Button>
+              <Button asChild variant="ghost" size="sm" className="text-sm">
+                <a href="/companies">Companies</a>
+              </Button>
+              <InboxDropdown
+                isOpen={isInboxOpen}
+                onOpenChange={handleOpenChange}
+                onTriggerHover={fetchInbox}
+                inboxLoading={inboxLoading}
+                inboxData={inboxData}
+                onItemClick={handleInboxItemClick}
+              />
+
               {/* Authenticated User Avatar with Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -75,11 +114,8 @@ export default function Navbar() {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <div className="px-2 py-1.5 text-sm font-medium">
-                    {user?.name}
-                  </div>
                   <DropdownMenuItem asChild>
-                    <a href="/dashboard">Dashboard</a>
+                    <a href="/">Home</a>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <a href="/profile">Profile</a>
@@ -94,10 +130,10 @@ export default function Navbar() {
             <>
               {/* Guest Links */}
               <Button asChild variant="ghost" size="sm" className="text-sm">
-                <a href="#">Companies</a>
+                <a href="/categories">Categories</a>
               </Button>
               <Button asChild variant="ghost" size="sm" className="text-sm">
-                <a href="#">Categories</a>
+                <a href="/companies">Companies</a>
               </Button>
               <Button asChild size="sm" className="text-sm">
                 <a href="/login">Get Started</a>

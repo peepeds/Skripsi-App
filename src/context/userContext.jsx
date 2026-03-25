@@ -1,20 +1,23 @@
 import { createContext, useState, useEffect, useRef } from "react";
 import { getMe } from "@/api/userApi";
+import { logout as apiLogout } from "@/api/authApi";
 
 export const UserContext = createContext({
   user: null,
   loadUser: async () => {},
-  logout: () => {},
+  logout: async () => {},
   loading: false
 });
 
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [admin, setAdmin] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start with true to prevent flash
   const isFetching = useRef(false);
 
   const loadUser = async (force = false) => {
+    setLoading(true); // Always set loading when starting
+    
     // Check localStorage first (unless force refresh)
     if (!force) {
       const cachedUser = localStorage.getItem("userProfile");
@@ -23,6 +26,7 @@ export function UserProvider({ children }) {
           const userData = JSON.parse(cachedUser);
           setUser(userData);
           setAdmin(userData?.role === "admin");
+          setLoading(false); // Done loading from cache
           console.info("User profile loaded from localStorage cache");
           return;
         } catch (err) {
@@ -43,7 +47,7 @@ export function UserProvider({ children }) {
       setLoading(true);
       console.info("Fetching user profile from API...");
       const res = await getMe();
-      const data = res?.data;
+      const data = res;
 
       if (data.success) {
         setUser(data.result);
@@ -66,16 +70,19 @@ export function UserProvider({ children }) {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
     setUser(null);
     isFetching.current = false;
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("userProfile");
+    // Call API logout which handles clearing cookies and localStorage
+    await apiLogout();
   };
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    if (!token) return;
+    if (!token) {
+      setLoading(false); // No token, not loading
+      return;
+    }
 
     loadUser();
   }, []);
