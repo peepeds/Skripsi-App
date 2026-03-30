@@ -6,3 +6,7 @@ export { CompanyTabsPanel } from './CompanyTabsPanel';
 export { TabNavigation } from './TabNavigation';
 export { CompanyListContainer } from './CompanyListContainer';
 export { EmptyStateCard } from './EmptyStateCard';
+export { InformationDetailsCard } from './InformationDetailsCard';
+export { ReviewRatingsCard } from './ReviewRatingsCard';
+export { RecruitmentProcessesCard } from './RecruitmentProcessesCard';
+export { InformationTabContent } from './InformationTabContent';

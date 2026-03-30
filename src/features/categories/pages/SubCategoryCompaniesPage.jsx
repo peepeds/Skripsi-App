@@ -7,9 +7,10 @@ import { CompanyCard } from '@/components/cards';
 
 export const SubCategoryCompaniesPage = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { subCategoryName: subCategoryNameParam } = useParams();
   const location = useLocation();
-  const subCategoryName = location.state?.subCategoryName || 'Subcategory';
+  const subCategoryName = location.state?.subCategoryName || decodeURIComponent(subCategoryNameParam) || 'Subcategory';
+  const type = location.state?.type || 'companies';
 
   const [companies, setCompanies] = useState([]);
   const [meta, setMeta] = useState(null);
@@ -19,7 +20,7 @@ export const SubCategoryCompaniesPage = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const data = await getCompaniesBySubcategory(id);
+        const data = await getCompaniesBySubcategory(subCategoryName, type);
         if (data.success) {
           setCompanies(data.result || []);
           setMeta(data.meta);
@@ -34,7 +35,7 @@ export const SubCategoryCompaniesPage = () => {
     };
 
     fetchCompanies();
-  }, [id]);
+  }, [subCategoryName, type]);
 
   if (loading) {
     return (

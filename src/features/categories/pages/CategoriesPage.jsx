@@ -47,7 +47,7 @@ const CATEGORY_ICONS = {
 };
 
 const SkeletonCard = () => (
-  <div className="rounded-xl overflow-hidden shadow-sm border border-gray-100">
+  <div className="break-inside-avoid mb-6 rounded-xl overflow-hidden shadow-sm border border-gray-100">
     <div className="bg-gray-100 flex flex-col items-center justify-center py-8 px-4 gap-3">
       <Skeleton className="h-8 w-8 rounded-full" />
       <Skeleton className="h-4 w-28" />
@@ -106,7 +106,7 @@ export const CategoriesPage = () => {
             <Skeleton className="h-9 w-24" />
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="columns-1 md:columns-3 gap-6">
           {Array.from({ length: 8 }).map((_, i) => (
             <SkeletonCard key={i} />
           ))}
@@ -144,7 +144,7 @@ export const CategoriesPage = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="columns-1 md:columns-3 gap-6">
           {categories.map((category, index) => {
             const { bg, text } = COLORS[index % COLORS.length];
             const Icon = CATEGORY_ICONS[category.categoryName] ?? Tag;
@@ -152,7 +152,7 @@ export const CategoriesPage = () => {
             return (
               <div
                 key={category.categoryId}
-                className="rounded-xl overflow-hidden shadow-sm border border-gray-100"
+                className="break-inside-avoid mb-6 rounded-xl overflow-hidden shadow-sm border border-gray-100"
               >
                 <div className={`${bg} ${text} flex flex-col items-center justify-center py-8 px-4 gap-2`}>
                   <Icon className="w-8 h-8" strokeWidth={1.5} />
@@ -165,8 +165,8 @@ export const CategoriesPage = () => {
                     <div
                       key={sub.subCategoryId}
                       onClick={() =>
-                        navigate(`/subcategory/${sub.subCategoryId}/companies`, {
-                          state: { subCategoryName: sub.subCategoryName },
+                        navigate(`/subcategory/${encodeURIComponent(sub.subCategoryName)}/companies`, {
+                          state: { subCategoryName: sub.subCategoryName, type },
                         })
                       }
                       className="px-4 py-3 text-sm text-gray-700 cursor-pointer hover:bg-orange-50 hover:text-orange-700 transition-colors"
