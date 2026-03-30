@@ -62,3 +62,25 @@ export const submitReview = async (companySlug, payload) => {
   const response = await axiosInstance.post(`/review/${companySlug}`, payload);
   return response.data;
 };
+
+/**
+ * Get review summary for a company
+ *
+ * @async
+ * @param {string} companySlug - The company slug
+ * @returns {Promise<Object>} - Response with aggregated review summary data
+ * @throws {Error} - Axios will throw if response status is not 2xx
+ *
+ * @example
+ * const response = await getReviewSummary("bank-rakyat-indonesia");
+ * // Returns: { success: true, result: { informationDetails, ratings, recruitmentProcesses } }
+ */
+export const getReviewSummary = async (companySlug) => {
+  const response = await axiosInstance.get(`/review/${companySlug}/summary`);
+  return response.data;
+};
+
+export const getRecentReviews = async () => {
+  const response = await axiosInstance.get('/review/recent');
+  return response.data;
+};

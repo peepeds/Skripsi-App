@@ -132,9 +132,14 @@ export const getCompanyBySlug = async (slug) => {
  * @example
  * const response = await getCompaniesBySubcategory(5, 0, 20);
  */
-export const getCompaniesBySubcategory = async (subcategoryId, page = 0, size = 20) => {
-  const response = await axiosInstance.get(`/subcategory/${subcategoryId}/companies`, {
-    params: { page, size }
+export const getCompaniesBySubcategory = async (subCategoryName, type, page = 0, size = 20) => {
+  const response = await axiosInstance.get(`/subcategory/${encodeURIComponent(subCategoryName)}/companies`, {
+    params: { type, page, size }
   });
+  return response.data;
+};
+
+export const getTopRatedCompanies = async () => {
+  const response = await axiosInstance.get('/company/top-ratings');
   return response.data;
 };

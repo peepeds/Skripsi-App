@@ -1,4 +1,3 @@
-// src/routes/AppRoutes.jsx
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { HomePage } from "@/features/home/pages/HomePage";
@@ -23,7 +22,7 @@ export const appRoutes = [
   { path: "/profile", element: <ProfilePage />, showNavbar: true },
   { path: "/inbox/:id", element: <InboxDetailPage />, showNavbar: true },
   { path: "/categories", element: <CategoriesPage />, showNavbar: true },
-  { path: "/subcategory/:id/companies", element: <SubCategoryCompaniesPage />, showNavbar: true },
+  { path: "/subcategory/:subCategoryName/companies", element: <SubCategoryCompaniesPage />, showNavbar: true },
   { path: "/companies", element: <CompaniesPage />, showNavbar: true },
   { path: "/company/:companySlug", element: <CompanyDetailPage />, showNavbar: true },
   { path: "/review/:companySlug", element: <ReviewWritePage />, showNavbar: true },

@@ -1,16 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CompanyBioSection } from "./CompanyBioSection";
+import { InformationTabContent } from "./InformationTabContent";
 import { TabNavigation } from "./TabNavigation";
 import { EmptyStateCard } from "./EmptyStateCard";
 import { COMPANY_DETAIL_TABS } from "../constants/tabs";
+import { getReviewSummary } from "@/api/reviewApi";
 
-export const CompanyTabsPanel = ({ companyId, bio }) => {
+export const CompanyTabsPanel = ({ companyId, companySlug, bio }) => {
   const [activeTab, setActiveTab] = useState("informasi");
+  const [summaryData, setSummaryData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!companySlug || activeTab !== "informasi") return;
+
+    const fetchSummary = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await getReviewSummary(companySlug);
+        if (response.success) {
+          setSummaryData(response.result);
+        } else {
+          setError(response.message || "Failed to load review summary");
+        }
+      } catch (err) {
+        setError(err.message || "Failed to load review summary");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSummary();
+  }, [companySlug, activeTab]);
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "informasi":
-        return <CompanyBioSection bio={bio} />;
+        return (
+          <InformationTabContent
+            bio={bio}
+            summaryData={summaryData}
+            loading={loading}
+            error={error}
+          />
+        );
 
       case "testimonial":
         return (

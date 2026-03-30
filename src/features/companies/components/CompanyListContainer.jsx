@@ -56,6 +56,9 @@ export const CompanyListContainer = ({
             website={company.website}
             isPartner={company.isPartner}
             companySlug={company.companySlug}
+            subcategoryName={company.subcategoryName}
+            rating={company.rating}
+            totalReviews={company.totalReviews}
           />
         );
 

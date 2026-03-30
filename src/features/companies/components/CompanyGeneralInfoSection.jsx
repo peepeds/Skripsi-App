@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { useLogoValidation } from "../hooks/useLogoValidation";
+import { StarRating } from "@/components/ui/StarRating";
 
 export const CompanyGeneralInfoSection = ({
   companyId,
@@ -11,6 +12,9 @@ export const CompanyGeneralInfoSection = ({
   companyAbbreviation,
   website,
   isPartner,
+  subcategoryName,
+  rating,
+  totalReviews,
 }) => {
   const navigate = useNavigate();
   const { logoUrl, logoValid } = useLogoValidation(website);
@@ -26,9 +30,14 @@ export const CompanyGeneralInfoSection = ({
         {/* Header dengan Logo dan Nama */}
         <div className="flex items-center space-x-6">
           {/* Logo / Avatar */}
-          <div className="flex-shrink-0">
+          <a
+            href={website ? `https://${website}` : undefined}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-shrink-0"
+          >
             {logoValid ? (
-              <div className="w-24 h-24 bg-gray-50 rounded-lg shadow-sm flex items-center justify-center overflow-hidden">
+              <div className="w-24 h-24 bg-gray-50 rounded-lg shadow-sm flex items-center justify-center overflow-hidden hover:shadow-md transition">
                 <img
                   src={logoUrl}
                   alt={companyName}
@@ -37,16 +46,18 @@ export const CompanyGeneralInfoSection = ({
                 />
               </div>
             ) : (
-              <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-3xl shadow-sm">
+              <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-3xl shadow-sm hover:shadow-md transition">
                 {initial}
               </div>
             )}
-          </div>
+          </a>
 
           {/* Nama dan Info */}
           <div className="flex-1">
-            <div className="flex items-center space-x-3 mb-2">
-              <h1 className="text-3xl font-bold text-gray-900">{companyName}</h1>
+            <div className="flex items-center gap-3 mb-1">
+              <h1 className="text-3xl font-bold text-gray-900">
+                {companyAbbreviation ? `${companyName} (${companyAbbreviation})` : companyName}
+              </h1>
               {isPartner && (
                 <div className="group relative">
                   <svg
@@ -63,20 +74,29 @@ export const CompanyGeneralInfoSection = ({
                 </div>
               )}
             </div>
-            {companyAbbreviation && (
-              <p className="text-gray-600 text-lg font-medium mb-3">
-                {companyAbbreviation}
-              </p>
-            )}
-            {website && (
-              <a
-                href={`https://${website}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block text-blue-600 hover:text-blue-800 hover:underline font-medium"
-              >
-                {website}
-              </a>
+
+            {/* Rating Row */}
+            <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-1">
+                <span className="text-base font-semibold text-gray-900">
+                  {rating !== null && rating !== undefined
+                    ? rating.toFixed(1).replace(".", ",")
+                    : "—"}
+                </span>
+                <StarRating rating={rating} size="md" />
+              </div>
+              <span className="text-base text-gray-600">
+                · {totalReviews || 0} {totalReviews === 1 ? 'review' : 'reviews'}
+              </span>
+            </div>
+
+            {/* Category Badge */}
+            {subcategoryName && (
+              <div className="mb-3">
+                <span className="inline-block bg-indigo-50 text-indigo-600 text-xs font-medium px-3 py-1 rounded-full">
+                  {subcategoryName}
+                </span>
+              </div>
             )}
           </div>
         </div>
