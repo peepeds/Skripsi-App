@@ -64,22 +64,26 @@ export const rejectCompanyRequest = async (requestId, reviewNote = "") => {
 };
 
 /**
- * Get paginated list of companies
+ * Get cursor-paginated list of companies
  *
  * @async
- * @param {number} [page=0] - Page number (0-indexed)
- * @param {number} [size=15] - Number of results per page
- * @returns {Promise<Object>} - Paginated list with { data: [...], pagination: { ... } }
+ * @param {number|null} [cursor=null] - Cursor for pagination (null for first page, use nextCursor from previous response)
+ * @param {number} [limit=15] - Number of results per page
+ * @returns {Promise<Object>} - Paginated list with { success: true, message: "...", result: [...], meta: { nextCursor, hasMore } }
  * @throws {Error} - Axios will throw if response status is not 2xx
  *
  * @example
- * const response = await getCompanies(0, 20);
- * // Returns: { success: true, message: "...", result: { data: [...], pagination: {...} } }
+ * const response = await getCompanies(null, 15);
+ * // First call: { success: true, result: [...], meta: { nextCursor: 15, hasMore: true } }
+ * const nextPage = await getCompanies(15, 15);
+ * // Next call uses nextCursor returned from previous response
  */
-export const getCompanies = async (page = 0, size = 15) => {
-  const response = await axiosInstance.get("/company", {
-    params: { page, size }
-  });
+export const getCompanies = async (cursor = null, limit = 15) => {
+  const params = { limit };
+  if (cursor !== null) {
+    params.cursor = cursor;
+  }
+  const response = await axiosInstance.get("/company", { params });
   return response.data;
 };
 
