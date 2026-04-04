@@ -3,11 +3,11 @@ import { User, Star } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getRecentReviews } from '@/api/reviewApi';
 
-const RecentReviewCard = ({ testimony, createdBy, averageRating, companyName, companyWebsite, jobTitle }) => {
+const RecentReviewCard = ({ testimony, createdBy, averageRating, companyName, jobTitle }) => {
   const initials = createdBy ? createdBy.substring(0, 2).toUpperCase() : '';
 
   return (
-    <div className="snap-start shrink-0 w-[420px] max-w-full bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow h-auto">
+    <div className="h-full rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md lg:p-6">
       <div className="flex justify-between items-start mb-4">
         <div className="flex gap-3 items-center">
           <div className="w-12 h-12 rounded-full bg-[#EA580C] text-white flex items-center justify-center shrink-0 font-bold text-lg">
@@ -42,21 +42,21 @@ export function HighlightReview() {
   }, []);
 
   return (
-    <section className="bg-white py-16">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex justify-between items-end mb-8">
+    <section className="bg-slate-50 py-14 md:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4 md:mb-10">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Recent Reviews</h2>
-            <p className="text-gray-500 text-sm">Cerita nyata dari mereka yang telah magang</p>
+            <h2 className="mb-2 text-2xl font-bold text-slate-900 md:text-[2rem]">Recent Reviews</h2>
+            <p className="text-sm text-slate-500 md:text-base">Cerita nyata dari mereka yang telah magang</p>
           </div>
-          <a href="#" className="text-[#F97316] font-medium hover:underline text-sm flex items-center gap-1">
+          <a href="#" className="flex items-center gap-1 text-sm font-semibold text-[#F97316] transition hover:opacity-80 md:text-lg">
             Read more reviews <span aria-hidden="true">&rarr;</span>
           </a>
         </div>
-        <div className="flex overflow-x-auto justify-between gap-6 snap-x snap-mandatory pb-4 -mx-1 px-1 custom-scrollbar">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 xl:gap-6">
           {loading
             ? Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="snap-start shrink-0 w-80">
+                <div key={i}>
                   <Skeleton className="h-[250px] rounded-2xl" />
                 </div>
               ))

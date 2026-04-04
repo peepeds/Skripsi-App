@@ -50,35 +50,39 @@ export function TopJobCategories() {
   }, []);
 
   return (
-    <section className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex justify-between flex-wrap gap-4 items-end mb-10">
+    <section className="border-b border-slate-100 bg-white py-14 md:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4 md:mb-10">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Top Job Categories</h2>
-            <p className="text-gray-500 text-sm">Eksplorasi magang berdasarkan bidang studimu</p>
+            <h2 className="mb-2 text-2xl font-bold text-slate-900 md:text-[2rem]">Top Job Categories</h2>
+            <p className="text-sm text-slate-500 md:text-base">Eksplorasi magang berdasarkan bidang studimu</p>
           </div>
-          <Link to="/categories" className="text-[#F97316] font-medium hover:underline text-sm flex items-center gap-1">
+          <Link to="/categories" className="flex items-center gap-1 text-sm font-semibold text-[#F97316] transition hover:opacity-80 md:text-lg">
             View All <span aria-hidden="true">&rarr;</span>
           </Link>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
           {loading
             ? Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="bg-white border text-left p-6 rounded-2xl">
+                <div key={i} className="rounded-2xl border border-slate-100 bg-white p-6 text-left">
                   <Skeleton className="h-10 w-10 rounded-lg mb-4" />
                   <Skeleton className="h-5 w-32 mb-2" />
                   <Skeleton className="h-4 w-20" />
                 </div>
               ))
             : categories.map((cat, i) => (
-                <Link key={cat.id || i} to={`/categories/${cat.slug}`} className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-row items-center cursor-pointer transition hover:shadow-md">
-                  <div className="w-14 h-14 bg-orange-50 rounded-xl flex items-center justify-center shrink-0 mr-5">
+                <Link
+                  key={cat.id || i}
+                  to={`/categories/${cat.slug}`}
+                  className="flex cursor-pointer items-center rounded-2xl border border-slate-100 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-md lg:p-6"
+                >
+                  <div className="mr-4 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-orange-50 lg:mr-5 lg:h-14 lg:w-14">
                     {DEFAULT_ICONS[i] || <BriefcaseBusiness className="w-6 h-6 text-[#ea580c]" />}
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900 text-lg mb-1">{cat.name}</h3>
-                    <p className="text-gray-500 text-sm">{cat.reviews || '10+'}+ reviews</p>
+                    <h3 className="mb-0.5 text-lg font-bold text-slate-900">{cat.name}</h3>
+                    <p className="text-sm text-slate-500">{cat.reviews || '10+'}+ reviews</p>
                   </div>
                 </Link>
               ))

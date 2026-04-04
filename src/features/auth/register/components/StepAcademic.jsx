@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Skeleton, SkeletonLine } from "@/components/ui/skeleton";
+import { SkeletonLine } from "@/components/ui/skeleton";
 import { getRegions } from "@/api/regionApi";
 import { getMajors } from "@/api/majorApi";
+import { BookOpen, GraduationCap, MapPin } from "lucide-react";
 
 export function StepAcademic({ form }) {
   const [regions, setRegions] = useState([]);
@@ -47,7 +48,7 @@ export function StepAcademic({ form }) {
 
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-5">
         <div className="space-y-2">
           <Label htmlFor="registerId">Student ID</Label>
           <SkeletonLine className="h-10 w-full" />
@@ -67,60 +68,74 @@ export function StepAcademic({ form }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="space-y-2">
         <Label htmlFor="registerId">Student ID</Label>
-        <Input
-          id="registerId"
-          placeholder="Enter your student ID"
-          {...form.register("registerId")}
-        />
+        <div className="relative">
+          <GraduationCap className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+          <Input
+            id="registerId"
+            placeholder="Enter your student ID"
+            {...form.register("registerId")}
+            className="h-12 rounded-xl border-slate-200 bg-slate-50/70 pl-10 pr-4 text-sm shadow-none transition-colors focus-visible:bg-white"
+          />
+        </div>
         {form.formState.errors.registerId && (
-          <p className="text-sm text-red-600">{form.formState.errors.registerId.message}</p>
+          <p className="text-sm text-red-500">{form.formState.errors.registerId.message}</p>
         )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="regionId">Region</Label>
-        <Select onValueChange={(value) => {
-          form.setValue("regionId", value);
-          form.trigger("regionId");
-        }}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select region" />
-          </SelectTrigger>
-          <SelectContent>
-            {regions.map((region) => (
-              <SelectItem key={region.regionId} value={region.regionId.toString()}>
-                {region.regionName}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Label htmlFor="regionId">Campus Region</Label>
+        <div className="relative">
+          <MapPin className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+          <Select
+            onValueChange={(value) => {
+              form.setValue("regionId", value);
+              form.trigger("regionId");
+            }}
+          >
+            <SelectTrigger className="h-12 w-full rounded-xl border-slate-200 bg-slate-50/70 pl-10 pr-4 text-sm shadow-none transition-colors focus-visible:bg-white">
+              <SelectValue placeholder="Select region" />
+            </SelectTrigger>
+            <SelectContent>
+              {regions.map((region) => (
+                <SelectItem key={region.regionId} value={region.regionId.toString()}>
+                  {region.regionName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         {form.formState.errors.regionId && (
-          <p className="text-sm text-red-600">{form.formState.errors.regionId.message}</p>
+          <p className="text-sm text-red-500">{form.formState.errors.regionId.message}</p>
         )}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="majorId">Major</Label>
-        <Select onValueChange={(value) => {
-          form.setValue("majorId", value);
-          form.trigger("majorId");
-        }}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select major" />
-          </SelectTrigger>
-          <SelectContent>
-            {majors.map((major) => (
-              <SelectItem key={major.majorId} value={major.majorId.toString()}>
-                {major.majorName}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="relative">
+          <BookOpen className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+          <Select
+            onValueChange={(value) => {
+              form.setValue("majorId", value);
+              form.trigger("majorId");
+            }}
+          >
+            <SelectTrigger className="h-12 w-full rounded-xl border-slate-200 bg-slate-50/70 pl-10 pr-4 text-sm shadow-none transition-colors focus-visible:bg-white">
+              <SelectValue placeholder="Select major" />
+            </SelectTrigger>
+            <SelectContent>
+              {majors.map((major) => (
+                <SelectItem key={major.majorId} value={major.majorId.toString()}>
+                  {major.majorName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         {form.formState.errors.majorId && (
-          <p className="text-sm text-red-600">{form.formState.errors.majorId.message}</p>
+          <p className="text-sm text-red-500">{form.formState.errors.majorId.message}</p>
         )}
       </div>
     </div>
