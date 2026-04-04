@@ -10,7 +10,7 @@ export const COMPANY_COMPARE_TABS = [
 ];
 
 export const COMPANY_DETAIL_TABS = [
-  { id: "informasi", label: "Informasi" },
-  { id: "testimonial", label: "Testimoni" },
-  { id: "recruitment", label: "Rekrutmen" },
+  { id: "informasi", label: "About Company" },
+  { id: "testimonial", label: "Reviews" },
+  { id: "recruitment", label: "Recruitment Process" },
 ];

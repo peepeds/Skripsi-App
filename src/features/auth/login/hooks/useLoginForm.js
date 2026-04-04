@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -15,6 +15,7 @@ const loginSchema = z.object({
 
 export const useLoginForm = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { loadUser } = useContext(UserContext);
 
   const form = useForm({
@@ -40,7 +41,7 @@ export const useLoginForm = () => {
       await loadUser();
 
       toast.success(response.message || "Login successful");
-      navigate("/");
+      navigate(searchParams.get("redirect") || "/");
     } catch (error) {
       const errorMessage = error?.response?.data?.message || "Login failed. Please try again.";
       toast.error(errorMessage);
