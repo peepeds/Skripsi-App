@@ -9,7 +9,7 @@ import { Container } from "@/components/layout/Container";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ReviewWriteForm } from "../components/ReviewWriteForm";
 import { ReviewHeroSection } from "../components/ReviewHeroSection";
-import { buildReviewPayload, submitReview } from "@/api/reviewApi";
+import { submitReview } from "@/api/reviewApi";
 
 /**
  * ReviewWritePage
@@ -29,11 +29,10 @@ export const ReviewWritePage = () => {
     return <UnauthenticatedModal redirectPath={location.pathname} />;
   }
 
-  const handleFormSubmit = async (formData) => {
+  const handleFormSubmit = async (payload) => {
     setLoading(true);
 
     try {
-      const payload = buildReviewPayload(formData);
       await submitReview(companySlug, payload);
       toast.success("Review berhasil dikirim");
       // After successful submission

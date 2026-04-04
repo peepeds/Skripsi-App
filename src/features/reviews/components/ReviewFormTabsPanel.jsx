@@ -1,172 +1,64 @@
 import React, { useState, useEffect } from "react";
+import { CheckSquare } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { useLookup } from "@/hooks/useLookup";
 import { getCategories } from "@/api/categoryApi";
 import { ReviewStepTabs } from "./ReviewStepTabs";
-import { Section1InternshipInfo } from "./review-sections/Section1InternshipInfo";
-import { Section2Rating } from "./review-sections/Section2Rating";
-import { Section3Experience } from "./review-sections/Section3Experience";
-import { Section4Submit } from "./review-sections/Section4Submit";
+import { Step1InternshipInfo } from "./review-steps/StepInfo";
+import { Step2Rating } from "./review-steps/StepRating";
+import { Step3Experience } from "./review-steps/StepExperience";
+import { Step4Submit } from "./review-steps/StepSubmit";
+import { useReviewWizard } from "../hooks/useReviewWizard";
 
-/**
- * ReviewFormTabsPanel
- * Step-based interface untuk review form dengan 4 sections
- * - Full-width step indicators dengan connectors
- * - User hanya bisa mundur ke step sebelumnya
- * - Validasi per-step untuk lanjut ke step berikutnya
- */
-export const ReviewFormTabsPanel = ({
-  company,
-  formData,
-  onFormDataChange,
-  onSubmit,
-  loading,
-  onCancel,
-}) => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [highestReachedStep, setHighestReachedStep] = useState(1);
+export const ReviewFormTabsPanel = ({ company, onSubmit: onFinalSubmit, loading, onCancel }) => {
   const [categories, setCategories] = useState([]);
   const { data: lookupData } = useLookup("INTERNSHIP_REVIEW");
+  const { step, form, onNext, onBack, onSubmit, isLastStep } = useReviewWizard(onFinalSubmit);
 
   useEffect(() => {
     let cancelled = false;
-
     getCategories().then((res) => {
-      if (!cancelled && res.success) {
-        setCategories(res.result);
-      }
+      if (!cancelled && res.success) setCategories(res.result);
     });
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
-  // Validate current step fields before allowing next
-  const validateCurrentStep = () => {
-    switch (currentStep) {
-      case 1:
-        return (
-          formData.internshipType &&
-          formData.workScheme &&
-          formData.duration &&
-          /^\d{4}$/.test(formData.year) &&
-          formData.jobTitle?.trim()
-        );
-      case 2:
-        return (
-          formData.ratings?.workCulture > 0 &&
-          formData.ratings?.learningOpp > 0 &&
-          formData.ratings?.mentorship > 0 &&
-          formData.ratings?.benefit > 0 &&
-          formData.ratings?.workLifeBalance > 0
-        );
-      case 3:
-        return (
-          formData.recruitmentProcess?.length > 0 &&
-          formData.interviewDifficulty > 0 &&
-          formData.testimony?.trim() &&
-          formData.pros?.trim() &&
-          formData.cons?.trim()
-        );
-      case 4:
-        return true;
-      default:
-        return false;
-    }
-  };
-
-  const handleStepChange = (stepNumber) => {
-    // User can revisit any step that has already been reached
-    if (stepNumber >= 1 && stepNumber <= highestReachedStep) {
-      setCurrentStep(stepNumber);
-    }
-  };
-
-  const handleNextStep = () => {
-    if (validateCurrentStep()) {
-      const nextStep = Math.min(currentStep + 1, 4);
-      setHighestReachedStep((prev) => Math.max(prev, nextStep));
-      setCurrentStep(nextStep);
-    }
-  };
+  const stepProps = { form, lookupData, categories, company };
 
   const renderStepContent = () => {
-    switch (currentStep) {
+    switch (step) {
+      case 0:
+        return (
+          <>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">Informasi Magang</h2>
+            <p className="text-sm text-gray-600 mb-6">Isi informasi dasar tentang pengalaman magang Anda</p>
+            <Step1InternshipInfo {...stepProps} />
+          </>
+        );
       case 1:
         return (
           <>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">
-              Informasi Magang
-            </h2>
-            <p className="text-sm text-gray-600 mb-6">
-              Isi informasi dasar tentang pengalaman magang Anda
-            </p>
-            <Section1InternshipInfo
-              company={company}
-              formData={formData}
-              lookupData={lookupData}
-              onFormDataChange={onFormDataChange}
-              categories={categories}
-            />
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">Penilaian & Ulasan</h2>
+            <p className="text-sm text-gray-600 mb-6">Bagikan penilaian objektifmu tentang pengalaman magang di sana.</p>
+            <Step2Rating {...stepProps} />
           </>
         );
-
       case 2:
         return (
           <>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">
-              Berikan Rating Pengalaman
-            </h2>
-            <p className="text-sm text-gray-600 mb-6">
-              Berikan rating untuk setiap aspek pengalaman Anda
-            </p>
-            <Section2Rating
-              company={company}
-              lookupData={lookupData}
-              formData={formData}
-              onFormDataChange={onFormDataChange}
-            />
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">Proses Rekrutmen dan Cara Apply</h2>
+            <p className="text-sm text-gray-600 mb-6">Bantu kandidat lain mendaftar di perusahaan yang mereka inginkan.</p>
+            <Step3Experience {...stepProps} />
           </>
         );
-
       case 3:
         return (
           <>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">
-              Detail Pengalaman Magang
-            </h2>
-            <p className="text-sm text-gray-600 mb-6">
-              Jelaskan pengalaman, proses rekrutmen, dan saran Anda
-            </p>
-            <Section3Experience
-              formData={formData}
-              onFormDataChange={onFormDataChange}
-              lookupData={lookupData}
-            />
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">Pemeriksaan Ulang (Konfirmasi)</h2>
+            <p className="text-sm text-gray-600 mb-6">Pastikan semua data yang kamu isi sudah benar sebelum diunggah.</p>
+            <Step4Submit {...stepProps} />
           </>
         );
-
-      case 4:
-        return (
-          <>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">
-              Ringkasan & Kirim Review
-            </h2>
-            <p className="text-sm text-gray-600 mb-6">
-              Periksa kembali semua detail sebelum mengirim review
-            </p>
-            <Section4Submit
-              lookupData={lookupData}
-              company={company}
-              formData={formData}
-              onSubmit={onSubmit}
-              loading={loading}
-              categories={categories}
-            />
-          </>
-        );
-
       default:
         return null;
     }
@@ -174,42 +66,42 @@ export const ReviewFormTabsPanel = ({
 
   return (
     <>
-      {/* Full-width Step Tabs */}
-      <ReviewStepTabs
-        currentStep={currentStep}
-        onStepChange={handleStepChange}
-        highestReachedStep={highestReachedStep}
-      />
+      <ReviewStepTabs currentStep={step + 1} onStepChange={() => {}} highestReachedStep={step + 1} />
 
-      {/* Step Content in Container */}
       <div className="bg-white py-8">
         <Container>
           <div className="space-y-6">
-            {/* Content */}
             {renderStepContent()}
 
-            {/* Navigation Buttons */}
-            {currentStep !== 4 && (
-              <div className="flex gap-3 pt-6 border-t border-gray-200">
+            <div className="flex justify-between items-center pt-6 border-t border-gray-200">
+              <button
+                onClick={onBack}
+                disabled={step === 0}
+                className="px-8 py-3 border border-gray-200 rounded-xl font-semibold text-gray-900 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Kembali
+              </button>
+
+              {isLastStep ? (
                 <button
-                  onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 1))}
-                  disabled={currentStep === 1}
-                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={onSubmit}
+                  disabled={loading}
+                  className="flex items-center gap-2 px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Kembali
+                  <CheckSquare size={18} />
+                  Unggah Ulasan
                 </button>
+              ) : (
                 <button
-                  onClick={handleNextStep}
-                  disabled={!validateCurrentStep()}
-                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={onNext}
+                  className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-xl transition-colors"
                 >
                   Lanjut
                 </button>
-              </div>
-            )}
+              )}
+            </div>
 
-            {/* Cancel Button (Only on First Step) */}
-            {currentStep === 1 && onCancel && (
+            {step === 0 && onCancel && (
               <button
                 onClick={onCancel}
                 className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 rounded-lg transition-colors"

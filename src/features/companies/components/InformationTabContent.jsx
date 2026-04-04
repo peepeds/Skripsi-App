@@ -3,9 +3,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CompanyBioSection } from "./CompanyBioSection";
 import { InformationDetailsCard } from "./InformationDetailsCard";
 import { ReviewRatingsCard } from "./ReviewRatingsCard";
-import { RecruitmentProcessesCard } from "./RecruitmentProcessesCard";
+import { CompanyInternedCTACard } from "./CompanyInternedCTACard";
 
-export const InformationTabContent = ({ bio, summaryData, loading, error }) => {
+export const InformationTabContent = ({
+  bio,
+  summaryData,
+  loading,
+  error,
+  companySlug,
+  companyName,
+}) => {
   if (loading) {
     return (
       <div className="grid grid-cols-12 gap-8">
@@ -44,9 +51,7 @@ export const InformationTabContent = ({ bio, summaryData, loading, error }) => {
         {summaryData?.ratings && (
           <ReviewRatingsCard data={summaryData.ratings} />
         )}
-        {summaryData?.recruitmentProcesses && (
-          <RecruitmentProcessesCard data={summaryData.recruitmentProcesses} />
-        )}
+        <CompanyInternedCTACard companySlug={companySlug} companyName={companyName} />
       </div>
     </div>
   );
