@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { register } from "@/api/authApi";
+import { sanitizeFields } from "@/helpers/sanitize";
 import {
   isEmail,
   isOptionalString,
@@ -100,7 +101,8 @@ export const useRegisterWizard = () => {
       return;
     }
 
-    const { confirmPassword, ...payload } = form.getValues();
+    const { confirmPassword, ...raw } = form.getValues();
+    const payload = sanitizeFields(raw, ["firstName", "lastName", "registerId"]);
 
     try {
       const data = await register(payload);

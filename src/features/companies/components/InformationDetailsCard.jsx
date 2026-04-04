@@ -22,72 +22,94 @@ export const InformationDetailsCard = ({ data }) => {
     return typeMap[type] || type;
   };
 
+  const InformationField = ({ icon: Icon, label, value }) => (
+    <div className="flex gap-3 p-4 bg-white rounded-lg border border-gray-200">
+      <div className="shrink-0 mt-0.5">
+        <Icon className="w-5 h-5 text-gray-500" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-gray-900 mb-0.5">{label}</p>
+        <div className="text-sm text-gray-600">{value}</div>
+      </div>
+    </div>
+  );
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Internship Details</CardTitle>
+    <Card className="border-gray-200 shadow-sm">
+      <CardHeader className="border-b border-gray-200 pb-4">
+        <CardTitle className="text-lg font-bold text-gray-900">Internship Information</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <tbody className="divide-y divide-gray-200">
-              <tr>
-                <td className="py-3 px-4 font-medium text-gray-600 w-1/3">Type</td>
-                <td className="py-3 px-4 text-gray-900">
-                  {type ? getInternshipTypeLabel(type) : <span className="text-gray-400">N/A</span>}
-                </td>
-              </tr>
+      <CardContent className="pt-6">
+        <div className="grid grid-cols-2 gap-4">
+          {/* Work Scheme */}
+          <InformationField
+            icon={WorkSchemeIcon}
+            label="Work Scheme"
+            value={
+              workScheme && workScheme.length > 0 ? (
+                workScheme.join(", ")
+              ) : (
+                <span className="text-gray-400">N/A</span>
+              )
+            }
+          />
 
-              <tr>
-                <td className="py-3 px-4 font-medium text-gray-600 w-1/3">Work Scheme</td>
-                <td className="py-3 px-4">
-                  {workScheme && workScheme.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
-                      {workScheme.map((scheme) => (
-                        <span
-                          key={scheme}
-                          className="inline-block bg-blue-100 text-blue-800 text-xs px-2.5 py-0.5 rounded-full"
-                        >
-                          {scheme}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <span className="text-gray-400">N/A</span>
-                  )}
-                </td>
-              </tr>
+          {/* Duration */}
+          <InformationField
+            icon={DurationIcon}
+            label="Avg. Duration"
+            value={duration ? duration : <span className="text-gray-400">N/A</span>}
+          />
 
-              <tr>
-                <td className="py-3 px-4 font-medium text-gray-600 w-1/3">Duration</td>
-                <td className="py-3 px-4 text-gray-900">
-                  {duration ? duration : <span className="text-gray-400">N/A</span>}
-                </td>
-              </tr>
+          {/* Categories */}
+          <InformationField
+            icon={CategoriesIcon}
+            label="Populer Categories"
+            value={
+              subCategories && subCategories.length > 0 ? (
+                subCategories.join(", ")
+              ) : (
+                <span className="text-gray-400">N/A</span>
+              )
+            }
+          />
 
-              <tr>
-                <td className="py-3 px-4 font-medium text-gray-600 w-1/3">Categories</td>
-                <td className="py-3 px-4">
-                  {subCategories && subCategories.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
-                      {subCategories.map((category) => (
-                        <span
-                          key={category}
-                          className="inline-block bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full"
-                        >
-                          {category}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <span className="text-gray-400">N/A</span>
-                  )}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          {/* Type */}
+          <InformationField
+            icon={TypeIcon}
+            label="Type Internship"
+            value={
+              type ? getInternshipTypeLabel(type) : (
+                <span className="text-gray-400">N/A</span>
+              )
+            }
+          />
         </div>
       </CardContent>
     </Card>
   );
 };
+
+const WorkSchemeIcon = ({ className }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 20 20">
+    <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+  </svg>
+);
+
+const DurationIcon = ({ className }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 20 20">
+    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-11.414a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L9.414 10l1.293-1.414z" clipRule="evenodd" />
+  </svg>
+);
+
+const CategoriesIcon = ({ className }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 20 20">
+    <path fillRule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+  </svg>
+);
+
+const TypeIcon = ({ className }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 20 20">
+    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v2h16V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a2 2 0 002 2h8a2 2 0 002-2V7H6v5z" clipRule="evenodd" />
+  </svg>
+);

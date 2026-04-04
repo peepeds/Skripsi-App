@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { CompanyBioSection } from "./CompanyBioSection";
 import { InformationTabContent } from "./InformationTabContent";
+import { ReviewsTabContent } from "./ReviewsTabContent";
+import { RecruitmentTabContent } from "./RecruitmentTabContent";
 import { TabNavigation } from "./TabNavigation";
-import { EmptyStateCard } from "./EmptyStateCard";
 import { COMPANY_DETAIL_TABS } from "../constants/tabs";
 import { getReviewSummary } from "@/api/reviewApi";
 
-export const CompanyTabsPanel = ({ companyId, companySlug, bio }) => {
+export const CompanyTabsPanel = ({ companyId, companySlug, companyName, bio }) => {
   const [activeTab, setActiveTab] = useState("informasi");
   const [summaryData, setSummaryData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!companySlug || activeTab !== "informasi") return;
+    if (!companySlug) return;
 
     const fetchSummary = async () => {
       setLoading(true);
@@ -33,7 +33,7 @@ export const CompanyTabsPanel = ({ companyId, companySlug, bio }) => {
     };
 
     fetchSummary();
-  }, [companySlug, activeTab]);
+  }, [companySlug]);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -44,32 +44,22 @@ export const CompanyTabsPanel = ({ companyId, companySlug, bio }) => {
             summaryData={summaryData}
             loading={loading}
             error={error}
+            companySlug={companySlug}
+            companyName={companyName}
           />
         );
 
       case "testimonial":
         return (
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Testimoni Mahasiswa
-            </h3>
-            <div className="space-y-4">
-              <EmptyStateCard message="Belum ada testimoni untuk perusahaan ini." />
-            </div>
-          </div>
+          <ReviewsTabContent
+            companySlug={companySlug}
+            companyName={companyName}
+            summaryData={summaryData}
+          />
         );
 
       case "recruitment":
-        return (
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Informasi Rekrutmen
-            </h3>
-            <div className="space-y-4">
-              <EmptyStateCard message="Belum ada informasi rekrutmen untuk perusahaan ini." />
-            </div>
-          </div>
-        );
+        return <RecruitmentTabContent companySlug={companySlug} companyName={companyName} />;
 
       default:
         return null;

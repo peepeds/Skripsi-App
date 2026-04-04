@@ -5,24 +5,25 @@ import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
 
 /**
  * Custom hook untuk fetch dan manage companies data
- * Mendukung pagination untuk list dan search functionality
+ * Mendukung cursor-based pagination untuk list dan search functionality
  * Implements standardized error handling per BASELINE API contract
  *
  * @param {string} searchQuery - Query string untuk search
- * @returns {Object} - { companies, loading, hasMore, error, fetchCompanies, setPage, page }
+ * @returns {Object} - { companies, loading, hasMore, error, fetchCompanies }
  */
 export const useCompanies = (searchQuery) => {
   const [companies, setCompanies] = useState([]);
-  const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(null);
 
-  const lastFetchedPage = useRef(-1);
+  const nextCursorRef = useRef(null);
+  const lastFetchedCursorRef = useRef(undefined);
 
-  const fetchCompanies = useCallback(async (currentPage) => {
-    // Guard: prevent duplicate requests
-    if (currentPage <= lastFetchedPage.current) {
+  const fetchCompanies = useCallback(async () => {
+    // Guard: prevent duplicate requests for the same cursor
+    const currentCursor = nextCursorRef.current;
+    if (currentCursor === lastFetchedCursorRef.current) {
       return;
     }
 
@@ -32,7 +33,7 @@ export const useCompanies = (searchQuery) => {
     try {
       const response = isValidSearchQuery(searchQuery)
         ? await searchCompanies(searchQuery)
-        : await getCompanies(currentPage, 15);
+        : await getCompanies(currentCursor, 15);
 
       // Use standardized response validation
       const { success, message, data } = handleApiResponse(response);
@@ -49,6 +50,7 @@ export const useCompanies = (searchQuery) => {
         // Search: replace all companies
         setCompanies(newCompanies);
         setHasMore(false);
+        nextCursorRef.current = null;
       } else {
         // Pagination: append companies, avoid duplicates
         setCompanies((prev) => {
@@ -58,10 +60,12 @@ export const useCompanies = (searchQuery) => {
           );
           return [...prev, ...uniqueNew];
         });
-        setHasMore(response.meta?.hasNext ?? true);
+        // Update nextCursor for next fetch and hasMore status
+        nextCursorRef.current = response.meta?.nextCursor ?? null;
+        setHasMore(response.meta?.hasMore ?? false);
       }
 
-      lastFetchedPage.current = currentPage;
+      lastFetchedCursorRef.current = currentCursor;
     } catch (err) {
       const errorMessage = normalizeErrorMessage(err, "Failed to fetch companies");
       console.error("Error fetching companies:", err);
@@ -74,17 +78,17 @@ export const useCompanies = (searchQuery) => {
 
   const resetCompanies = useCallback(() => {
     setCompanies([]);
-    setPage(0);
     setHasMore(true);
-    lastFetchedPage.current = -1;
+    nextCursorRef.current = null;
+    lastFetchedCursorRef.current = undefined;
     setError(null);
   }, []);
 
   // Reset dan refetch saat search query berubah
   useEffect(() => {
     resetCompanies();
-    fetchCompanies(0);
-  }, [searchQuery]); // Only depend on searchQuery, not on fetchCompanies
+    fetchCompanies();
+  }, [searchQuery]); // Only depend on searchQuery to avoid infinite loops
 
   return {
     companies,
@@ -92,7 +96,5 @@ export const useCompanies = (searchQuery) => {
     hasMore,
     error,
     fetchCompanies,
-    setPage,
-    page,
   };
 };

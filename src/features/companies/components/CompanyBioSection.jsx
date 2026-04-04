@@ -1,4 +1,10 @@
 import React from "react";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card";
 
 /**
  * Component untuk menampilkan biography/deskripsi perusahaan
@@ -11,11 +17,15 @@ export const CompanyBioSection = ({ bio }) => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-4">About</h2>
-      <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap">
-        {bio}
-      </div>
-    </div>
+    <Card className="border-gray-200 shadow-sm">
+      <CardHeader className="border-b border-gray-200 pb-4">
+        <CardTitle className="text-lg font-bold text-gray-900">Company Profile</CardTitle>
+      </CardHeader>
+      <CardContent className="pt-6">
+        <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap">
+          {bio}
+        </div>
+      </CardContent>
+    </Card>
   );
 };

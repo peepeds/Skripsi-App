@@ -1,13 +1,3 @@
-/**
- * Authentication utilities for clearing session data
- *
- * @module api/authUtils
- */
-
-/**
- * Clear all authentication session data (cookies and localStorage)
- * Called when user logs out or session becomes invalid
- */
 export function clearAuthSession() {
   // Clear all authentication tokens from localStorage
   localStorage.removeItem("accessToken");

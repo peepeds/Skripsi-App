@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { HeroSection } from "@/features/home/sections/HeroSection";
 import { CompanyListContainer } from "../components/CompanyListContainer";
@@ -13,15 +13,12 @@ export const CompaniesPage = () => {
   const searchQuery = searchParams.get("search") || "";
   const [activeTab, setActiveTab] = useState("semua");
 
-  const { companies, loading, hasMore, error, fetchCompanies, setPage, page } =
+  const { companies, loading, hasMore, error, fetchCompanies } =
     useCompanies(searchQuery);
 
-  const pageRef = useRef(0);
-
-  // Handle pagination trigger
+  // Handle pagination trigger for infinite scroll
   const handleLoadMore = useCallback(() => {
-    pageRef.current += 1;
-    fetchCompanies(pageRef.current);
+    fetchCompanies();
   }, [fetchCompanies]);
 
   // Intersection observer for infinite scroll
@@ -32,10 +29,9 @@ export const CompaniesPage = () => {
     0.5
   );
 
-  // Reset active tab and page when search changes
+  // Reset active tab when search changes
   useEffect(() => {
     setActiveTab("semua");
-    pageRef.current = 0;
   }, [searchQuery]);
 
   return (
