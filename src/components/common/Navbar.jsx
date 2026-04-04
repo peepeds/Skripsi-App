@@ -75,12 +75,12 @@ export function Navbar() {
       <div className="flex h-16 items-center justify-between gap-4">
         {/* Logo */}
         <div className="flex-1">
-          <a href="/" className="text-primary hover:text-primary/90">
+          <a href="/" className="group inline-flex items-center gap-2">
             <Logo />
           </a>
         </div>
         {/* Right side */}
-        <div className="flex flex-1 items-center justify-end gap-2">
+        <div className="flex items-center justify-end gap-4 md:gap-6">
           {loading ? (
             <div className="w-10 h-10">
               <SkeletonCircle size={40} />
@@ -129,13 +129,13 @@ export function Navbar() {
           ) : (
             <>
               {/* Guest Links */}
-              <Button asChild variant="ghost" size="sm" className="text-sm">
-                <a href="/categories">Categories</a>
-              </Button>
-              <Button asChild variant="ghost" size="sm" className="text-sm">
-                <a href="/companies">Companies</a>
-              </Button>
-              <Button asChild size="sm" className="text-sm">
+              <a href="/categories" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors hidden md:block">
+                Categories
+              </a>
+              <a href="/companies" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors hidden md:block">
+                Companies
+              </a>
+              <Button asChild size="sm" className="bg-[#F97316] hover:bg-[#EA580C] text-white rounded-lg px-5">
                 <a href="/login">Get Started</a>
               </Button>
             </>

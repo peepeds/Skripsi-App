@@ -1,46 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { User } from 'lucide-react';
+import { User, Star } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { StarRating } from '@/components/ui/StarRating';
-import { useLogoValidation } from '@/features/companies/hooks/useLogoValidation';
 import { getRecentReviews } from '@/api/reviewApi';
 
-const RecentReviewCard = ({ testimony, createdBy, averageRating, companyName, companyCategory, companyWebsite, jobTitle }) => {
-  const { logoUrl, logoValid } = useLogoValidation(companyWebsite);
+const RecentReviewCard = ({ testimony, createdBy, averageRating, companyName, companyWebsite, jobTitle }) => {
+  const initials = createdBy ? createdBy.substring(0, 2).toUpperCase() : '';
 
   return (
-    <div className="snap-start shrink-0 w-96 bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex flex-col">
-      <div className="flex items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
-            <User className="w-5 h-5 text-gray-500" />
+    <div className="snap-start shrink-0 w-[420px] max-w-full bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow h-auto">
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex gap-3 items-center">
+          <div className="w-12 h-12 rounded-full bg-[#EA580C] text-white flex items-center justify-center shrink-0 font-bold text-lg">
+            {initials || <User className="w-5 h-5 text-white" />}
           </div>
-          <p className="text-base text-gray-600">{createdBy}</p>
-        </div>
-        <div className="flex items-center gap-1 shrink-0">
-          <span className="text-base font-semibold text-gray-900">{averageRating?.toFixed(1).replace('.', ',')}</span>
-          <StarRating rating={averageRating} size="sm" />
-        </div>
-      </div>
-
-      <div className="flex-1">
-        <p className="font-semibold text-base text-gray-900 mb-1">{jobTitle}</p>
-        <p className="text-sm leading-relaxed text-gray-600">{testimony}</p>
-      </div>
-
-      <div className="border-t border-gray-100 mt-4 pt-4 flex items-center gap-3 shrink-0">
-        {logoValid === true ? (
-          <img src={logoUrl} alt={companyName} className="h-7 w-auto max-w-[4rem] object-contain" />
-        ) : (
-          <div className="h-7 w-7 bg-gray-100 rounded flex items-center justify-center text-gray-600 font-semibold text-xs shrink-0">
-            {companyName?.charAt(0) || '?'}
+          <div>
+            <h4 className="font-bold text-slate-900 text-base">{createdBy || "Anonim"}</h4>
+            <p className="text-slate-500 text-xs leading-tight mt-0.5">{jobTitle} di {companyName}</p>
+            <p className="text-slate-400 text-[10px] mt-0.5">Magang</p>
           </div>
-        )}
-        <div>
-          <p className="text-base font-medium text-gray-900">{companyName}</p>
-          <p className="text-sm text-gray-500">{companyCategory}</p>
+        </div>
+        <div className="flex items-center bg-orange-50 px-2 py-1 rounded-md text-orange-600 font-bold text-sm">
+          <Star className="w-3.5 h-3.5 fill-[#F97316] text-[#F97316] mr-1" />
+          {averageRating?.toFixed(1).replace('.', ',')}
         </div>
       </div>
+      <blockquote className="text-slate-700 text-sm leading-relaxed mt-4">
+        "{testimony}"
+      </blockquote>
     </div>
   );
 };
@@ -58,15 +44,20 @@ export function HighlightReview() {
   return (
     <section className="bg-white py-16">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-semibold">Recent Reviews</h2>
-          <a href="#" className="text-green-600 hover:underline text-sm">Baca review lengkap</a>
+        <div className="flex justify-between items-end mb-8">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Recent Reviews</h2>
+            <p className="text-gray-500 text-sm">Cerita nyata dari mereka yang telah magang</p>
+          </div>
+          <a href="#" className="text-[#F97316] font-medium hover:underline text-sm flex items-center gap-1">
+            Read more reviews <span aria-hidden="true">&rarr;</span>
+          </a>
         </div>
-        <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory pb-4 -mx-1 px-1">
+        <div className="flex overflow-x-auto justify-between gap-6 snap-x snap-mandatory pb-4 -mx-1 px-1 custom-scrollbar">
           {loading
             ? Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="snap-start shrink-0 w-96">
-                  <Skeleton className="h-[300px] rounded-xl" />
+                <div key={i} className="snap-start shrink-0 w-80">
+                  <Skeleton className="h-[250px] rounded-2xl" />
                 </div>
               ))
             : reviews.map((review, i) => <RecentReviewCard key={i} {...review} />)

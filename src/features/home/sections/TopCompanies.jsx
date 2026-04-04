@@ -11,25 +11,31 @@ const TopCompanyCard = ({ companyName, companyAbbreviation, website, subcategory
   const reviewLabel = totalReviews === 1 ? 'review' : 'reviews';
 
   return (
-    <Link to={`/company/${companySlug}`} className="block snap-start shrink-0 w-96">
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-shadow h-full">
-        <div className="h-10 flex items-start mb-3">
+    <Link to={`/company/${companySlug}`} className="block snap-start shrink-0 w-80 group">
+      <div className="bg-white rounded-2xl border border-slate-100 p-6 hover:shadow-md transition duration-300">
+        <div className="h-16 w-16 rounded-2xl bg-white border border-slate-100 flex items-center justify-center p-2 mb-5">
           {logoValid === true ? (
-            <img src={logoUrl} alt={companyName} className="h-8 w-auto max-w-[8rem] object-contain" />
+            <img src={logoUrl} alt={companyName} className="max-w-full max-h-full object-contain" />
           ) : logoValid === false ? (
-            <div className="h-8 w-8 bg-gray-100 rounded flex items-center justify-center text-gray-600 font-semibold text-base">
+            <div className="h-full w-full bg-gray-50 flex items-center justify-center text-gray-500 font-bold text-xl rounded">
               {initial}
             </div>
           ) : (
-            <Skeleton className="h-8 w-16 rounded" />
+            <Skeleton className="h-full w-full rounded" />
           )}
         </div>
-        <p className="font-semibold text-base text-gray-900 leading-snug mb-0.5">{companyName}</p>
-        <p className="text-sm text-gray-500 mb-2">{subcategoryName}</p>
-        <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-base font-medium text-gray-900">{rating?.toFixed(1).replace('.', ',')}</span>
-          <StarRating rating={rating} size="sm" />
-          <span className="text-sm text-gray-500">· {totalReviews} {reviewLabel}</span>
+        <h3 className="font-bold text-lg text-slate-900 mb-2 truncate">{companyName}</h3>
+        
+        <div className="flex items-center gap-2 mb-5">
+          <StarRating rating={rating} size="sm" className="text-[#F97316]" />
+          <span className="text-sm font-bold text-slate-900">{rating?.toFixed(1).replace('.', ',')}</span>
+          <span className="text-sm text-slate-400">({totalReviews} {reviewLabel})</span>
+        </div>
+
+        <div>
+          <span className="inline-block px-3 py-1 border-gray-100 rounded-md text-xs font-medium bg-slate-50 text-slate-600">
+            {subcategoryName}
+          </span>
         </div>
       </div>
     </Link>
@@ -47,16 +53,21 @@ export function TopCompanies() {
   }, []);
 
   return (
-    <section className="py-12">
+    <section className="py-20 bg-gray-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-semibold">Top Reviewed Companies</h2>
-          <Link to="/companies" className="text-green-600 hover:underline text-sm">Lihat semua</Link>
+        <div className="flex justify-between items-end mb-8">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Top Reviewed Companies</h2>
+            <p className="text-gray-500 text-sm">Berdasarkan ulasan mahasiswa di seluruh Indonesia</p>
+          </div>
+          <Link to="/companies" className="text-[#F97316] font-medium hover:underline text-sm flex items-center gap-1">
+            View All <span aria-hidden="true">&rarr;</span>
+          </Link>
         </div>
-        <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory pb-4 -mx-1 px-1">
+        <div className="flex overflow-x-auto justify-between gap-6 snap-x snap-mandatory pb-4 -mx-1 px-1 custom-scrollbar">
           {loading
-            ? Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="snap-start shrink-0 w-96">
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="snap-start shrink-0 w-80">
                   <Skeleton className="h-40 rounded-xl" />
                 </div>
               ))
