@@ -90,6 +90,7 @@ export const CompanyDetailPage = () => {
         <CompanyTabsPanel
           companyId={company.companyId}
           companySlug={companySlug}
+          companyName={company.companyName}
           bio={company.bio}
         />
       </Container>

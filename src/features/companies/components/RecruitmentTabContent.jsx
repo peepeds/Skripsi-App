@@ -1,0 +1,108 @@
+import React from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { RecruitmentProcessCard } from "./RecruitmentProcessCard";
+import { AverageDifficultyCard } from "./AverageDifficultyCard";
+import { RecruitmentStatisticsCard } from "./RecruitmentStatisticsCard";
+import { CompanyInternedCTACard } from "./CompanyInternedCTACard";
+import { EmptyStateCard } from "./EmptyStateCard";
+import { useCompanyRecruitmentProcess } from "../hooks/useCompanyRecruitmentProcess";
+import { useRecruitmentProcessSummary } from "../hooks/useRecruitmentProcessSummary";
+
+const CardSkeleton = () => (
+  <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+    <div className="flex items-center gap-3">
+      <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+      <div className="space-y-2 flex-1">
+        <Skeleton className="h-4 w-28" />
+        <Skeleton className="h-3 w-20" />
+      </div>
+    </div>
+    <div className="flex gap-2">
+      <Skeleton className="h-6 w-24 rounded-full" />
+      <Skeleton className="h-6 w-16 rounded-full" />
+      <Skeleton className="h-6 w-20 rounded-full" />
+    </div>
+    <Skeleton className="h-16 rounded-xl" />
+    <Skeleton className="h-20 rounded-xl" />
+  </div>
+);
+
+const SidebarSkeleton = () => (
+  <div className="space-y-4">
+    <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-4">
+      <Skeleton className="h-6 w-40" />
+      <Skeleton className="h-20 rounded-xl" />
+    </div>
+    <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-4">
+      <Skeleton className="h-6 w-48" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-3 w-full rounded-full" />
+      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="h-3 w-3/4 rounded-full" />
+    </div>
+  </div>
+);
+
+export const RecruitmentTabContent = ({ companySlug, companyName }) => {
+  const { items, loading: listLoading, error: listError, hasMore, loadMore } = useCompanyRecruitmentProcess(companySlug);
+  const { summary, loading: summaryLoading } = useRecruitmentProcessSummary(companySlug);
+
+  return (
+    <div className="grid grid-cols-12 gap-8">
+      {/* Left: list */}
+      <div className="col-span-8 max-lg:col-span-12 space-y-4">
+        <h2 className="text-xl font-bold text-gray-900">Alumni Recruitment Experience</h2>
+
+        {listLoading && items.length === 0 && (
+          <div className="space-y-4">
+            {[1, 2].map((i) => <CardSkeleton key={i} />)}
+          </div>
+        )}
+
+        {!listLoading && listError && items.length === 0 && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-red-700 text-sm">{listError}</p>
+          </div>
+        )}
+
+        {!listLoading && !listError && items.length === 0 && (
+          <EmptyStateCard message="Belum ada informasi rekrutmen untuk perusahaan ini." />
+        )}
+
+        {items.length > 0 && (
+          <div className="space-y-4">
+            {items.map((item) => (
+              <RecruitmentProcessCard key={item.internshipDetailId} data={item} />
+            ))}
+          </div>
+        )}
+
+        {hasMore && (
+          <div className="flex justify-center pt-2">
+            <button
+              onClick={loadMore}
+              disabled={listLoading}
+              className="px-6 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {listLoading ? "Memuat..." : "Muat Lebih Banyak"}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Right: sidebar */}
+      <div className="col-span-4 max-lg:col-span-12 space-y-4">
+        {summaryLoading && !summary && <SidebarSkeleton />}
+
+        {summary && (
+          <>
+            <AverageDifficultyCard difficulty={summary.difficulty} />
+            <RecruitmentStatisticsCard statistics={summary.statistics} />
+          </>
+        )}
+
+        <CompanyInternedCTACard companySlug={companySlug} companyName={companyName} />
+      </div>
+    </div>
+  );
+};
