@@ -11,25 +11,31 @@ const TopCompanyCard = ({ companyName, companyAbbreviation, website, subcategory
   const reviewLabel = totalReviews === 1 ? 'review' : 'reviews';
 
   return (
-    <Link to={`/company/${companySlug}`} className="block snap-start shrink-0 w-96">
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-shadow h-full">
-        <div className="h-10 flex items-start mb-3">
+    <Link to={`/company/${companySlug}`} className="group block h-full">
+      <div className="h-full rounded-2xl border border-slate-100 bg-white p-6 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
+        <div className="h-16 w-16 rounded-2xl bg-white border border-slate-100 flex items-center justify-center p-2 mb-5">
           {logoValid === true ? (
-            <img src={logoUrl} alt={companyName} className="h-8 w-auto max-w-[8rem] object-contain" />
+            <img src={logoUrl} alt={companyName} className="max-w-full max-h-full object-contain" />
           ) : logoValid === false ? (
-            <div className="h-8 w-8 bg-gray-100 rounded flex items-center justify-center text-gray-600 font-semibold text-base">
+            <div className="h-full w-full bg-gray-50 flex items-center justify-center text-gray-500 font-bold text-xl rounded">
               {initial}
             </div>
           ) : (
-            <Skeleton className="h-8 w-16 rounded" />
+            <Skeleton className="h-full w-full rounded" />
           )}
         </div>
-        <p className="font-semibold text-base text-gray-900 leading-snug mb-0.5">{companyName}</p>
-        <p className="text-sm text-gray-500 mb-2">{subcategoryName}</p>
-        <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-base font-medium text-gray-900">{rating?.toFixed(1).replace('.', ',')}</span>
-          <StarRating rating={rating} size="sm" />
-          <span className="text-sm text-gray-500">· {totalReviews} {reviewLabel}</span>
+        <h3 className="mb-2 text-lg font-bold text-slate-900">{companyName}</h3>
+        
+        <div className="flex items-center gap-2 mb-5">
+          <StarRating rating={rating} size="sm" className="text-[#F97316]" />
+          <span className="text-sm font-bold text-slate-900">{rating?.toFixed(1).replace('.', ',')}</span>
+          <span className="text-sm text-slate-400">({totalReviews} {reviewLabel})</span>
+        </div>
+
+        <div>
+          <span className="inline-block px-3 py-1 border-gray-100 rounded-md text-xs font-medium bg-slate-50 text-slate-600">
+            {subcategoryName}
+          </span>
         </div>
       </div>
     </Link>
@@ -47,17 +53,26 @@ export function TopCompanies() {
   }, []);
 
   return (
-    <section className="py-12">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-semibold">Top Reviewed Companies</h2>
-          <Link to="/companies" className="text-green-600 hover:underline text-sm">Lihat semua</Link>
+    <section className="border-b border-slate-100 bg-slate-50 py-14 md:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4 md:mb-10">
+          <div>
+            <h2 className="mb-2 text-2xl font-bold text-slate-900 md:text-[2rem]">Top Reviewed Companies</h2>
+            <p className="text-sm text-slate-500 md:text-base">Berdasarkan ulasan mahasiswa di seluruh Indonesia</p>
+          </div>
+          <Link to="/companies" className="flex items-center gap-1 text-sm font-semibold text-[#F97316] transition hover:opacity-80 md:text-lg">
+            View All <span aria-hidden="true">&rarr;</span>
+          </Link>
         </div>
-        <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory pb-4 -mx-1 px-1">
+
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-6">
           {loading
-            ? Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="snap-start shrink-0 w-96">
-                  <Skeleton className="h-40 rounded-xl" />
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="rounded-2xl border border-slate-100 bg-white p-6">
+                  <Skeleton className="mb-5 h-16 w-16 rounded-2xl" />
+                  <Skeleton className="mb-2 h-6 w-2/3" />
+                  <Skeleton className="mb-5 h-5 w-1/2" />
+                  <Skeleton className="h-7 w-24 rounded-md" />
                 </div>
               ))
             : companies.map(c => <TopCompanyCard key={c.companyId} {...c} />)

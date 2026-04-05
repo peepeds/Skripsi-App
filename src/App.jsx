@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { setNavigator } from '@/utils/history'; // Sesuaikan path jika perlu
 import { AppRoutes, appRoutes } from "@/routes/AppRoutes";
 import { SkeletonProvider } from "@/context/skeletonContext";
+import { Footer } from "@/components/layout/Footer";
 
 const NavigatorSetup = () => {
   const navigate = useNavigate();
@@ -22,10 +23,11 @@ function Layout({ children }) {
   const hideNavbar = matches?.some((match) => match.route.showNavbar === false) ?? false;
 
   return (
-    <>
+    <div className="flex min-h-screen flex-col">
       {!hideNavbar && <Navbar />}
-      <main>{children}</main>
-    </>
+      <main className="flex-1">{children}</main>
+      {!hideNavbar && <Footer />}
+    </div>
   );
 }
 

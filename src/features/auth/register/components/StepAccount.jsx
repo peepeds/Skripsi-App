@@ -2,10 +2,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState, useRef } from "react";
 import { checkEmail } from "@/api/userApi";
+import { KeyRound, LockKeyhole, Mail } from "lucide-react";
 
 export function StepAccount({ form }) {
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
-  const [emailCheckError, setEmailCheckError] = useState(null);
   const debounceTimerRef = useRef(null);
   const emailValue = form.watch("email");
 
@@ -14,9 +14,6 @@ export function StepAccount({ form }) {
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
-
-    // Clear error when user is typing
-    setEmailCheckError(null);
 
     // Reset error in form
     if (form.formState.errors.email?.type === "server") {
@@ -34,7 +31,6 @@ export function StepAccount({ form }) {
       try {
         const response = await checkEmail(emailValue);
         if (!response.success) {
-          setEmailCheckError(response.message);
           form.setError("email", {
             type: "server",
             message: response.message,
@@ -44,7 +40,6 @@ export function StepAccount({ form }) {
         // Handle axios error dengan status code 409 (Conflict)
         if (error.response?.status === 409) {
           const errorMessage = error.response.data?.message || "Email already used!";
-          setEmailCheckError(errorMessage);
           form.setError("email", {
             type: "server",
             message: errorMessage,
@@ -66,52 +61,61 @@ export function StepAccount({ form }) {
   }, [emailValue, form]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <div className="relative">
+          <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
           <Input
             id="email"
             type="email"
             placeholder="Enter your email"
             {...form.register("email")}
             disabled={isCheckingEmail}
-            className={isCheckingEmail ? "opacity-75" : ""}
+            className={`h-12 rounded-xl border-slate-200 bg-slate-50/70 pl-10 pr-10 text-sm shadow-none transition-colors focus-visible:bg-white ${isCheckingEmail ? "opacity-75" : ""}`}
           />
           {isCheckingEmail && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <div className="animate-spin w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full"></div>
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-[#F97316]" />
             </div>
           )}
         </div>
         {form.formState.errors.email && (
-          <p className="text-sm text-red-600">{form.formState.errors.email.message}</p>
+          <p className="text-sm text-red-500">{form.formState.errors.email.message}</p>
         )}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          placeholder="Enter your password"
-          {...form.register("password")}
-        />
+        <div className="relative">
+          <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+          <Input
+            id="password"
+            type="password"
+            placeholder="Enter your password"
+            {...form.register("password")}
+            className="h-12 rounded-xl border-slate-200 bg-slate-50/70 pl-10 pr-4 text-sm shadow-none transition-colors focus-visible:bg-white"
+          />
+        </div>
         {form.formState.errors.password && (
-          <p className="text-sm text-red-600">{form.formState.errors.password.message}</p>
+          <p className="text-sm text-red-500">{form.formState.errors.password.message}</p>
         )}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="confirmPassword">Confirm Password</Label>
-        <Input
-          id="confirmPassword"
-          type="password"
-          placeholder="Confirm your password"
-          {...form.register("confirmPassword")}
-        />
+        <div className="relative">
+          <KeyRound className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+          <Input
+            id="confirmPassword"
+            type="password"
+            placeholder="Confirm your password"
+            {...form.register("confirmPassword")}
+            className="h-12 rounded-xl border-slate-200 bg-slate-50/70 pl-10 pr-4 text-sm shadow-none transition-colors focus-visible:bg-white"
+          />
+        </div>
         {form.formState.errors.confirmPassword && (
-          <p className="text-sm text-red-600">{form.formState.errors.confirmPassword.message}</p>
+          <p className="text-sm text-red-500">{form.formState.errors.confirmPassword.message}</p>
         )}
       </div>
     </div>
