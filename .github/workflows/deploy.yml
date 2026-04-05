@@ -66,6 +66,10 @@ jobs:
           script: |
             sudo rm -rf /var/www/app/*
             sudo mkdir -p /var/www/app
-            sudo cp -r /home/ubuntu/frontend-temp/* /var/www/app
+
+            sudo cp -r ${{ secrets.BASE_DIR }}/dist/* /var/www/app
+            
             sudo chown -R www-data:www-data /var/www/app
-            rm -rf /home/ubuntu/frontend-temp
+            sudo chmod -R 755 /var/www/app  
+
+            rm -rf ${{ secrets.BASE_DIR }}
