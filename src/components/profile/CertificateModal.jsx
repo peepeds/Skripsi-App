@@ -44,17 +44,17 @@ export function CertificateModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-[2px] flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
-        <h2 className="text-xl font-semibold mb-4">Submit Certificate</h2>
-        <form onSubmit={certificateForm.handleSubmit(handleSubmit)} className="space-y-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-4 backdrop-blur-[2px]">
+      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-xl sm:p-6">
+        <h2 className="font-plus-jakarta mb-4 text-xl font-semibold text-slate-900">Submit Certificate</h2>
+        <form onSubmit={certificateForm.handleSubmit(handleSubmit)} className="space-y-4.5">
           <Controller
             name="issuer"
             control={certificateForm.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>Issuer</FieldLabel>
-                <Input {...field} placeholder="Enter issuer" />
+                <FieldLabel className="font-inter text-sm text-slate-700">Issuer</FieldLabel>
+                <Input {...field} placeholder="Enter issuer" className="h-11 rounded-xl" />
                 {fieldState.error && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
@@ -64,8 +64,8 @@ export function CertificateModal({
             control={certificateForm.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>Certificate Name</FieldLabel>
-                <Input {...field} placeholder="Enter certificate name" />
+                <FieldLabel className="font-inter text-sm text-slate-700">Certificate Name</FieldLabel>
+                <Input {...field} placeholder="Enter certificate name" className="h-11 rounded-xl" />
                 {fieldState.error && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
@@ -74,41 +74,44 @@ export function CertificateModal({
           {/* File Upload Section */}
           <div className="space-y-2">
             <Field>
-              <FieldLabel>File</FieldLabel>
+              <FieldLabel className="font-inter text-sm text-slate-700">File</FieldLabel>
               <Input
                 type="file"
                 accept=".pdf"
                 onChange={handleFileChange}
+                className="h-11 rounded-xl"
               />
             </Field>
 
             {fileName && (
               <Field>
-                <FieldLabel>File Name (optional)</FieldLabel>
+                <FieldLabel className="font-inter text-sm text-slate-700">File Name (optional)</FieldLabel>
                 <Input
                   value={fileName}
                   onChange={(e) => setFileName(e.target.value)}
                   placeholder="Enter custom file name"
+                  className="h-11 rounded-xl"
                 />
               </Field>
             )}
 
             {(compressing || requestingUrl) && (
-              <p className="text-sm text-muted-foreground">
+              <p className="font-inter text-sm text-slate-500">
                 {compressing ? "Compressing image..." : "Getting upload URL..."}
               </p>
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+            <Button type="button" variant="outline" onClick={onClose} className="h-10 rounded-xl px-4">
+              Cancel
+            </Button>
             <Button
               type="submit"
               disabled={uploading || compressing || requestingUrl || !selectedFile}
+              className="h-10 rounded-xl bg-[#F97316] px-4 text-white hover:bg-[#EA580C]"
             >
               {compressing ? "Compressing..." : requestingUrl ? "Preparing..." : uploading ? "Submitting..." : "Submit Certificate"}
-            </Button>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
             </Button>
           </div>
         </form>

@@ -1,33 +1,17 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldLabel,
-  FieldGroup,
-} from "@/components/ui/field";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export function CampusLocationCard({ user }) {
   return (
-    <Card>
-      <CardHeader>
-        <h2 className="text-xl font-semibold">Campus Location</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Your campus region
-        </p>
+    <Card className="rounded-2xl border-slate-200 py-0 shadow-sm">
+      <CardHeader className="border-b border-slate-100 px-5 py-4 sm:px-6 sm:py-5">
+        <h2 className="font-plus-jakarta text-xl font-semibold text-slate-900">Campus Location</h2>
+        <p className="font-inter mt-1 text-sm text-slate-500">Your campus region</p>
       </CardHeader>
-      <CardContent>
-        <FieldGroup>
-          {/* Region display */}
-          <Field>
-            <FieldLabel>Region</FieldLabel>
-            <dd className="text-base font-bold">
-              {user?.regionName || "-"}
-            </dd>
-          </Field>
-        </FieldGroup>
+      <CardContent className="px-5 py-5 sm:px-6 sm:py-6">
+        <div className="space-y-1.5 rounded-xl border border-slate-100 bg-slate-50/60 p-3.5 sm:p-4">
+          <p className="font-inter text-xs font-medium uppercase tracking-wide text-slate-500">Region</p>
+          <p className="font-plus-jakarta text-sm font-semibold text-slate-900 sm:text-base">{user?.regionName || "-"}</p>
+        </div>
       </CardContent>
     </Card>
   );
