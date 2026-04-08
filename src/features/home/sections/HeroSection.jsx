@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { SearchBar } from "@/components/common/SearchBar";
 import { getTopRatedCompanies } from "@/api/companyApi";
 import { Skeleton } from "@/components/ui/skeleton";
+import internPics from "@/assets/intern.jpeg";
 
 export function HeroSection() {
   const [popularCompanies, setPopularCompanies] = useState([]);
@@ -22,7 +23,7 @@ export function HeroSection() {
     <section className="relative overflow-hidden border-b border-slate-100 bg-white py-6 md:py-8 lg:py-0">
       <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[52vw] lg:block">
         <img
-          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1800&ixlib=rb-4.0.3"
+          src={internPics}
           alt="Intern working on laptop"
           className="h-full w-full object-cover object-center"
         />
