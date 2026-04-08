@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
+import { useParams, useLocation, Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ChevronLeft } from 'lucide-react';
 import { getCompaniesBySubcategory } from '@/api/companyApi';
 import { CompanyCard } from '@/components/cards';
+import { ErrorMessage } from '@/components/ui/ErrorMessage';
+import { BackButton } from '@/components/common/BackButton';
 
 export const SubCategoryCompaniesPage = () => {
-  const navigate = useNavigate();
   const { subCategoryName: subCategoryNameParam } = useParams();
   const location = useLocation();
   const subCategoryName = location.state?.subCategoryName || decodeURIComponent(subCategoryNameParam) || 'Subcategory';
@@ -40,13 +40,7 @@ export const SubCategoryCompaniesPage = () => {
   if (loading) {
     return (
       <div className="container mx-auto p-6">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-orange-600 hover:text-orange-700 mb-6"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Back
-        </button>
+        <BackButton variant="default" label="Back" className="mb-6" />
         <Skeleton className="h-8 w-64 mb-8" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
@@ -60,27 +54,15 @@ export const SubCategoryCompaniesPage = () => {
   if (error) {
     return (
       <div className="container mx-auto p-6">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-orange-600 hover:text-orange-700 mb-6"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Back
-        </button>
-        <div className="text-red-500">Error: {error}</div>
+        <BackButton variant="default" label="Back" className="mb-6" />
+        <ErrorMessage message={error} />
       </div>
     );
   }
 
   return (
     <div className="container mx-auto p-6">
-      <button
-        onClick={() => navigate(-1)}
-        className="flex items-center gap-2 text-orange-600 hover:text-orange-700 mb-6"
-      >
-        <ChevronLeft className="w-4 h-4" />
-        Back
-      </button>
+      <BackButton variant="default" label="Back" className="mb-6" />
 
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">{subCategoryName}</h1>

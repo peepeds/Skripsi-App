@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
-import { useLogoValidation } from "../hooks/useLogoValidation";
 import { StarRating } from "@/components/ui/StarRating";
+import { CompanyLogo } from "@/components/common/CompanyLogo";
+import { BackButton } from "@/components/common/BackButton";
 
 export const CompanyGeneralInfoSection = ({
   companyId,
@@ -17,13 +18,7 @@ export const CompanyGeneralInfoSection = ({
   totalReviews,
 }) => {
   const navigate = useNavigate();
-  const { logoUrl, logoValid } = useLogoValidation(website);
   const [copiedUrl, setCopiedUrl] = useState(false);
-
-  const initial =
-    companyAbbreviation?.charAt(0) ||
-    companyName?.charAt(0) ||
-    "?";
 
   const handleShareClick = async () => {
     const currentUrl = window.location.href;
@@ -44,15 +39,7 @@ export const CompanyGeneralInfoSection = ({
       <Container className="relative z-10">
         {/* Top Action Bar: Back Button + Action Buttons */}
         <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={() => navigate(-1)}
-            className="p-2 hover:bg-white/20 rounded-lg transition text-white"
-            aria-label="Go back"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
+          <BackButton variant="ghost" />
           
           {/* Action Buttons Group */}
           <div className="flex items-center gap-2">
@@ -85,20 +72,14 @@ export const CompanyGeneralInfoSection = ({
         <div className="flex gap-6 md:gap-8 items-start">
           {/* Logo Section */}
           <div className="shrink-0">
-            {logoValid ? (
-              <div className="w-24 h-24 bg-white rounded-xl shadow-lg flex items-center justify-center overflow-hidden">
-                <img
-                  src={logoUrl}
-                  alt={companyName}
-                  loading="lazy"
-                  className="w-20 h-20 object-contain"
-                />
-              </div>
-            ) : (
-              <div className="w-24 h-24 bg-white rounded-xl flex items-center justify-center text-blue-600 font-bold text-3xl shadow-lg">
-                {initial}
-              </div>
-            )}
+            <CompanyLogo
+              website={website}
+              companyName={companyName}
+              companyAbbreviation={companyAbbreviation}
+              className="w-24 h-24 bg-white rounded-xl shadow-lg flex items-center justify-center overflow-hidden"
+              imgClassName="w-20 h-20 object-contain"
+              fallbackClassName="text-blue-600 font-bold text-3xl"
+            />
           </div>
 
           {/* Company Info Section */}

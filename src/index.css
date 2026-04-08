@@ -8,6 +8,16 @@
   }
 }
 
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* @layer base {
   .password [data-invalid="true"] [data-slot="field-error"] {
     display: none !important;

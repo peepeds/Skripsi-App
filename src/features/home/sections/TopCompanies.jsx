@@ -3,27 +3,22 @@ import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
 import { StarRating } from '@/components/ui/StarRating';
 import { getTopRatedCompanies } from '@/api/companyApi';
-import { useLogoValidation } from '@/features/companies/hooks/useLogoValidation';
+import { CompanyLogo } from '@/components/common/CompanyLogo';
 
 const TopCompanyCard = ({ companyName, companyAbbreviation, website, subcategoryName, rating, totalReviews, companySlug }) => {
-  const { logoUrl, logoValid } = useLogoValidation(website);
-  const initial = companyAbbreviation?.charAt(0) || companyName?.charAt(0) || '?';
   const reviewLabel = totalReviews === 1 ? 'review' : 'reviews';
 
   return (
     <Link to={`/company/${companySlug}`} className="group block h-full">
       <div className="h-full rounded-2xl border border-slate-100 bg-white p-6 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
-        <div className="h-16 w-16 rounded-2xl bg-white border border-slate-100 flex items-center justify-center p-2 mb-5">
-          {logoValid === true ? (
-            <img src={logoUrl} alt={companyName} className="max-w-full max-h-full object-contain" />
-          ) : logoValid === false ? (
-            <div className="h-full w-full bg-gray-50 flex items-center justify-center text-gray-500 font-bold text-xl rounded">
-              {initial}
-            </div>
-          ) : (
-            <Skeleton className="h-full w-full rounded" />
-          )}
-        </div>
+        <CompanyLogo
+          website={website}
+          companyName={companyName}
+          companyAbbreviation={companyAbbreviation}
+          className="h-16 w-16 rounded-2xl bg-white border border-slate-100 flex items-center justify-center p-2 mb-5"
+          fallbackClassName="bg-gray-50 text-gray-500 font-bold text-xl rounded"
+          showSkeleton
+        />
         <h3 className="mb-2 text-lg font-bold text-slate-900">{companyName}</h3>
         
         <div className="flex items-center gap-2 mb-5">

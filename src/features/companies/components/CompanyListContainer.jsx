@@ -1,9 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { CompanyCardHorizontal, CompanyCardSkeleton } from "./index";
 
-/**
- * Container untuk menampilkan list companies
- */
+
 export const CompanyListContainer = ({
   companies,
   loading,
@@ -12,6 +12,7 @@ export const CompanyListContainer = ({
   searchQuery,
   lastElementRef,
 }) => {
+  const navigate = useNavigate();
   const isEmpty = companies.length === 0;
   const isLoading = isEmpty && loading;
 
@@ -34,11 +35,27 @@ export const CompanyListContainer = ({
       );
     }
 
+    if (searchQuery) {
+      return (
+        <div className="borde rounded-lg bg-gray-50 shadow-sm py-16 px-8 flex flex-col items-center text-center gap-4">
+          <h2 className="text-xl font-bold text-gray-900">Company Not Found</h2>
+          <p className="text-gray-500 max-w-sm">
+            We don&apos;t have any reviews for &quot;{searchQuery}&quot; yet. Help other
+            students by adding this company!
+          </p>
+          <Button
+            className="mt-2 bg-amber-600 hover:bg-amber-700 text-white rounded-full px-10 py-5 text-base font-semibold"
+            onClick={() => navigate("/companies/add")}
+          >
+            Add Company
+          </Button>
+        </div>
+      );
+    }
+
     return (
       <div className="col-span-full text-center py-8 text-gray-500">
-        {searchQuery
-          ? "Tidak ada perusahaan yang sesuai dengan pencarian."
-          : "Tidak ada perusahaan tersedia."}
+        Tidak ada perusahaan tersedia.
       </div>
     );
   }

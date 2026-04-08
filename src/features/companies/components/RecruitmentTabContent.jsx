@@ -1,5 +1,7 @@
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { TwoColumnLayout } from "@/components/layout";
 import { RecruitmentProcessCard } from "./RecruitmentProcessCard";
 import { AverageDifficultyCard } from "./AverageDifficultyCard";
 import { RecruitmentStatisticsCard } from "./RecruitmentStatisticsCard";
@@ -48,61 +50,56 @@ export const RecruitmentTabContent = ({ companySlug, companyName }) => {
   const { summary, loading: summaryLoading } = useRecruitmentProcessSummary(companySlug);
 
   return (
-    <div className="grid grid-cols-12 gap-8">
-      {/* Left: list */}
-      <div className="col-span-8 max-lg:col-span-12 space-y-4">
-        <h2 className="text-xl font-bold text-gray-900">Alumni Recruitment Experience</h2>
+    <TwoColumnLayout
+      leftClassName="space-y-4"
+      rightClassName="space-y-4"
+      left={
+        <>
+          <h2 className="text-xl font-bold text-gray-900">Alumni Recruitment Experience</h2>
 
-        {listLoading && items.length === 0 && (
-          <div className="space-y-4">
-            {[1, 2].map((i) => <CardSkeleton key={i} />)}
-          </div>
-        )}
-
-        {!listLoading && listError && items.length === 0 && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-700 text-sm">{listError}</p>
-          </div>
-        )}
-
-        {!listLoading && !listError && items.length === 0 && (
-          <EmptyStateCard message="Belum ada informasi rekrutmen untuk perusahaan ini." />
-        )}
-
-        {items.length > 0 && (
-          <div className="space-y-4">
-            {items.map((item) => (
-              <RecruitmentProcessCard key={item.internshipDetailId} data={item} />
-            ))}
-          </div>
-        )}
-
-        {hasMore && (
-          <div className="flex justify-center pt-2">
-            <button
-              onClick={loadMore}
-              disabled={listLoading}
-              className="px-6 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {listLoading ? "Memuat..." : "Muat Lebih Banyak"}
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Right: sidebar */}
-      <div className="col-span-4 max-lg:col-span-12 space-y-4">
-        {summaryLoading && !summary && <SidebarSkeleton />}
-
-        {summary && (
-          <>
-            <AverageDifficultyCard difficulty={summary.difficulty} />
-            <RecruitmentStatisticsCard statistics={summary.statistics} />
-          </>
-        )}
-
-        <CompanyInternedCTACard companySlug={companySlug} companyName={companyName} />
-      </div>
-    </div>
+          {listLoading && items.length === 0 && (
+            <div className="space-y-4">
+              {[1, 2].map((i) => <CardSkeleton key={i} />)}
+            </div>
+          )}
+          {!listLoading && listError && items.length === 0 && (
+            <ErrorMessage message={listError} />
+          )}
+          {!listLoading && !listError && items.length === 0 && (
+            <EmptyStateCard message="Belum ada informasi rekrutmen untuk perusahaan ini." />
+          )}
+          {items.length > 0 && (
+            <div className="space-y-4">
+              {items.map((item) => (
+                <RecruitmentProcessCard key={item.internshipDetailId} data={item} />
+              ))}
+            </div>
+          )}
+          {hasMore && (
+            <div className="flex justify-center pt-2">
+              <button
+                onClick={loadMore}
+                disabled={listLoading}
+                className="px-6 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {listLoading ? "Memuat..." : "Muat Lebih Banyak"}
+              </button>
+            </div>
+          )}
+        </>
+      }
+      right={
+        <>
+          {summaryLoading && !summary && <SidebarSkeleton />}
+          {summary && (
+            <>
+              <AverageDifficultyCard difficulty={summary.difficulty} />
+              <RecruitmentStatisticsCard statistics={summary.statistics} />
+            </>
+          )}
+          <CompanyInternedCTACard companySlug={companySlug} companyName={companyName} />
+        </>
+      }
+    />
   );
 };

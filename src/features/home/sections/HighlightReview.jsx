@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { User, Star } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getRecentReviews } from '@/api/reviewApi';
+import { getInitials } from '@/utils/avatar';
 
 const RecentReviewCard = ({ testimony, createdBy, averageRating, companyName, jobTitle }) => {
-  const initials = createdBy ? createdBy.substring(0, 2).toUpperCase() : '';
+  const initials = getInitials(createdBy);
 
   return (
     <div className="h-full rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md lg:p-6">

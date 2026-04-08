@@ -11,6 +11,7 @@ import { StorageFilePage } from "@/features/storage/pages/StorageFilePage";
 import { CategoriesPage, SubCategoryCompaniesPage } from "@/features/categories";
 import { CompaniesPage } from "@/features/companies/pages/CompaniesPage";
 import { CompanyDetailPage } from "@/features/companies/pages/CompanyDetailPage";
+import { AddCompanyPage } from "@/features/companies/pages/AddCompanyPage";
 import { ReviewWritePage } from "@/features/reviews";
 
 export const appRoutes = [
@@ -22,6 +23,7 @@ export const appRoutes = [
   { path: "/categories", element: <CategoriesPage />, showNavbar: true },
   { path: "/subcategory/:subCategoryName/companies", element: <SubCategoryCompaniesPage />, showNavbar: true },
   { path: "/companies", element: <CompaniesPage />, showNavbar: true },
+  { path: "/companies/add", element: <AddCompanyPage />, showNavbar: true },
   { path: "/company/:companySlug", element: <CompanyDetailPage />, showNavbar: true },
   { path: "/review/:companySlug", element: <ReviewWritePage />, showNavbar: true },
   { path: "/test-minio", element: <MinioUploadTestPage />, showNavbar: true },
