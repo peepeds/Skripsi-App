@@ -51,3 +51,8 @@ export const getTopRatedCompanies = async () => {
   const response = await axiosInstance.get('/company/top-ratings');
   return response.data;
 };
+
+export const createCompanyRequest = async (payload) => {
+  const response = await axiosInstance.post('/company/requests', payload);
+  return response.data;
+};

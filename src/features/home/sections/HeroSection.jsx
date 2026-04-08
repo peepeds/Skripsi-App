@@ -1,11 +1,29 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { SearchBar } from "@/components/common/SearchBar";
+import { getTopRatedCompanies } from "@/api/companyApi";
+import { Skeleton } from "@/components/ui/skeleton";
+import internPics from "@/assets/intern.jpeg";
 
 export function HeroSection() {
+  const [popularCompanies, setPopularCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    getTopRatedCompanies()
+      .then(data => {
+        if (!cancelled && data.success) setPopularCompanies(data.result.slice(0, 3));
+      })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
   return (
     <section className="relative overflow-hidden border-b border-slate-100 bg-white py-6 md:py-8 lg:py-0">
       <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[52vw] lg:block">
         <img
-          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1800&ixlib=rb-4.0.3"
+          src={internPics}
           alt="Intern working on laptop"
           className="h-full w-full object-cover object-center"
         />
@@ -26,19 +44,27 @@ export function HeroSection() {
               <SearchBar />
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="font-inter text-sm font-semibold text-slate-500">Populer:</span>
-              <div className="flex flex-wrap gap-2">
-                {["Tokopedia", "Gojek", "Traveloka"].map((tag) => (
-                  <span
-                    key={tag}
-                    className="font-inter cursor-pointer rounded-full bg-slate-100 px-4 py-1.5 text-[13px] font-medium text-slate-600 transition-colors hover:bg-slate-200"
-                  >
-                    {tag}
-                  </span>
-                ))}
+            {(loading || popularCompanies.length > 0) && (
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="font-inter text-sm font-semibold text-slate-500">Populer:</span>
+                <div className="flex flex-wrap gap-2">
+                  {loading
+                    ? Array.from({ length: 3 }).map((_, i) => (
+                        <Skeleton key={i} className="h-7 w-20 rounded-full" />
+                      ))
+                    : popularCompanies.map(({ companyId, companyName, companySlug }) => (
+                        <Link
+                          key={companyId}
+                          to={`/company/${companySlug}`}
+                          className="font-inter rounded-full bg-slate-100 px-4 py-1.5 text-[13px] font-medium text-slate-600 transition-colors hover:bg-slate-200"
+                        >
+                          {companyName}
+                        </Link>
+                      ))
+                  }
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

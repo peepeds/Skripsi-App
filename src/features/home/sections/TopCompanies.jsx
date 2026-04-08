@@ -3,41 +3,36 @@ import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
 import { StarRating } from '@/components/ui/StarRating';
 import { getTopRatedCompanies } from '@/api/companyApi';
-import { useLogoValidation } from '@/features/companies/hooks/useLogoValidation';
+import { CompanyLogo } from '@/components/common/CompanyLogo';
 
 const TopCompanyCard = ({ companyName, companyAbbreviation, website, subcategoryName, rating, totalReviews, companySlug }) => {
-  const { logoUrl, logoValid } = useLogoValidation(website);
-  const initial = companyAbbreviation?.charAt(0) || companyName?.charAt(0) || '?';
   const reviewLabel = totalReviews === 1 ? 'review' : 'reviews';
 
   return (
-    <Link to={`/company/${companySlug}`} className="group block h-full w-[280px] shrink-0 snap-start sm:w-[300px] lg:w-[320px]">
-      <div className="flex h-[246px] flex-col rounded-2xl border border-slate-200 bg-white p-6 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 p-2.5">
-          {logoValid === true ? (
-            <img src={logoUrl} alt={companyName} className="max-w-full max-h-full object-contain" />
-          ) : logoValid === false ? (
-            <div className="h-full w-full bg-gray-50 flex items-center justify-center text-gray-500 font-bold text-xl rounded">
-              {initial}
-            </div>
-          ) : (
-            <Skeleton className="h-full w-full rounded" />
-          )}
-        </div>
-        <h3 className="font-plus-jakarta mb-2 text-[18px] font-semibold leading-tight tracking-[-0.01em] text-slate-900 sm:text-[19px]">
+    <Link to={`/company/${companySlug}`} className="group block h-full w-[250px] shrink-0 snap-start sm:w-[270px]">
+      <div className="flex h-full flex-col rounded-xl border border-slate-200 bg-white p-5 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
+        <CompanyLogo
+          website={website}
+          companyName={companyName}
+          companyAbbreviation={companyAbbreviation}
+          className="mb-3.5 flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 p-2"
+          fallbackClassName="bg-gray-50 text-gray-500 font-bold text-base rounded"
+          showSkeleton
+        />
+        <h3 className="font-plus-jakarta mb-2 text-[15px] font-semibold leading-tight text-slate-900">
           {companyName}
         </h3>
-        
-        <div className="mb-3 flex items-center gap-2">
-          <StarRating rating={rating} size="md" className="text-[#F97316]" />
-          <span className="font-inter text-[16px] font-semibold leading-none text-slate-900">
+
+        <div className="mb-2.5 flex items-center gap-1.5">
+          <StarRating rating={rating} size="sm" className="text-[#F97316]" />
+          <span className="font-inter text-sm font-semibold text-slate-900">
             {rating?.toFixed(1).replace('.', ',')}
           </span>
-          <span className="font-inter text-[14px] text-slate-400">({totalReviews} {reviewLabel})</span>
+          <span className="font-inter text-xs text-slate-400">({totalReviews})</span>
         </div>
 
         <div>
-          <span className="font-inter inline-block rounded-xl bg-slate-100 px-3.5 py-1.5 text-[14px] font-medium text-slate-600">
+          <span className="font-inter inline-block rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
             {subcategoryName}
           </span>
         </div>
@@ -57,27 +52,27 @@ export function TopCompanies() {
   }, []);
 
   return (
-    <section className="border-b border-slate-100 bg-slate-50 py-14 md:py-20">
+    <section className="border-b border-slate-100 bg-slate-50 py-10 md:py-14">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4 md:mb-10">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="font-plus-jakarta mb-2 text-[30px] font-bold tracking-[-0.01em] text-slate-900">Top Reviewed Companies</h2>
-            <p className="font-inter text-base text-slate-500 md:text-[18px]">Berdasarkan ulasan mahasiswa di seluruh Indonesia</p>
+            <h2 className="font-plus-jakarta mb-1 text-xl font-bold tracking-tight text-slate-900 md:text-2xl">Top Reviewed Companies</h2>
+            <p className="font-inter text-sm text-slate-500">Berdasarkan ulasan mahasiswa di seluruh Indonesia</p>
           </div>
-          <Link to="/companies" className="font-inter flex items-center gap-1 text-sm font-semibold text-[#F97316] transition hover:opacity-80 md:text-[18px]">
+          <Link to="/companies" className="font-inter flex items-center gap-1 text-sm font-semibold text-[#F97316] transition hover:opacity-80">
             View All <span aria-hidden="true">&rarr;</span>
           </Link>
         </div>
 
-        <div className="hide-scrollbar overflow-x-auto pb-3">
-          <div className="flex min-w-max snap-x snap-mandatory gap-4 md:gap-5">
+        <div className="hide-scrollbar overflow-x-auto pb-2">
+          <div className="flex min-w-max snap-x snap-mandatory gap-3">
           {loading
             ? Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="h-[246px] w-[280px] shrink-0 rounded-2xl border border-slate-200 bg-white p-6 sm:w-[300px] lg:w-[320px]">
-                  <Skeleton className="mb-5 h-16 w-16 rounded-xl" />
-                  <Skeleton className="mb-4 h-8 w-2/3" />
-                  <Skeleton className="mb-3 h-7 w-1/2" />
-                  <Skeleton className="h-8 w-24 rounded-xl" />
+                <div key={i} className="w-[250px] shrink-0 rounded-xl border border-slate-200 bg-white p-5 sm:w-[270px]">
+                  <Skeleton className="mb-3.5 h-12 w-12 rounded-xl" />
+                  <Skeleton className="mb-2 h-4 w-2/3" />
+                  <Skeleton className="mb-2.5 h-3 w-1/2" />
+                  <Skeleton className="h-6 w-20 rounded-lg" />
                 </div>
               ))
             : companies.map(c => <TopCompanyCard key={c.companyId} {...c} />)

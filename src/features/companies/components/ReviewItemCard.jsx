@@ -1,32 +1,6 @@
 import React from "react";
 import { StarRating } from "@/components/ui/StarRating";
-
-const AVATAR_COLORS = [
-  "bg-red-500",
-  "bg-orange-500",
-  "bg-amber-500",
-  "bg-green-500",
-  "bg-teal-500",
-  "bg-blue-500",
-  "bg-indigo-500",
-  "bg-purple-500",
-];
-
-const getAvatarColor = (name) => {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
-};
-
-const getInitials = (name) =>
-  name
-    .split(" ")
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase();
+import { getInitials, getAvatarColor } from "@/utils/avatar";
 
 const RATING_ROWS = [
   [

@@ -1,5 +1,7 @@
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { TwoColumnLayout } from "@/components/layout";
 import { ReviewItemCard } from "./ReviewItemCard";
 import { ReviewRatingsCard } from "./ReviewRatingsCard";
 import { CompanyInternedCTACard } from "./CompanyInternedCTACard";
@@ -29,37 +31,32 @@ export const ReviewsTabContent = ({ companySlug, companyName, summaryData }) => 
   const { reviews, loading, error } = useCompanyReviews(companySlug);
 
   return (
-    <div className="grid grid-cols-12 gap-8">
-      <div className="col-span-8 max-lg:col-span-12 space-y-4">
-        <h2 className="text-xl font-bold text-gray-900">All Reviews</h2>
+    <TwoColumnLayout
+      leftClassName="space-y-4"
+      left={
+        <>
+          <h2 className="text-xl font-bold text-gray-900">All Reviews</h2>
 
-        {loading && <ReviewListSkeleton />}
-
-        {!loading && error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-700 text-sm">{error}</p>
-          </div>
-        )}
-
-        {!loading && !error && reviews.length === 0 && (
-          <EmptyStateCard message="Belum ada ulasan untuk perusahaan ini." />
-        )}
-
-        {!loading && !error && reviews.length > 0 && (
-          <div className="space-y-4">
-            {reviews.map((review, idx) => (
-              <ReviewItemCard key={review.reviewId ?? idx} review={review} />
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="col-span-4 max-lg:col-span-12 space-y-6">
-        {summaryData?.ratings && (
-          <ReviewRatingsCard data={summaryData.ratings} />
-        )}
-        <CompanyInternedCTACard companySlug={companySlug} companyName={companyName} />
-      </div>
-    </div>
+          {loading && <ReviewListSkeleton />}
+          {!loading && error && <ErrorMessage message={error} />}
+          {!loading && !error && reviews.length === 0 && (
+            <EmptyStateCard message="Belum ada ulasan untuk perusahaan ini." />
+          )}
+          {!loading && !error && reviews.length > 0 && (
+            <div className="space-y-4">
+              {reviews.map((review, idx) => (
+                <ReviewItemCard key={review.reviewId ?? idx} review={review} />
+              ))}
+            </div>
+          )}
+        </>
+      }
+      right={
+        <>
+          {summaryData?.ratings && <ReviewRatingsCard data={summaryData.ratings} />}
+          <CompanyInternedCTACard companySlug={companySlug} companyName={companyName} />
+        </>
+      }
+    />
   );
 };

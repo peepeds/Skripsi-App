@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useLogoValidation } from "../hooks/useLogoValidation";
 import { StarRating } from "@/components/ui/StarRating";
+import { CompanyLogo } from "@/components/common/CompanyLogo";
 
 const RatingStars = ({ rating, totalReviews }) => {
   const reviewText = totalReviews === 1 ? 'review' : 'reviews';
@@ -29,13 +29,6 @@ export const CompanyCardHorizontal = ({
   rating,
   totalReviews,
 }) => {
-  const { logoUrl, logoValid } = useLogoValidation(website);
-
-  const initial =
-    companyAbbreviation?.charAt(0) ||
-    companyName?.charAt(0) ||
-    "?";
-
   return (
     <Link to={`/company/${companySlug}`} className="block">
       <div className="bg-white shadow-sm hover:shadow-md transition rounded-lg p-4 flex items-center gap-4">
@@ -47,20 +40,14 @@ export const CompanyCardHorizontal = ({
           onClick={(e) => e.stopPropagation()}
           className="flex-shrink-0 w-10 h-10"
         >
-          {logoValid ? (
-            <div className="w-10 h-10 bg-white rounded flex items-center justify-center">
-              <img
-                src={logoUrl}
-                alt={companyName}
-                loading="lazy"
-                className="w-8 h-8 object-contain"
-              />
-            </div>
-          ) : (
-            <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center text-gray-600 font-semibold">
-              {initial}
-            </div>
-          )}
+          <CompanyLogo
+            website={website}
+            companyName={companyName}
+            companyAbbreviation={companyAbbreviation}
+            className="w-10 h-10 bg-white rounded flex items-center justify-center"
+            imgClassName="w-8 h-8 object-contain"
+            fallbackClassName="bg-gray-100 text-gray-600 font-semibold rounded"
+          />
         </a>
 
         {/* Content */}

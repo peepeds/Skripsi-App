@@ -6,3 +6,8 @@ export const getCategories = async (type = 'jobs') => {
   });
   return response.data;
 };
+
+export const getTopCategories = async () => {
+  const response = await axiosInstance.get('/top-categories');
+  return response.data;
+};
