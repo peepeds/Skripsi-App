@@ -18,6 +18,7 @@ export function SearchBar() {
   const [searchResults, setSearchResults] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const isHeroSearch = isHomePage;
 
   // Debounced update URL for companies page
   const updateUrl = useCallback(
@@ -93,9 +94,12 @@ export function SearchBar() {
   };
 
   return (
-    <div id="searchbar-container" className="relative w-64">
-      <InputGroup>
+    <div id="searchbar-container" className="relative w-full font-inter">
+      <InputGroup
+        className={isHeroSearch ? "h-14 rounded-2xl border-slate-200 bg-white shadow-sm" : undefined}
+      >
         <InputGroupInput
+          className={isHeroSearch ? "text-[17px] text-slate-700 placeholder:text-slate-400" : undefined}
           placeholder="Search companies..."
           value={searchValue}
           onChange={(e) => handleSearch(e.target.value)}
@@ -110,13 +114,13 @@ export function SearchBar() {
             setTimeout(() => setIsDropdownOpen(false), 200);
           }}
         />
-        <InputGroupAddon>
+        <InputGroupAddon className={isHeroSearch ? "pr-4" : undefined}>
           <Search className="w-4 h-4 text-gray-500" />
         </InputGroupAddon>
       </InputGroup>
 
       {isHomePage && isDropdownOpen && (searchResults.length > 0 || isLoading) && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-64 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 z-50 mt-2 max-h-64 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-lg">
           {isLoading ? (
             <div className="px-4 py-2 text-gray-500">Searching...</div>
           ) : (

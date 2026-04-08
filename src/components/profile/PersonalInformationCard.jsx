@@ -1,105 +1,29 @@
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldLabel,
-  FieldError,
-} from "@/components/ui/field";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-// Validation schema: defines what data is required and how it should be formatted
-const profileSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().optional(),
-  phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
-});
+function InfoItem({ label, value }) {
+  return (
+    <div className="space-y-1.5 rounded-xl border border-slate-100 bg-slate-50/60 p-3.5 sm:p-4">
+      <p className="font-inter text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
+      <p className="font-plus-jakarta text-sm font-semibold text-slate-900 sm:text-base">{value || "-"}</p>
+    </div>
+  );
+}
 
 export function PersonalInformationCard({ user }) {
-  // Set up form with validation using react-hook-form and Zod
-  const form = useForm({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      phoneNumber: "",
-    },
-  });
-
   return (
-    <Card className="md:col-span-2">
-      <CardHeader>
+    <Card className="rounded-2xl border-slate-200 py-0 shadow-sm lg:col-span-2">
+      <CardHeader className="border-b border-slate-100 px-5 py-4 sm:px-6 sm:py-5">
         <div>
-          <h2 className="text-xl font-semibold">Personal Information</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Your basic contact details
-          </p>
+          <h2 className="font-plus-jakarta text-xl font-semibold text-slate-900">Personal Information</h2>
+          <p className="font-inter mt-1 text-sm text-slate-500">Your basic contact details</p>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* First Name Field */}
-          <Controller
-            name="firstName"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>First Name</FieldLabel>
-                <dd className="text-base font-bold">
-                  {user?.firstName || ""}
-                </dd>
-                {fieldState.error && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-
-          {/* Last Name Field */}
-          <Controller
-            name="lastName"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>Last Name</FieldLabel>
-                <dd className="text-base font-bold">
-                  {user?.lastName || ""}
-                </dd>
-                {fieldState.error && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-
-          {/* Phone Number Field */}
-          <Controller
-            name="phoneNumber"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>Phone Number</FieldLabel>
-                <dd className="text-base font-bold">
-                  {user?.phoneNumber || ""}
-                </dd>
-                {fieldState.error && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-
-          {/* Email Field (Read-only) */}
-          <Field>
-            <FieldLabel>Email Address</FieldLabel>
-            <dd className="text-base font-bold">
-              {user?.email || ""}
-            </dd>
-          </Field>
+      <CardContent className="px-5 py-5 sm:px-6 sm:py-6">
+        <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-4">
+          <InfoItem label="First Name" value={user?.firstName} />
+          <InfoItem label="Last Name" value={user?.lastName} />
+          <InfoItem label="Phone Number" value={user?.phoneNumber} />
+          <InfoItem label="Email Address" value={user?.email} />
         </div>
       </CardContent>
     </Card>
