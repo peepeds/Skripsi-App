@@ -11,9 +11,9 @@ const TopCompanyCard = ({ companyName, companyAbbreviation, website, subcategory
   const reviewLabel = totalReviews === 1 ? 'review' : 'reviews';
 
   return (
-    <Link to={`/company/${companySlug}`} className="group block h-full">
-      <div className="h-full rounded-2xl border border-slate-100 bg-white p-6 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
-        <div className="h-16 w-16 rounded-2xl bg-white border border-slate-100 flex items-center justify-center p-2 mb-5">
+    <Link to={`/company/${companySlug}`} className="group block h-full w-[280px] shrink-0 snap-start sm:w-[300px] lg:w-[320px]">
+      <div className="flex h-[246px] flex-col rounded-2xl border border-slate-200 bg-white p-6 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 p-2.5">
           {logoValid === true ? (
             <img src={logoUrl} alt={companyName} className="max-w-full max-h-full object-contain" />
           ) : logoValid === false ? (
@@ -24,16 +24,20 @@ const TopCompanyCard = ({ companyName, companyAbbreviation, website, subcategory
             <Skeleton className="h-full w-full rounded" />
           )}
         </div>
-        <h3 className="mb-2 text-lg font-bold text-slate-900">{companyName}</h3>
+        <h3 className="font-plus-jakarta mb-2 text-[18px] font-semibold leading-tight tracking-[-0.01em] text-slate-900 sm:text-[19px]">
+          {companyName}
+        </h3>
         
-        <div className="flex items-center gap-2 mb-5">
-          <StarRating rating={rating} size="sm" className="text-[#F97316]" />
-          <span className="text-sm font-bold text-slate-900">{rating?.toFixed(1).replace('.', ',')}</span>
-          <span className="text-sm text-slate-400">({totalReviews} {reviewLabel})</span>
+        <div className="mb-3 flex items-center gap-2">
+          <StarRating rating={rating} size="md" className="text-[#F97316]" />
+          <span className="font-inter text-[16px] font-semibold leading-none text-slate-900">
+            {rating?.toFixed(1).replace('.', ',')}
+          </span>
+          <span className="font-inter text-[14px] text-slate-400">({totalReviews} {reviewLabel})</span>
         </div>
 
         <div>
-          <span className="inline-block px-3 py-1 border-gray-100 rounded-md text-xs font-medium bg-slate-50 text-slate-600">
+          <span className="font-inter inline-block rounded-xl bg-slate-100 px-3.5 py-1.5 text-[14px] font-medium text-slate-600">
             {subcategoryName}
           </span>
         </div>
@@ -57,26 +61,28 @@ export function TopCompanies() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4 md:mb-10">
           <div>
-            <h2 className="mb-2 text-2xl font-bold text-slate-900 md:text-[2rem]">Top Reviewed Companies</h2>
-            <p className="text-sm text-slate-500 md:text-base">Berdasarkan ulasan mahasiswa di seluruh Indonesia</p>
+            <h2 className="font-plus-jakarta mb-2 text-[30px] font-bold tracking-[-0.01em] text-slate-900">Top Reviewed Companies</h2>
+            <p className="font-inter text-base text-slate-500 md:text-[18px]">Berdasarkan ulasan mahasiswa di seluruh Indonesia</p>
           </div>
-          <Link to="/companies" className="flex items-center gap-1 text-sm font-semibold text-[#F97316] transition hover:opacity-80 md:text-lg">
+          <Link to="/companies" className="font-inter flex items-center gap-1 text-sm font-semibold text-[#F97316] transition hover:opacity-80 md:text-[18px]">
             View All <span aria-hidden="true">&rarr;</span>
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-6">
+        <div className="hide-scrollbar overflow-x-auto pb-3">
+          <div className="flex min-w-max snap-x snap-mandatory gap-4 md:gap-5">
           {loading
             ? Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="rounded-2xl border border-slate-100 bg-white p-6">
-                  <Skeleton className="mb-5 h-16 w-16 rounded-2xl" />
-                  <Skeleton className="mb-2 h-6 w-2/3" />
-                  <Skeleton className="mb-5 h-5 w-1/2" />
-                  <Skeleton className="h-7 w-24 rounded-md" />
+                <div key={i} className="h-[246px] w-[280px] shrink-0 rounded-2xl border border-slate-200 bg-white p-6 sm:w-[300px] lg:w-[320px]">
+                  <Skeleton className="mb-5 h-16 w-16 rounded-xl" />
+                  <Skeleton className="mb-4 h-8 w-2/3" />
+                  <Skeleton className="mb-3 h-7 w-1/2" />
+                  <Skeleton className="h-8 w-24 rounded-xl" />
                 </div>
               ))
             : companies.map(c => <TopCompanyCard key={c.companyId} {...c} />)
           }
+          </div>
         </div>
       </div>
     </section>

@@ -54,10 +54,10 @@ export function TopJobCategories() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4 md:mb-10">
           <div>
-            <h2 className="mb-2 text-2xl font-bold text-slate-900 md:text-[2rem]">Top Job Categories</h2>
-            <p className="text-sm text-slate-500 md:text-base">Eksplorasi magang berdasarkan bidang studimu</p>
+            <h2 className="font-plus-jakarta mb-2 text-[30px] font-bold tracking-[-0.01em] text-slate-900">Top Job Categories</h2>
+            <p className="font-inter text-base text-slate-500 md:text-[18px]">Eksplorasi magang berdasarkan bidang studimu</p>
           </div>
-          <Link to="/categories" className="flex items-center gap-1 text-sm font-semibold text-[#F97316] transition hover:opacity-80 md:text-lg">
+          <Link to="/categories" className="font-inter flex items-center gap-1 text-sm font-semibold text-[#F97316] transition hover:opacity-80 md:text-[18px]">
             View All <span aria-hidden="true">&rarr;</span>
           </Link>
         </div>
@@ -81,8 +81,8 @@ export function TopJobCategories() {
                     {DEFAULT_ICONS[i] || <BriefcaseBusiness className="w-6 h-6 text-[#ea580c]" />}
                   </div>
                   <div>
-                    <h3 className="mb-0.5 text-lg font-bold text-slate-900">{cat.name}</h3>
-                    <p className="text-sm text-slate-500">{cat.reviews || '10+'}+ reviews</p>
+                    <h3 className="font-plus-jakarta mb-0.5 text-[20px] font-semibold text-slate-900">{cat.name}</h3>
+                    <p className="font-inter text-[16px] text-slate-500">{cat.reviews || '10+'}+ reviews</p>
                   </div>
                 </Link>
               ))

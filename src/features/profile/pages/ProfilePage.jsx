@@ -29,7 +29,6 @@ export function ProfilePage() {
     requestingUrl,
     uploading,
     compressing,
-    result,
     handleFileChange,
     handleUpload: uploadToMinio,
   } = useFileUpload();
@@ -92,7 +91,7 @@ export function ProfilePage() {
   // Show animated skeleton while fetching user data
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
         <div className="mb-8">
           <div className="flex items-center gap-6 mb-6">
             <SkeletonCircle size={80} className="shrink-0" />
@@ -104,12 +103,15 @@ export function ProfilePage() {
           <Separator />
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="md:col-span-2 space-y-4">
+        <div className="grid gap-5 lg:grid-cols-3">
+          <div className="space-y-4 lg:col-span-3">
             <SkeletonLine height="h-40" />
           </div>
           <SkeletonLine height="h-24" />
           <SkeletonLine height="h-24" />
+          <div className="lg:col-span-3">
+            <SkeletonLine height="h-28" />
+          </div>
         </div>
       </div>
     );
@@ -117,12 +119,12 @@ export function ProfilePage() {
 
   // Main profile page with three sections: header, personal info, academic info, campus location
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
       <ProfileHeader user={user} onSubmitCertificate={() => setIsModalOpen(true)} />
 
       {/* ===== PROFILE INFORMATION CARDS ===== */}
       <div>
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-5 lg:grid-cols-3">
           <PersonalInformationCard user={user} />
           <AcademicDetailsCard user={user} />
           <CampusLocationCard user={user} />
