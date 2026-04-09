@@ -14,7 +14,7 @@ export function CompanyCard({ companyName, companyAbbreviation, website, isPartn
         </a>
       )}
       {isPartner && <div className="text-green-500 text-xs mt-1">Partner</div>}
-      <div className="text-yellow-400 mt-2">★★★★★</div>
+      <div className="text-[#F97316] mt-2">★★★★★</div>
     </div>
   );
 }

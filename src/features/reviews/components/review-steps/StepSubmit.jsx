@@ -44,7 +44,7 @@ export const Step4Submit = ({ form, lookupData, categories, company }) => {
           {metaLine2 && <p className="text-slate-300 text-sm">{metaLine2}</p>}
         </div>
         <div className="bg-slate-700 rounded-xl px-4 py-2 flex items-center gap-2 flex-shrink-0">
-          <span className="text-orange-400 text-lg">★</span>
+          <span className="text-[#F97316] text-lg">★</span>
           <span className="text-white font-bold text-2xl leading-none">{avg}</span>
           <span className="text-slate-400 text-sm">/ 5</span>
         </div>
