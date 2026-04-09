@@ -18,7 +18,7 @@ export const CompanyListContainer = ({
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }).map((_, index) => (
           <CompanyCardSkeleton key={index} />
         ))}
@@ -37,14 +37,14 @@ export const CompanyListContainer = ({
 
     if (searchQuery) {
       return (
-        <div className="borde rounded-lg bg-gray-50 shadow-sm py-16 px-8 flex flex-col items-center text-center gap-4">
-          <h2 className="text-xl font-bold text-gray-900">Company Not Found</h2>
-          <p className="text-gray-500 max-w-sm">
+        <div className="flex flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-white px-8 py-16 text-center">
+          <h2 className="font-plus-jakarta text-2xl font-bold text-slate-900">Company Not Found</h2>
+          <p className="max-w-sm font-inter text-slate-500">
             We don&apos;t have any reviews for &quot;{searchQuery}&quot; yet. Help other
             students by adding this company!
           </p>
           <Button
-            className="mt-2 bg-amber-600 hover:bg-amber-700 text-white rounded-full px-10 py-5 text-base font-semibold"
+            className="mt-2 h-11 rounded-full bg-orange-500 px-8 font-inter text-sm font-semibold text-white hover:bg-orange-600"
             onClick={() => navigate("/companies/add")}
           >
             Add Company
@@ -61,7 +61,7 @@ export const CompanyListContainer = ({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {companies.map((company, index) => {
         const isLastElement = companies.length === index + 1;
 
@@ -80,7 +80,7 @@ export const CompanyListContainer = ({
         );
 
         return isLastElement ? (
-          <div ref={lastElementRef} key={company.companyId}>
+          <div ref={lastElementRef} key={company.companyId} className="h-full">
             {card}
           </div>
         ) : (
@@ -90,7 +90,7 @@ export const CompanyListContainer = ({
 
       {loading && companies.length > 0 && (
         <>
-          {Array.from({ length: 2 }).map((_, index) => (
+          {Array.from({ length: 3 }).map((_, index) => (
             <CompanyCardSkeleton key={`loading-${index}`} />
           ))}
         </>

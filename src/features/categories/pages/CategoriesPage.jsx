@@ -20,14 +20,14 @@ import {
 } from 'lucide-react';
 
 const COLORS = [
-  { bg: 'bg-yellow-100', text: 'text-yellow-900' },
-  { bg: 'bg-pink-100', text: 'text-pink-900' },
-  { bg: 'bg-green-100', text: 'text-green-900' },
-  { bg: 'bg-orange-100', text: 'text-orange-900' },
+  { bg: 'bg-amber-100', text: 'text-amber-900' },
+  { bg: 'bg-sky-100', text: 'text-sky-900' },
+  { bg: 'bg-emerald-100', text: 'text-emerald-900' },
   { bg: 'bg-blue-100', text: 'text-blue-900' },
-  { bg: 'bg-purple-100', text: 'text-purple-900' },
-  { bg: 'bg-teal-100', text: 'text-teal-900' },
-  { bg: 'bg-rose-100', text: 'text-rose-900' },
+  { bg: 'bg-indigo-100', text: 'text-indigo-900' },
+  { bg: 'bg-violet-100', text: 'text-violet-900' },
+  { bg: 'bg-cyan-100', text: 'text-cyan-900' },
+  { bg: 'bg-pink-100', text: 'text-pink-900' },
 ];
 
 const CATEGORY_ICONS = {
@@ -47,7 +47,7 @@ const CATEGORY_ICONS = {
 };
 
 const SkeletonCard = () => (
-  <div className="break-inside-avoid mb-6 rounded-xl overflow-hidden shadow-sm border border-gray-100">
+  <div className="break-inside-avoid mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
     <div className="bg-gray-100 flex flex-col items-center justify-center py-8 px-4 gap-3">
       <Skeleton className="h-8 w-8 rounded-full" />
       <Skeleton className="h-4 w-28" />
@@ -98,12 +98,15 @@ export const CategoriesPage = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="flex items-center justify-between mb-8">
-          <Skeleton className="h-9 w-72" />
-          <div className="flex gap-2">
-            <Skeleton className="h-9 w-20" />
-            <Skeleton className="h-9 w-24" />
+      <div className="mx-auto max-w-7xl px-6 py-10">
+        <div className="mb-8 flex items-center justify-between gap-4">
+          <div className="space-y-3">
+            <Skeleton className="h-10 w-80" />
+            <Skeleton className="h-5 w-96" />
+          </div>
+          <div className="flex gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-1">
+            <Skeleton className="h-10 w-20 rounded-xl" />
+            <Skeleton className="h-10 w-24 rounded-xl" />
           </div>
         </div>
         <div className="columns-1 md:columns-3 gap-6">
@@ -116,35 +119,40 @@ export const CategoriesPage = () => {
   }
 
   if (error) {
-    return <div className="container mx-auto p-6 text-red-500">Error: {error}</div>;
+    return <div className="mx-auto max-w-7xl px-6 py-10 text-red-500">Error: {error}</div>;
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="mx-auto max-w-7xl px-6 py-10">
       <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">
-            {type === 'jobs' ? 'Explore Jobs by category' : 'Explore Companies by category'}
-          </h1>
-          <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
+        <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-2">
+            <h1 className="font-plus-jakarta text-[30px] font-bold leading-[1.2] tracking-[-0.02em] text-slate-900 md:text-[36px] lg:text-[38px]">
+              {type === 'jobs' ? 'Explore Jobs by Category' : 'Explore Companies by Category'}
+            </h1>
+            <p className="max-w-[560px] font-inter text-[14px] leading-6 text-slate-600 md:text-[15px]">
+              Temukan kategori yang sesuai minatmu dan mulai pencarian magangmu.
+            </p>
+          </div>
+          <div className="inline-flex gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-1 md:mt-1">
             <Toggle
               pressed={type === 'jobs'}
               onPressedChange={(pressed) => pressed && setType('jobs')}
-              className="data-[state=on]:bg-white data-[state=on]:shadow-sm"
+              className="h-10 rounded-xl px-4 font-inter text-sm font-semibold text-slate-600 data-[state=on]:bg-white data-[state=on]:text-slate-900 data-[state=on]:shadow-sm"
             >
               Jobs
             </Toggle>
             <Toggle
               pressed={type === 'companies'}
               onPressedChange={(pressed) => pressed && setType('companies')}
-              className="data-[state=on]:bg-white data-[state=on]:shadow-sm"
+              className="h-10 rounded-xl px-4 font-inter text-sm font-semibold text-slate-600 data-[state=on]:bg-white data-[state=on]:text-slate-900 data-[state=on]:shadow-sm"
             >
               Companies
             </Toggle>
           </div>
         </div>
 
-        <div className="columns-1 md:columns-3 gap-6">
+        <div className="mt-2 columns-1 gap-6 md:columns-3">
           {categories.map((category, index) => {
             const { bg, text } = COLORS[index % COLORS.length];
             const Icon = CATEGORY_ICONS[category.categoryName] ?? Tag;
@@ -152,15 +160,15 @@ export const CategoriesPage = () => {
             return (
               <div
                 key={category.categoryId}
-                className="break-inside-avoid mb-6 rounded-xl overflow-hidden shadow-sm border border-gray-100"
+                className="break-inside-avoid mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
               >
-                <div className={`${bg} ${text} flex flex-col items-center justify-center py-8 px-4 gap-2`}>
-                  <Icon className="w-8 h-8" strokeWidth={1.5} />
-                  <span className="font-semibold text-center text-sm leading-snug">
+                <div className={`${bg} ${text} flex flex-col items-center justify-center gap-2 px-4 py-8`}>
+                  <Icon className="h-8 w-8" strokeWidth={1.5} />
+                  <span className="font-inter text-center text-base font-semibold leading-snug">
                     {category.categoryName}
                   </span>
                 </div>
-                <div className="bg-white divide-y divide-gray-100">
+                <div className="divide-y divide-slate-100 bg-white">
                   {category.subCategories.map((sub) => (
                     <div
                       key={sub.subCategoryId}
@@ -169,7 +177,7 @@ export const CategoriesPage = () => {
                           state: { subCategoryName: sub.subCategoryName, type },
                         })
                       }
-                      className="px-4 py-3 text-sm text-gray-700 cursor-pointer hover:bg-orange-50 hover:text-orange-700 transition-colors"
+                      className="cursor-pointer px-4 py-3 font-inter text-sm text-slate-700 transition-colors hover:bg-orange-50 hover:text-orange-700"
                     >
                       {sub.subCategoryName}
                     </div>

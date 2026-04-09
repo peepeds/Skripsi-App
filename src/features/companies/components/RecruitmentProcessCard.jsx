@@ -1,5 +1,5 @@
-import React from "react";
-import { Clock, MessageCircle, Lightbulb } from "lucide-react";
+import React, { useState } from "react";
+import { Clock, Lightbulb, MessageCircle, Share2, ThumbsUp } from "lucide-react";
 
 const AVATAR_COLORS = [
   "bg-red-500", "bg-orange-500", "bg-amber-500", "bg-green-500",
@@ -26,6 +26,8 @@ const DIFFICULTY_MAP = {
 };
 
 export const RecruitmentProcessCard = ({ data }) => {
+  const [copied, setCopied] = useState(false);
+
   const {
     jobTitle,
     durationMonths,
@@ -41,53 +43,61 @@ export const RecruitmentProcessCard = ({ data }) => {
 
   const displayName = createdByName ?? "Anonim";
   const difficulty = DIFFICULTY_MAP[interviewDifficulty];
+  const helpfulCount = data.helpfulCount ?? data.helpful ?? 0;
+
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    } catch {
+      setCopied(false);
+    }
+  };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-5">
-      {/* Header */}
+    <div className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
       <div className="flex items-center gap-3">
         <div
-          className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-white text-sm font-semibold ${getAvatarColor(displayName)}`}
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white ${getAvatarColor(displayName)}`}
         >
           {getInitials(displayName)}
         </div>
         <div>
-          <p className="font-semibold text-gray-900 text-sm">{displayName}</p>
-          <p className="text-sm text-gray-600">{jobTitle}</p>
+          <p className="font-plus-jakarta text-[26px] font-semibold text-slate-900 md:text-[22px]">{displayName}</p>
+          <p className="font-inter text-sm text-slate-600">{jobTitle}</p>
           {durationMonths && (
-            <p className="text-xs text-gray-400">Magang {durationMonths} bulan</p>
+            <p className="font-inter text-xs text-slate-400">Magang {durationMonths} bulan</p>
           )}
         </div>
       </div>
 
-      {/* Badge row */}
       <div className="flex flex-wrap gap-2">
         {admissionTrack && (
-          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-700 text-xs font-medium">
+          <span className="inline-flex items-center gap-1 rounded-xl border border-sky-200 bg-sky-100/70 px-3 py-1.5 font-inter text-sm font-semibold text-sky-700">
             🌐 {admissionTrack}
           </span>
         )}
         {difficulty && (
-          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full border text-xs font-medium ${difficulty.className}`}>
+          <span className={`inline-flex items-center gap-1 rounded-xl border px-3 py-1.5 font-inter text-sm font-semibold ${difficulty.className}`}>
             {difficulty.emoji} {difficulty.label}
           </span>
         )}
         {recruitmentDuration && (
-          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-gray-200 bg-gray-50 text-gray-600 text-xs font-medium">
+          <span className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-slate-100/80 px-3 py-1.5 font-inter text-sm font-semibold text-slate-600">
             <Clock size={12} /> {recruitmentDuration}
           </span>
         )}
       </div>
 
-      {/* Tahapan Seleksi */}
       {recruitmentSteps.length > 0 && (
-        <div>
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Tahapan Seleksi</p>
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <p className="mb-2 font-inter text-xs font-semibold uppercase tracking-wide text-slate-500">Tahapan Seleksi</p>
           <div className="flex flex-wrap gap-2">
             {recruitmentSteps.map((step, idx) => (
               <span
                 key={idx}
-                className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-gray-200 text-xs text-gray-700"
+                className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1 font-inter text-sm text-slate-700"
               >
                 <span className="text-orange-400">○</span> {step}
               </span>
@@ -96,33 +106,48 @@ export const RecruitmentProcessCard = ({ data }) => {
         </div>
       )}
 
-      {/* Pengalaman Seleksi */}
       {selectionProcess && (
         <div>
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Pengalaman Seleksi</p>
-          <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{selectionProcess}</p>
+          <p className="mb-2 font-inter text-xs font-semibold uppercase tracking-wide text-slate-500">Pengalaman Seleksi</p>
+          <p className="font-inter text-base leading-relaxed text-slate-700 whitespace-pre-line">{selectionProcess}</p>
         </div>
       )}
 
-      {/* Contoh Pertanyaan Wawancara */}
       {exampleQuestions && (
-        <div className="bg-gray-50 rounded-xl p-4">
-          <p className="flex items-center gap-2 text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <p className="mb-2 flex items-center gap-2 font-inter text-xs font-semibold uppercase tracking-wide text-slate-500">
             <MessageCircle size={13} /> Contoh Pertanyaan Wawancara
           </p>
-          <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{exampleQuestions}</p>
+          <p className="font-inter text-base leading-relaxed text-slate-700 whitespace-pre-line">{exampleQuestions}</p>
         </div>
       )}
 
-      {/* Tips Lolos Seleksi */}
       {tipsTricks && (
-        <div className="bg-amber-50 rounded-xl p-4">
-          <p className="flex items-center gap-2 text-xs font-semibold text-amber-700 uppercase tracking-wide mb-2">
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+          <p className="mb-2 flex items-center gap-2 font-inter text-xs font-semibold uppercase tracking-wide text-amber-700">
             <Lightbulb size={13} /> Tips Lolos Seleksi
           </p>
-          <p className="text-sm text-amber-800 leading-relaxed whitespace-pre-line">{tipsTricks}</p>
+          <p className="font-inter text-base leading-relaxed text-amber-800 whitespace-pre-line">{tipsTricks}</p>
         </div>
       )}
+
+      <div className="flex items-center justify-between border-t border-slate-200 pt-3">
+        <button
+          className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 font-inter text-sm font-semibold text-slate-600 hover:bg-slate-50"
+          type="button"
+        >
+          <ThumbsUp className="h-4 w-4" />
+          Helpful ({helpfulCount})
+        </button>
+        <button
+          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50"
+          onClick={handleShare}
+          type="button"
+          title={copied ? "Copied" : "Share"}
+        >
+          <Share2 className="h-4 w-4" />
+        </button>
+      </div>
     </div>
   );
 };

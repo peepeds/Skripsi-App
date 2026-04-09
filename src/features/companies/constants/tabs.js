@@ -3,10 +3,9 @@
  */
 
 export const COMPANY_COMPARE_TABS = [
-  { id: "semua", label: "Semua" },
-  { id: "teratas", label: "Teratas" },
-  { id: "populer", label: "Populer" },
-  { id: "terbaru", label: "Terbaru" },
+  { id: "all", label: "All" },
+  { id: "top", label: "Top" },
+  { id: "latest", label: "Latest" },
 ];
 
 export const COMPANY_DETAIL_TABS = [
