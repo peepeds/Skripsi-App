@@ -4,7 +4,7 @@ export function ReviewCard({ name, company, role, review }) {
       <p className="text-sm text-gray-500 mb-1">{name}</p>
       <h3 className="font-semibold text-lg">{company}</h3>
       <p className="text-gray-700">{role}</p>
-      <div className="text-yellow-400 mt-2 mb-3">★★★★★</div>
+      <div className="text-[#F97316] mt-2 mb-3">★★★★★</div>
       <p className="text-gray-600">{review}</p>
     </div>
   );

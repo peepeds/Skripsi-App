@@ -6,8 +6,6 @@ import { getTopRatedCompanies } from '@/api/companyApi';
 import { CompanyLogo } from '@/components/common/CompanyLogo';
 
 const TopCompanyCard = ({ companyName, companyAbbreviation, website, subcategoryName, rating, totalReviews, companySlug }) => {
-  const reviewLabel = totalReviews === 1 ? 'review' : 'reviews';
-
   return (
     <Link to={`/company/${companySlug}`} className="group block h-full w-[250px] shrink-0 snap-start sm:w-[270px]">
       <div className="flex h-full flex-col rounded-xl border border-slate-200 bg-white p-5 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">

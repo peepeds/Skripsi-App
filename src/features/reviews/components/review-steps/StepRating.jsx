@@ -68,7 +68,7 @@ export const Step2Rating = ({ form, lookupData, categories }) => {
           {[1, 2, 3, 4, 5].map((star) => (
             <span
               key={star}
-              className={`text-5xl leading-none pointer-events-none ${star <= Math.round(avg) ? "text-orange-400" : "text-gray-200"}`}
+              className={`text-5xl leading-none pointer-events-none ${star <= Math.round(avg) ? "text-[#F97316]" : "text-gray-200"}`}
             >★</span>
           ))}
         </div>
@@ -96,7 +96,7 @@ export const Step2Rating = ({ form, lookupData, categories }) => {
                     type="button"
                     onClick={() => handleRatingChange(cat.key, star)}
                     className={`text-2xl leading-none transition-transform hover:scale-110 ${
-                      star <= (ratings[cat.key] || 0) ? "text-orange-400" : "text-gray-200"
+                      star <= (ratings[cat.key] || 0) ? "text-[#F97316]" : "text-gray-200"
                     }`}
                     title={`${star} bintang`}
                   >★</button>
