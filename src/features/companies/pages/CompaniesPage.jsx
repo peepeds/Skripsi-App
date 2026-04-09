@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
-import { HeroSection } from "@/features/home/sections/HeroSection";
+import { SearchBar } from "@/components/common/SearchBar";
 import { CompanyListContainer } from "../components/CompanyListContainer";
-import { TabNavigation } from "../components/TabNavigation";
+import { CompanyFilterDropdown } from "../components/CompanyFilterDropdown";
 import { useCompanies } from "../hooks/useCompanies";
 import { useIntersectionObserver } from "../hooks/useIntersectionObserver";
 import { COMPANY_COMPARE_TABS } from "../constants/tabs";
@@ -11,7 +11,7 @@ import { isValidSearchQuery } from "@/helpers/validations";
 export const CompaniesPage = () => {
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get("search") || "";
-  const [activeTab, setActiveTab] = useState("semua");
+  const [activeTab, setActiveTab] = useState("all");
 
   const { companies, loading, hasMore, error, fetchCompanies } =
     useCompanies(searchQuery);
@@ -31,41 +31,50 @@ export const CompaniesPage = () => {
 
   // Reset active tab when search changes
   useEffect(() => {
-    setActiveTab("semua");
+    setActiveTab("all");
   }, [searchQuery]);
 
   return (
-    <div>
-      <HeroSection />
-
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Tab Navigation */}
-        <TabNavigation
-          tabs={COMPANY_COMPARE_TABS}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
-
-        {/* Content */}
-        <div className="mt-8">
-          {activeTab === "semua" && (
-            <CompanyListContainer
-              companies={companies}
-              loading={loading}
-              error={error}
-              hasMore={hasMore}
-              searchQuery={searchQuery}
-              lastElementRef={lastElementRef}
-            />
-          )}
-
-          {/* TODO: Implement filtering for teratas, populer, terbaru tabs */}
-          {activeTab !== "semua" && (
-            <div className="text-center py-8 text-gray-500">
-              Fitur filter sedang dalam pengembangan
-            </div>
-          )}
+    <div className="mx-auto max-w-7xl px-6 py-10">
+      <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_520px] md:items-start">
+        <div className="space-y-2">
+          <h1 className="font-plus-jakarta text-[30px] font-bold leading-[1.2] tracking-[-0.02em] text-slate-900 md:text-[36px] lg:text-[38px]">
+            Explore Internship Companies
+          </h1>
+          <p className="max-w-[560px] font-inter text-[14px] leading-6 text-slate-600 md:text-[15px]">
+            Temukan perusahaan yang sesuai minatmu, baca pengalaman mahasiswa lain, dan mulai pencarian magangmu.
+          </p>
         </div>
+
+        <div className="flex w-full flex-col gap-3 md:flex-row md:items-center md:justify-end md:pt-1">
+          <div className="w-full md:w-[420px]">
+            <SearchBar />
+          </div>
+          <CompanyFilterDropdown
+            options={COMPANY_COMPARE_TABS}
+            activeValue={activeTab}
+            onChange={setActiveTab}
+          />
+        </div>
+      </div>
+
+      <div className="mt-8">
+        {activeTab === "all" && (
+          <CompanyListContainer
+            companies={companies}
+            loading={loading}
+            error={error}
+            hasMore={hasMore}
+            searchQuery={searchQuery}
+            lastElementRef={lastElementRef}
+          />
+        )}
+
+        {activeTab !== "all" && (
+          <div className="rounded-2xl border border-slate-200 bg-white px-6 py-10 text-center font-inter text-sm text-slate-500">
+            Filter feature is currently in development.
+          </div>
+        )}
       </div>
     </div>
   );

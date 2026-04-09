@@ -5,13 +5,13 @@ import { Skeleton } from "@/components/ui/skeleton";
  * Skeleton/loading placeholder untuk CompanyCardHorizontal
  */
 export const CompanyCardSkeleton = () => (
-  <div className="bg-white shadow-sm rounded-lg p-4 flex items-center space-x-4">
-    <Skeleton className="w-10 h-10 rounded flex-shrink-0" />
-    <div className="flex-1">
-      <Skeleton className="h-5 w-3/4 mb-2" />
-      <Skeleton className="h-4 w-1/2 mb-2" />
-      <Skeleton className="h-4 w-2/3 mb-1" />
-      <Skeleton className="h-3 w-1/4" />
+  <div className="min-h-[186px] rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <Skeleton className="mb-3 h-11 w-11 rounded-xl" />
+    <Skeleton className="mb-2 h-4 w-4/5" />
+    <Skeleton className="mb-2 h-4 w-3/5" />
+    <Skeleton className="mb-1 h-4 w-1/2" />
+    <div className="mt-1">
+      <Skeleton className="h-6 w-24 rounded-full" />
     </div>
   </div>
 );

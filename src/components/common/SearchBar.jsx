@@ -19,6 +19,7 @@ export function SearchBar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const isHeroSearch = isHomePage;
+  const isCompaniesSearch = isCompaniesPage;
 
   // Debounced update URL for companies page
   const updateUrl = useCallback(
@@ -96,10 +97,22 @@ export function SearchBar() {
   return (
     <div id="searchbar-container" className="relative w-full font-inter">
       <InputGroup
-        className={isHeroSearch ? "h-14 rounded-2xl border-slate-200 bg-white shadow-sm" : undefined}
+        className={
+          isHeroSearch
+            ? "h-14 rounded-2xl border-slate-200 bg-white shadow-sm"
+            : isCompaniesSearch
+              ? "h-11 rounded-xl border-slate-200 bg-white"
+              : undefined
+        }
       >
         <InputGroupInput
-          className={isHeroSearch ? "text-[17px] text-slate-700 placeholder:text-slate-400" : undefined}
+          className={
+            isHeroSearch
+              ? "text-[17px] text-slate-700 placeholder:text-slate-400"
+              : isCompaniesSearch
+                ? "font-inter text-sm text-slate-700 placeholder:text-slate-400"
+                : undefined
+          }
           placeholder="Search companies..."
           value={searchValue}
           onChange={(e) => handleSearch(e.target.value)}
@@ -114,7 +127,7 @@ export function SearchBar() {
             setTimeout(() => setIsDropdownOpen(false), 200);
           }}
         />
-        <InputGroupAddon className={isHeroSearch ? "pr-4" : undefined}>
+        <InputGroupAddon className={isHeroSearch ? "pr-4" : isCompaniesSearch ? "pr-3" : undefined}>
           <Search className="w-4 h-4 text-gray-500" />
         </InputGroupAddon>
       </InputGroup>
