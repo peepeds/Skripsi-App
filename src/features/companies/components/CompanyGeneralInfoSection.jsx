@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { StarRating } from "@/components/ui/StarRating";
 import { CompanyLogo } from "@/components/common/CompanyLogo";
 import { BackButton } from "@/components/common/BackButton";
-import { Bookmark, BriefcaseBusiness, Share2 } from "lucide-react";
+import { CompanySelectModal } from "./CompanySelectModal";
+import { ArrowLeftRight, Bookmark, BriefcaseBusiness, Share2 } from "lucide-react";
 
 export const CompanyGeneralInfoSection = ({
   companySlug,
@@ -19,6 +20,7 @@ export const CompanyGeneralInfoSection = ({
 }) => {
   const navigate = useNavigate();
   const [copiedUrl, setCopiedUrl] = useState(false);
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
 
   const handleShareClick = async () => {
     const currentUrl = window.location.href;
@@ -32,7 +34,8 @@ export const CompanyGeneralInfoSection = ({
   };
 
   return (
-    <section className="relative overflow-hidden bg-linear-to-br from-slate-500 via-slate-600 to-slate-700 py-10 md:py-12">
+    <>
+      <section className="relative overflow-hidden bg-linear-to-br from-slate-500 via-slate-600 to-slate-700 py-10 md:py-12">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.2),transparent_45%)]" />
 
       <Container className="relative z-10">
@@ -51,6 +54,13 @@ export const CompanyGeneralInfoSection = ({
             <button className="inline-flex h-10 items-center gap-2 rounded-xl border border-white/70 bg-white px-4 font-inter text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
               <Bookmark className="h-4 w-4" />
               Save
+            </button>
+            <button
+              onClick={() => setIsCompareModalOpen(true)}
+              className="inline-flex h-10 items-center gap-2 rounded-xl border border-white/70 bg-white px-4 font-inter text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              <ArrowLeftRight className="h-4 w-4" />
+              Compare
             </button>
             <Button
               onClick={() => navigate(`/review/${companySlug}`)}
@@ -119,6 +129,13 @@ export const CompanyGeneralInfoSection = ({
           </div>
         </div>
       </Container>
-    </section>
+      </section>
+
+      <CompanySelectModal
+        open={isCompareModalOpen}
+        currentCompanySlug={companySlug}
+        onClose={() => setIsCompareModalOpen(false)}
+      />
+    </>
   );
 };

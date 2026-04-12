@@ -15,6 +15,7 @@
 
 export { CompaniesPage } from './pages/CompaniesPage';
 export { CompanyDetailPage } from './pages/CompanyDetailPage';
+export { CompareCompaniesPage } from './pages/CompareCompaniesPage';
 export { ReviewWritePage } from './pages/ReviewWritePage';
 
 export * from './components/index.js';
