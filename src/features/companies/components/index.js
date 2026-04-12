@@ -9,3 +9,5 @@ export { EmptyStateCard } from './EmptyStateCard';
 export { InformationDetailsCard } from './InformationDetailsCard';
 export { ReviewRatingsCard } from './ReviewRatingsCard';
 export { InformationTabContent } from './InformationTabContent';
+export { CompanySelectModal } from './CompanySelectModal';
+export { ComparisonDataGrid } from './ComparisonDataGrid';
