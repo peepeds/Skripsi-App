@@ -39,7 +39,7 @@ export const RecentReviewsCard = ({ reviews, loading, error }) => {
         <h2 className="font-plus-jakarta text-xl font-bold text-slate-900">
           Recent Review ({reviews.length})
         </h2>
-        <p className="font-inter text-sm text-slate-500">Riwayat review yang pernah kamu buat</p>
+        <p className="font-inter text-sm text-slate-500">Your review history</p>
       </CardHeader>
 
       <CardContent>
@@ -55,7 +55,7 @@ export const RecentReviewsCard = ({ reviews, loading, error }) => {
         )}
 
         {!loading && !error && reviews.length === 0 && (
-          <p className="font-inter text-sm text-slate-500">Belum ada review yang kamu kirim.</p>
+          <p className="font-inter text-sm text-slate-500">No reviews submitted yet.</p>
         )}
 
         {!loading && !error && reviews.length > 0 && (
@@ -97,7 +97,7 @@ export const RecentReviewsCard = ({ reviews, loading, error }) => {
                         to={reviewPath}
                         className="font-inter rounded-lg border border-orange-600 px-3 py-1.5 text-xs font-semibold text-orange-600 hover:bg-orange-50"
                       >
-                        Lihat Review
+                        View Review
                       </Link>
                     )}
                     {recruitmentPath && (
@@ -105,7 +105,7 @@ export const RecentReviewsCard = ({ reviews, loading, error }) => {
                         to={recruitmentPath}
                         className="font-inter rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
                       >
-                        Lihat Rekrutmen
+                        View Recruitment Process
                       </Link>
                     )}
                   </div>
