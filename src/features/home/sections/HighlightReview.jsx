@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
-import { handleApiResponse } from '@/helpers/apiUtils';
-import { getCompanyReviews, getRecentReviews } from '@/api/reviewApi';
+import { getRecentReviews } from '@/api/reviewApi';
 import { getCompanies } from '@/api/companyApi';
-import { ReviewItemCard } from '@/features/companies/components/ReviewItemCard';
+import { RecentReviewCard } from '@/features/reviews/components/RecentReviewCard';
 
 const normalizeText = (value) =>
   String(value || '')
@@ -47,46 +46,6 @@ const getReviewerName = (review) =>
 
 const getReviewWebsite = (review) =>
   review?.companyWebsite ?? review?.company?.website ?? review?.website;
-
-const collectReviewIds = (review) => {
-  const ids = [
-    review?.reviewId,
-    review?.internshipDetailId,
-    review?.internshipHeaderId,
-    review?.id,
-    review?.detailId,
-    review?.headerId,
-    review?.reviewID,
-    review?.review_id,
-    review?.internshipHeader?.internshipHeaderId,
-    review?.internshipHeader?.id,
-    review?.internshipDetail?.internshipDetailId,
-    review?.internshipDetail?.id,
-  ]
-    .filter((value) => value !== null && value !== undefined && String(value).trim().length > 0)
-    .map((value) => String(value));
-
-  return Array.from(new Set(ids));
-};
-
-const toReviewPayload = (item) => ({
-  ...item,
-  createdByName: item?.createdByName ?? item?.createdBy ?? item?.resolvedReviewerName,
-  internshipDetailId: item?.internshipDetailId ?? item?.reviewId ?? item?.resolvedReviewId,
-  internshipHeaderId:
-    item?.internshipHeaderId ??
-    item?.headerId ??
-    item?.internshipReviewId ??
-    item?.reviewID ??
-    item?.review_id ??
-    item?.internshipHeader?.internshipHeaderId ??
-    item?.internshipHeader?.id ??
-    item?.internshipDetail?.internshipHeaderId ??
-    item?.internshipDetail?.internshipHeader?.internshipHeaderId,
-  reviewId: item?.reviewId ?? item?.resolvedReviewId,
-  id: item?.id ?? item?.resolvedReviewId,
-  detailId: item?.detailId ?? item?.resolvedReviewId,
-});
 
 const getReviewCompanySlug = (review, companyByName, companyByHost) => {
   const directSlug =
@@ -155,62 +114,7 @@ export function HighlightReview() {
           resolvedReviewerSlug: slugify(getReviewerName(review)),
         }));
 
-        const detailMap = new Map();
-        const companySlugs = Array.from(
-          new Set(enriched.map((item) => item?.resolvedCompanySlug).filter(Boolean))
-        );
-
-        await Promise.all(
-          companySlugs.map(async (slug) => {
-            try {
-              const companyReviewsResponse = await getCompanyReviews(slug, { limit: 200 });
-              const parsedCompanyReviews = handleApiResponse(companyReviewsResponse);
-
-              if (!parsedCompanyReviews.success) return;
-
-              const companyItems = Array.isArray(parsedCompanyReviews.data?.items)
-                ? parsedCompanyReviews.data.items
-                : Array.isArray(parsedCompanyReviews.data)
-                ? parsedCompanyReviews.data
-                : [];
-
-              companyItems.forEach((reviewItem) => {
-                const ids = collectReviewIds(reviewItem);
-                if (!ids.length) return;
-                ids.forEach((id) => {
-                  detailMap.set(`${slug}::${id}`, reviewItem);
-                });
-              });
-            } catch {
-              // Keep homepage cards usable even if one detail fetch fails.
-            }
-          })
-        );
-
-        const hydrated = enriched.map((item) => {
-          const ids = collectReviewIds(item);
-          if (item?.resolvedReviewId) {
-            ids.push(String(item.resolvedReviewId));
-          }
-
-          const detailed = ids
-            .map((id) => detailMap.get(`${item?.resolvedCompanySlug}::${id}`))
-            .find(Boolean);
-
-          if (!detailed) {
-            return toReviewPayload(item);
-          }
-
-          return {
-            ...toReviewPayload(item),
-            ...detailed,
-            resolvedCompanySlug: item?.resolvedCompanySlug,
-            resolvedReviewId: item?.resolvedReviewId,
-            resolvedReviewerSlug: item?.resolvedReviewerSlug,
-          };
-        });
-
-        setReviews(hydrated);
+        setReviews(enriched);
       } finally {
         setLoading(false);
       }
@@ -241,10 +145,11 @@ export function HighlightReview() {
                   </div>
                 ))
               : reviews.map((review, i) => (
-                  <ReviewItemCard
+                  <RecentReviewCard
                     key={review.resolvedReviewId ?? review.reviewId ?? review.internshipDetailId ?? i}
-                    review={review}
-                    companySlug={review.resolvedCompanySlug}
+                    {...review}
+                    clickVariant="author"
+                    reviewerSlug={review.resolvedReviewerSlug}
                     className="w-[320px] shrink-0 snap-start sm:w-[340px]"
                   />
                 ))}
