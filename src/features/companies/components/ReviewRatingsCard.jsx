@@ -21,7 +21,7 @@ export const ReviewRatingsCard = ({ data }) => {
 
   return (
     <Card className="border-gray-200 shadow-sm">
-      <CardHeader className="border-b border-gray-200 pb-4">
+      <CardHeader>
         <CardTitle className="text-lg font-bold text-gray-900">Reviews Rating</CardTitle>
       </CardHeader>
       <CardContent className="space-y-5 pt-6">

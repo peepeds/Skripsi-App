@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SearchBar } from "@/components/common/SearchBar";
 import { CompanyListContainer } from "../components/CompanyListContainer";
@@ -9,12 +9,24 @@ import { COMPANY_COMPARE_TABS } from "../constants/tabs";
 import { isValidSearchQuery } from "@/helpers/validations";
 
 export const CompaniesPage = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const searchQuery = searchParams.get("search") || "";
-  const [activeTab, setActiveTab] = useState("all");
+  const activeTab = searchParams.get("sort") || "all";
+
+  const handleTabChange = (value) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (value === "all") {
+        next.delete("sort");
+      } else {
+        next.set("sort", value);
+      }
+      return next;
+    });
+  };
 
   const { companies, loading, hasMore, error, fetchCompanies } =
-    useCompanies(searchQuery);
+    useCompanies(searchQuery, activeTab);
 
   // Handle pagination trigger for infinite scroll
   const handleLoadMore = useCallback(() => {
@@ -28,11 +40,6 @@ export const CompaniesPage = () => {
     handleLoadMore,
     0.5
   );
-
-  // Reset active tab when search changes
-  useEffect(() => {
-    setActiveTab("all");
-  }, [searchQuery]);
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
@@ -53,28 +60,20 @@ export const CompaniesPage = () => {
           <CompanyFilterDropdown
             options={COMPANY_COMPARE_TABS}
             activeValue={activeTab}
-            onChange={setActiveTab}
+            onChange={handleTabChange}
           />
         </div>
       </div>
 
       <div className="mt-8">
-        {activeTab === "all" && (
-          <CompanyListContainer
-            companies={companies}
-            loading={loading}
-            error={error}
-            hasMore={hasMore}
-            searchQuery={searchQuery}
-            lastElementRef={lastElementRef}
-          />
-        )}
-
-        {activeTab !== "all" && (
-          <div className="rounded-2xl border border-slate-200 bg-white px-6 py-10 text-center font-inter text-sm text-slate-500">
-            Filter feature is currently in development.
-          </div>
-        )}
+        <CompanyListContainer
+          companies={companies}
+          loading={loading}
+          error={error}
+          hasMore={hasMore}
+          searchQuery={searchQuery}
+          lastElementRef={lastElementRef}
+        />
       </div>
     </div>
   );
