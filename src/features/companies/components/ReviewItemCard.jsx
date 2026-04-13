@@ -47,6 +47,56 @@ const InfoBadge = ({ children }) => (
   </span>
 );
 
+const slugify = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+
+const resolveCompanyName = (review) =>
+  review?.companyName ??
+  review?.company?.companyName ??
+  review?.company?.name ??
+  review?.internshipHeader?.company?.companyName ??
+  review?.internshipHeader?.companyName ??
+  review?.internshipDetail?.company?.companyName ??
+  review?.internshipDetail?.companyName ??
+  "Perusahaan";
+
+const resolveCompanySlug = (review, companySlug) =>
+  companySlug ??
+  review?.companySlug ??
+  review?.company?.companySlug ??
+  review?.company?.slug ??
+  review?.internshipHeader?.company?.companySlug ??
+  review?.internshipHeader?.company?.slug ??
+  review?.internshipDetail?.company?.companySlug ??
+  review?.internshipDetail?.company?.slug ??
+  slugify(resolveCompanyName(review));
+
+const resolveReviewDetailId = (review) =>
+  review?.internshipDetailId ??
+  review?.reviewId ??
+  review?.id ??
+  review?.detailId ??
+  review?.internshipDetail?.internshipDetailId ??
+  review?.internshipDetail?.id ??
+  review?.internshipHeader?.internshipDetailId ??
+  review?.internshipHeader?.id;
+
+const resolveInternshipHeaderId = (review) =>
+  review?.internshipHeaderId ??
+  review?.headerId ??
+  review?.internshipReviewId ??
+  review?.reviewID ??
+  review?.review_id ??
+  review?.internshipHeader?.internshipHeaderId ??
+  review?.internshipHeader?.id ??
+  review?.internshipDetail?.internshipHeaderId ??
+  review?.internshipDetail?.headerId;
+
 export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -74,6 +124,8 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
     "Anonim";
 
   const jobTitle = review?.jobTitle ?? review?.role ?? review?.position ?? "-";
+  const companyName = resolveCompanyName(review);
+  const resolvedCompanySlug = resolveCompanySlug(review, companySlug);
   const durationMonths = review?.durationMonths;
   const year = review?.year;
   const type = review?.type;
@@ -89,17 +141,8 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
     typeof review?.averageRating === "number"
       ? review.averageRating
       : computeOverallRating(ratings);
-  const reviewDetailId =
-    review?.internshipDetailId ??
-    review?.reviewId ??
-    review?.id ??
-    review?.detailId;
-  const internshipHeaderId =
-    review?.internshipHeaderId ??
-    review?.headerId ??
-    review?.internshipReviewId ??
-    review?.reviewID ??
-    review?.review_id;
+  const reviewDetailId = resolveReviewDetailId(review);
+  const internshipHeaderId = resolveInternshipHeaderId(review);
 
   useEffect(() => {
     setLiked(Boolean(review?.isLiked));
@@ -109,13 +152,13 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
   }, [review]);
 
   const handleShare = async () => {
-    if (!reviewDetailId || !companySlug) {
+    if (!reviewDetailId || !resolvedCompanySlug) {
       toast.error("Link review tidak dapat dibuat karena data belum lengkap");
       return;
     }
 
     try {
-      const reviewPath = `/company/${companySlug}/review/${reviewDetailId}`;
+      const reviewPath = `/company/${resolvedCompanySlug}/review/${reviewDetailId}`;
       const shareUrl = `${window.location.origin}${reviewPath}`;
 
       await navigator.clipboard.writeText(shareUrl);
@@ -135,12 +178,12 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
       toast.error("Review ID tidak ditemukan");
       return;
     }
-    if (!companySlug) {
+    if (!resolvedCompanySlug) {
       toast.error("Slug company tidak ditemukan");
       return;
     }
 
-    navigate(`/company/${companySlug}/review/${reviewDetailId}`);
+    navigate(`/company/${resolvedCompanySlug}/review/${reviewDetailId}`);
   };
 
   const handleLikeClick = async () => {
@@ -222,6 +265,7 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
           <div className="space-y-0.5">
             <p className="font-plus-jakarta text-[18px] font-semibold tracking-[-0.02em] text-slate-900 md:text-[19px]">{displayName}</p>
             <p className="font-inter text-sm text-slate-600">{jobTitle ?? "-"}</p>
+            <p className="font-inter text-sm text-slate-500">{companyName}</p>
             <div className="mt-0.5 flex flex-wrap gap-1.5">
               {durationMonths && (
                 <InfoBadge>{durationMonths} bulan</InfoBadge>
