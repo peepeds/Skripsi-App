@@ -55,7 +55,10 @@ export const RecruitmentTabContent = ({ companySlug, companyName }) => {
       rightClassName="space-y-4"
       left={
         <>
-          <h2 className="text-xl font-bold text-gray-900">Alumni Recruitment Experience</h2>
+          <div className="space-y-1">
+            <p className="font-inter text-xs font-semibold uppercase tracking-[0.12em] text-orange-600">Recruitment Process</p>
+            <h2 className="font-plus-jakarta text-2xl font-bold tracking-[-0.02em] text-slate-900">Alumni Recruitment Experience</h2>
+          </div>
 
           {listLoading && items.length === 0 && (
             <div className="space-y-4">
@@ -84,7 +87,7 @@ export const RecruitmentTabContent = ({ companySlug, companyName }) => {
               <button
                 onClick={loadMore}
                 disabled={listLoading}
-                className="px-6 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-full border border-slate-200 px-6 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {listLoading ? "Memuat..." : "Muat Lebih Banyak"}
               </button>

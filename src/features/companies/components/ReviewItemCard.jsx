@@ -47,7 +47,7 @@ const InfoBadge = ({ children }) => (
   </span>
 );
 
-export const ReviewItemCard = ({ review, companySlug }) => {
+export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuth();
@@ -58,23 +58,37 @@ export const ReviewItemCard = ({ review, companySlug }) => {
     review?.totalLikes ?? review?.likeCount ?? review?.helpfulCount ?? review?.helpful ?? 0
   );
 
-  const {
-    createdByName,
-    jobTitle,
-    durationMonths,
-    year,
-    type,
-    workScheme,
-    subCategories = [],
-    ratings = {},
-    testimony,
-    pros,
-    cons,
-    createdAt,
-  } = review;
+  const ratings = review?.ratings ?? {
+    workCulture: review?.workCulture ?? review?.ratingWorkCulture ?? 0,
+    learningOpp: review?.learningOpp ?? review?.ratingLearningOpp ?? 0,
+    mentorship: review?.mentorship ?? review?.ratingMentorship ?? 0,
+    benefit: review?.benefit ?? review?.ratingBenefit ?? 0,
+    workLifeBalance: review?.workLifeBalance ?? review?.ratingWorkLifeBalance ?? 0,
+  };
 
-  const displayName = createdByName ?? "Anonim";
-  const overallRating = computeOverallRating(ratings);
+  const displayName =
+    review?.createdByName ??
+    review?.createdBy ??
+    review?.authorName ??
+    review?.user?.name ??
+    "Anonim";
+
+  const jobTitle = review?.jobTitle ?? review?.role ?? review?.position ?? "-";
+  const durationMonths = review?.durationMonths;
+  const year = review?.year;
+  const type = review?.type;
+  const workScheme = review?.workScheme;
+  const subCategories =
+    review?.subCategories ?? review?.subCategoryNames ?? review?.subcategories ?? [];
+  const testimony = review?.testimony ?? review?.review ?? review?.content;
+  const pros = review?.pros;
+  const cons = review?.cons;
+  const createdAt = review?.createdAt;
+
+  const overallRating =
+    typeof review?.averageRating === "number"
+      ? review.averageRating
+      : computeOverallRating(ratings);
   const reviewDetailId =
     review?.internshipDetailId ??
     review?.reviewId ??
@@ -115,6 +129,8 @@ export const ReviewItemCard = ({ review, companySlug }) => {
   };
 
   const handleOpenDetail = () => {
+    if (!interactive) return;
+
     if (!reviewDetailId) {
       toast.error("Review ID tidak ditemukan");
       return;
@@ -182,28 +198,31 @@ export const ReviewItemCard = ({ review, companySlug }) => {
 
   return (
     <div
-      onClick={handleOpenDetail}
-      role="button"
-      tabIndex={0}
+      onClick={interactive ? handleOpenDetail : undefined}
+      role={interactive ? "button" : undefined}
+      tabIndex={interactive ? 0 : undefined}
       onKeyDown={(event) => {
+        if (!interactive) return;
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
           handleOpenDetail();
         }
       }}
-      className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md md:p-6"
+      className={`space-y-3 rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm transition md:p-4 ${
+        interactive ? "cursor-pointer hover:shadow-md" : ""
+      }`}
     >
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-2">
           <div
-            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white ${getAvatarColor(displayName)}`}
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white ${getAvatarColor(displayName)}`}
           >
             {getInitials(displayName)}
           </div>
-          <div>
-            <p className="font-plus-jakarta text-[26px] font-semibold text-slate-900 md:text-[22px]">{displayName}</p>
+          <div className="space-y-0.5">
+            <p className="font-plus-jakarta text-[18px] font-semibold tracking-[-0.02em] text-slate-900 md:text-[19px]">{displayName}</p>
             <p className="font-inter text-sm text-slate-600">{jobTitle ?? "-"}</p>
-            <div className="mt-1.5 flex flex-wrap gap-1.5">
+            <div className="mt-0.5 flex flex-wrap gap-1.5">
               {durationMonths && (
                 <InfoBadge>{durationMonths} bulan</InfoBadge>
               )}
@@ -215,11 +234,11 @@ export const ReviewItemCard = ({ review, companySlug }) => {
         </div>
 
         {overallRating != null && (
-          <div className="flex shrink-0 items-center gap-1 rounded-full bg-orange-50 px-3 py-1">
-            <svg className="h-4 w-4 fill-orange-500 text-orange-500" viewBox="0 0 20 20">
+          <div className="flex shrink-0 items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5">
+            <svg className="h-3 w-3 fill-orange-500 text-orange-500" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
-            <span className="font-inter text-2xl font-semibold text-orange-500 md:text-[24px]">
+            <span className="font-inter text-sm font-semibold text-orange-500 md:text-base">
               {overallRating.toFixed(1)}
             </span>
           </div>
@@ -231,7 +250,7 @@ export const ReviewItemCard = ({ review, companySlug }) => {
           {subCategories.map((cat) => (
             <span
               key={cat}
-              className="bg-orange-50 text-orange-700 text-xs px-2 py-0.5 rounded-full border border-orange-200"
+              className="rounded-full border border-orange-200 bg-orange-50 px-2 py-0.5 font-inter text-[11px] text-orange-700"
             >
               {cat}
             </span>
@@ -239,31 +258,31 @@ export const ReviewItemCard = ({ review, companySlug }) => {
         </div>
       )}
 
-      <div className="space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <div className="space-y-1 rounded-lg border border-slate-200 bg-slate-50 p-3">
         {RATING_ROWS.map((row, rowIdx) => (
-          <div key={rowIdx} className="grid grid-cols-2 gap-x-6 gap-y-2">
+          <div key={rowIdx} className="grid grid-cols-2 gap-x-4 gap-y-1">
             {row.map(({ key, label }) => (
               <div key={key} className="flex items-center justify-between gap-2">
-                <span className="font-inter text-sm text-slate-600 whitespace-nowrap">{label}</span>
-                <StarRating rating={ratings[key] ?? 0} size="sm" />
+                <span className="font-inter whitespace-nowrap text-[13px] text-slate-600">{label}</span>
+                <StarRating rating={ratings[key] ?? 0} size="xs" />
               </div>
             ))}
           </div>
         ))}
       </div>
 
-      {testimony && <p className="font-inter text-base leading-relaxed text-slate-800">"{testimony}"</p>}
+      {testimony && <p className="font-inter text-[14px] leading-relaxed text-slate-800">"{testimony}"</p>}
 
       {(pros || cons) && (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
           {pros && (
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3">
               <SectionLabel>Kelebihan (Pros)</SectionLabel>
               <p className="font-inter text-sm leading-relaxed text-emerald-800">{pros}</p>
             </div>
           )}
           {cons && (
-            <div className="rounded-xl border border-rose-200 bg-rose-50 p-4">
+            <div className="rounded-lg border border-rose-200 bg-rose-50 p-3">
               <SectionLabel>Kekurangan (Cons)</SectionLabel>
               <p className="font-inter text-sm leading-relaxed text-rose-800">{cons}</p>
             </div>
@@ -271,14 +290,14 @@ export const ReviewItemCard = ({ review, companySlug }) => {
         </div>
       )}
 
-      <div className="flex items-center justify-between border-t border-slate-200 pt-3">
+      <div className="flex items-center justify-between border-t border-slate-200 pt-2">
         <button
           onClick={(event) => {
             event.stopPropagation();
             handleLikeClick();
           }}
           disabled={likeLoading}
-          className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 font-inter text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${
+          className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1 font-inter text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${
             liked
               ? "border-orange-200 bg-orange-50 text-orange-600"
               : "border-slate-200 text-slate-600 hover:bg-slate-50"
@@ -294,7 +313,7 @@ export const ReviewItemCard = ({ review, companySlug }) => {
             <p className="font-inter text-xs text-slate-400">{formatDate(createdAt)}</p>
           )}
           <button
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50"
             onClick={(event) => {
               event.stopPropagation();
               handleShare();

@@ -14,7 +14,11 @@ const getReviewCompanySlug = (review) =>
   );
 
 const getReviewId = (review) =>
-  review?.internshipDetailId ?? review?.reviewId ?? review?.id ?? review?.detailId;
+  review?.internshipDetailId ??
+  review?.reviewId ??
+  review?.internshipHeaderId ??
+  review?.id ??
+  review?.detailId;
 
 const getReviewText = (review) =>
   pickFirstString(review?.testimony, review?.review, review?.content) || "-";
@@ -33,7 +37,7 @@ export const RecentReviewsCard = ({ reviews, loading, error, unavailable = false
     <Card className="rounded-2xl border border-slate-200">
       <CardHeader className="space-y-1 pb-3">
         <h2 className="font-plus-jakarta text-xl font-bold text-slate-900">
-          Recent Review ({reviews.length})
+          Recent Reviews ({reviews.length})
         </h2>
         <p className="font-inter text-sm text-slate-500">Riwayat review yang pernah kamu buat</p>
       </CardHeader>
@@ -52,7 +56,7 @@ export const RecentReviewsCard = ({ reviews, loading, error, unavailable = false
 
         {!loading && !error && unavailable && (
           <p className="font-inter text-sm text-slate-500">
-            Fitur Recent Reviews masih dalam tahap pengembangan. Nantikan update selanjutnya!
+            Endpoint recent review user belum tersedia di backend (`GET /user/my-reviews`).
           </p>
         )}
 
@@ -69,8 +73,17 @@ export const RecentReviewsCard = ({ reviews, loading, error, unavailable = false
                 ? `/company/${companySlug}/review/${reviewId}`
                 : null;
 
+              const ItemWrapper = detailPath ? Link : "div";
+              const itemProps = detailPath
+                ? {
+                    to: detailPath,
+                    className:
+                      "block rounded-xl border border-slate-200 p-4 transition hover:border-orange-200 hover:bg-orange-50/30",
+                  }
+                : { className: "rounded-xl border border-slate-200 p-4" };
+
               return (
-                <div key={reviewId ?? index} className="rounded-xl border border-slate-200 p-4">
+                <ItemWrapper key={reviewId ?? index} {...itemProps}>
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-plus-jakarta text-base font-semibold text-slate-900">
@@ -91,7 +104,7 @@ export const RecentReviewsCard = ({ reviews, loading, error, unavailable = false
                   <p className="font-inter mt-2 line-clamp-2 text-sm text-slate-700">
                     "{getReviewText(review)}"
                   </p>
-                </div>
+                </ItemWrapper>
               );
             })}
           </div>

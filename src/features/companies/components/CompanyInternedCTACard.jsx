@@ -12,18 +12,18 @@ export const CompanyInternedCTACard = ({ companySlug, companyName }) => {
   const navigate = useNavigate();
 
   return (
-    <Card className="border-0 bg-linear-to-br from-orange-50 to-orange-100 shadow-sm">
-      <CardContent className="pt-8 pb-6">
-        <div className="text-center space-y-4">
-          <h3 className="text-base font-bold text-gray-900">
+    <Card className="border border-orange-100 bg-linear-to-br from-orange-50 to-orange-100 shadow-sm">
+      <CardContent className="px-5 py-6 md:px-6 md:py-7">
+        <div className="space-y-4 text-center">
+          <h3 className="font-plus-jakarta text-lg font-bold text-gray-900">
             Interned Here Before?
           </h3>
-          <p className="text-sm text-gray-700 leading-relaxed">
+          <p className="font-inter text-sm leading-relaxed text-gray-700">
             Help other students by sharing your internship experience at {companyName}
           </p>
           <Button
             onClick={() => navigate(`/review/${companySlug}`)}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 rounded-lg transition-colors mt-4"
+            className="mt-1 w-full rounded-full bg-orange-500 py-3 text-sm font-semibold text-white transition-colors hover:bg-orange-600"
           >
             Write Review Here
           </Button>

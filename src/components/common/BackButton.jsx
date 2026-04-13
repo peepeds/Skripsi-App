@@ -3,7 +3,7 @@ import { ChevronLeft } from "lucide-react";
 
 const VARIANTS = {
   ghost: "p-2 hover:bg-white/20 rounded-lg transition text-white",
-  default: "flex items-center gap-2 text-orange-600 hover:text-orange-700 transition",
+  default: "flex items-center gap-2 text-slate-600 hover:text-slate-900 transition",
 };
 
 export function BackButton({ variant = "ghost", className = "", label }) {

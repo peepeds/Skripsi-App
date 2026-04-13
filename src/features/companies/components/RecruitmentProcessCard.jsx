@@ -58,12 +58,23 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
   const difficulty = DIFFICULTY_MAP[interviewDifficulty];
   const processDetailId =
     data?.internshipDetailId ??
+    data?.reviewId ??
+    data?.reviewID ??
+    data?.review_id ??
     data?.id ??
-    data?.detailId;
+    data?.detailId ??
+    data?.internshipDetail?.internshipDetailId ??
+    data?.internshipDetail?.id;
   const internshipHeaderId =
     data?.internshipHeaderId ??
     data?.headerId ??
-    data?.internshipReviewId;
+    data?.internshipReviewId ??
+    data?.reviewID ??
+    data?.review_id ??
+    data?.internshipHeader?.internshipHeaderId ??
+    data?.internshipHeader?.id ??
+    data?.internshipDetail?.internshipHeaderId ??
+    data?.internshipDetail?.internshipHeader?.internshipHeaderId;
 
   useEffect(() => {
     setLiked(Boolean(data?.isLiked));
@@ -170,16 +181,16 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
           handleOpenDetail();
         }
       }}
-      className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md md:p-6"
+      className="space-y-3.5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md md:p-5"
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         <div
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white ${getAvatarColor(displayName)}`}
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white ${getAvatarColor(displayName)}`}
         >
           {getInitials(displayName)}
         </div>
         <div>
-          <p className="font-plus-jakarta text-[26px] font-semibold text-slate-900 md:text-[22px]">{displayName}</p>
+          <p className="font-plus-jakarta text-[19px] font-semibold text-slate-900 md:text-[20px]">{displayName}</p>
           <p className="font-inter text-sm text-slate-600">{jobTitle}</p>
           {durationMonths && (
             <p className="font-inter text-xs text-slate-400">Magang {durationMonths} bulan</p>
@@ -187,32 +198,32 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         {admissionTrack && (
-          <span className="inline-flex items-center gap-1 rounded-xl border border-sky-200 bg-sky-100/70 px-3 py-1.5 font-inter text-sm font-semibold text-sky-700">
+            <span className="inline-flex items-center gap-1 rounded-lg border border-sky-200 bg-sky-100/70 px-2.5 py-1 font-inter text-sm font-semibold text-sky-700">
             🌐 {admissionTrack}
           </span>
         )}
         {difficulty && (
-          <span className={`inline-flex items-center gap-1 rounded-xl border px-3 py-1.5 font-inter text-sm font-semibold ${difficulty.className}`}>
+            <span className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 font-inter text-sm font-semibold ${difficulty.className}`}>
             {difficulty.emoji} {difficulty.label}
           </span>
         )}
         {recruitmentDuration && (
-          <span className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-slate-100/80 px-3 py-1.5 font-inter text-sm font-semibold text-slate-600">
+            <span className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-100/80 px-2.5 py-1 font-inter text-sm font-semibold text-slate-600">
             <Clock size={12} /> {recruitmentDuration}
           </span>
         )}
       </div>
 
       {recruitmentSteps.length > 0 && (
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3.5">
           <p className="mb-2 font-inter text-xs font-semibold uppercase tracking-wide text-slate-500">Tahapan Seleksi</p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {recruitmentSteps.map((step, idx) => (
               <span
                 key={idx}
-                className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1 font-inter text-sm text-slate-700"
+                className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 font-inter text-sm text-slate-700"
               >
                 <span className="text-orange-400">○</span> {step}
               </span>
@@ -223,37 +234,37 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
 
       {selectionProcess && (
         <div>
-          <p className="mb-2 font-inter text-xs font-semibold uppercase tracking-wide text-slate-500">Pengalaman Seleksi</p>
-          <p className="font-inter text-base leading-relaxed text-slate-700 whitespace-pre-line">{selectionProcess}</p>
+            <p className="mb-2 font-inter text-xs font-semibold uppercase tracking-wide text-slate-500">Pengalaman Seleksi</p>
+          <p className="font-inter text-[15px] leading-relaxed text-slate-700 whitespace-pre-line">{selectionProcess}</p>
         </div>
       )}
 
       {exampleQuestions && (
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3.5">
           <p className="mb-2 flex items-center gap-2 font-inter text-xs font-semibold uppercase tracking-wide text-slate-500">
             <MessageCircle size={13} /> Contoh Pertanyaan Wawancara
           </p>
-          <p className="font-inter text-base leading-relaxed text-slate-700 whitespace-pre-line">{exampleQuestions}</p>
+          <p className="font-inter text-[15px] leading-relaxed text-slate-700 whitespace-pre-line">{exampleQuestions}</p>
         </div>
       )}
 
       {tipsTricks && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3.5">
           <p className="mb-2 flex items-center gap-2 font-inter text-xs font-semibold uppercase tracking-wide text-amber-700">
             <Lightbulb size={13} /> Tips Lolos Seleksi
           </p>
-          <p className="font-inter text-base leading-relaxed text-amber-800 whitespace-pre-line">{tipsTricks}</p>
+          <p className="font-inter text-[15px] leading-relaxed text-amber-800 whitespace-pre-line">{tipsTricks}</p>
         </div>
       )}
 
-      <div className="flex items-center justify-between border-t border-slate-200 pt-3">
+      <div className="flex items-center justify-between border-t border-slate-200 pt-2.5">
         <button
           onClick={(event) => {
             event.stopPropagation();
             handleLikeClick();
           }}
           disabled={likeLoading}
-          className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 font-inter text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${
+          className={`inline-flex items-center gap-2 rounded-lg border px-3.5 py-1.5 font-inter text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${
             liked
               ? "border-orange-200 bg-orange-50 text-orange-600"
               : "border-slate-200 text-slate-600 hover:bg-slate-50"
@@ -265,7 +276,7 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
         </button>
         <div className="flex items-center gap-2">
           <button
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50"
             onClick={(event) => {
               event.stopPropagation();
               handleShare();
