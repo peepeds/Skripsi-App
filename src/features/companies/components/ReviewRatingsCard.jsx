@@ -20,9 +20,9 @@ export const ReviewRatingsCard = ({ data }) => {
   ];
 
   return (
-    <Card className="border-slate-200 shadow-sm">
-      <CardHeader className="border-b border-slate-200 pb-4">
-        <CardTitle className="font-plus-jakarta text-lg font-bold text-slate-900">Reviews Rating</CardTitle>
+    <Card className="border-gray-200 shadow-sm">
+      <CardHeader>
+        <CardTitle className="font-plus-jakarta text-lg font-bold text-gray-900">Reviews Rating</CardTitle>
       </CardHeader>
       <CardContent className="space-y-5 pt-6">
         {ratingFields.map(({ key, label }) => {

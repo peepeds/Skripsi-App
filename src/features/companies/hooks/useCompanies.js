@@ -11,7 +11,7 @@ import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
  * @param {string} searchQuery - Query string untuk search
  * @returns {Object} - { companies, loading, hasMore, error, fetchCompanies }
  */
-export const useCompanies = (searchQuery) => {
+export const useCompanies = (searchQuery, sort = "all") => {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -33,7 +33,7 @@ export const useCompanies = (searchQuery) => {
     try {
       const response = isValidSearchQuery(searchQuery)
         ? await searchCompanies(searchQuery)
-        : await getCompanies(currentCursor, 15);
+        : await getCompanies(currentCursor, 15, sort);
 
       // Use standardized response validation
       const { success, message, data } = handleApiResponse(response);
@@ -74,7 +74,7 @@ export const useCompanies = (searchQuery) => {
     } finally {
       setLoading(false);
     }
-  }, [searchQuery]);
+  }, [searchQuery, sort]);
 
   const resetCompanies = useCallback(() => {
     setCompanies([]);
@@ -84,11 +84,11 @@ export const useCompanies = (searchQuery) => {
     setError(null);
   }, []);
 
-  // Reset dan refetch saat search query berubah
+  // Reset dan refetch saat search query atau sort berubah
   useEffect(() => {
     resetCompanies();
     fetchCompanies();
-  }, [searchQuery]); // Only depend on searchQuery to avoid infinite loops
+  }, [searchQuery, sort]); // Only depend on searchQuery and sort to avoid infinite loops
 
   return {
     companies,
