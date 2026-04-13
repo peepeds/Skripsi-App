@@ -14,11 +14,7 @@ const getReviewCompanySlug = (review) =>
   );
 
 const getReviewId = (review) =>
-  review?.internshipDetailId ??
-  review?.reviewId ??
-  review?.internshipHeaderId ??
-  review?.id ??
-  review?.detailId;
+  review?.internshipDetailId ?? review?.reviewId ?? review?.id ?? review?.detailId;
 
 const getReviewText = (review) =>
   pickFirstString(review?.testimony, review?.review, review?.content) || "-";
@@ -32,12 +28,12 @@ const getCompanyName = (review) =>
 
 const getJobTitle = (review) => pickFirstString(review?.jobTitle, review?.role) || "-";
 
-export const RecentReviewsCard = ({ reviews, loading, error }) => {
+export const RecentReviewsCard = ({ reviews, loading, error, unavailable = false }) => {
   return (
     <Card className="rounded-2xl border border-slate-200">
       <CardHeader className="space-y-1 pb-3">
         <h2 className="font-plus-jakarta text-xl font-bold text-slate-900">
-          Recent Review ({reviews.length})
+          Review ({reviews.length})
         </h2>
         <p className="font-inter text-sm text-slate-500">Your review history</p>
       </CardHeader>
@@ -54,11 +50,17 @@ export const RecentReviewsCard = ({ reviews, loading, error }) => {
           <p className="font-inter text-sm text-red-600">{error}</p>
         )}
 
-        {!loading && !error && reviews.length === 0 && (
+        {!loading && !error && unavailable && (
+          <p className="font-inter text-sm text-slate-500">
+            Recent Reviews feature is still in development. Stay tuned for updates!
+          </p>
+        )}
+
+        {!loading && !error && !unavailable && reviews.length === 0 && (
           <p className="font-inter text-sm text-slate-500">No reviews submitted yet.</p>
         )}
 
-        {!loading && !error && reviews.length > 0 && (
+        {!loading && !error && !unavailable && reviews.length > 0 && (
           <div className="space-y-3">
             {reviews.map((review, index) => {
               const reviewId = getReviewId(review);
@@ -72,12 +74,8 @@ export const RecentReviewsCard = ({ reviews, loading, error }) => {
                 ? `/${review.recruitmentUrl}`
                 : null;
 
-              const itemProps = {
-                className: "rounded-xl border border-slate-200 p-4",
-              };
-
               return (
-                <div key={reviewId ?? index} {...itemProps}>
+                <div key={reviewId ?? index} className="rounded-xl border border-slate-200 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-plus-jakarta text-base font-semibold text-slate-900">
