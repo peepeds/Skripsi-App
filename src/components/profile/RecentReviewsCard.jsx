@@ -32,7 +32,7 @@ const getCompanyName = (review) =>
 
 const getJobTitle = (review) => pickFirstString(review?.jobTitle, review?.role) || "-";
 
-export const RecentReviewsCard = ({ reviews, loading, error, unavailable = false }) => {
+export const RecentReviewsCard = ({ reviews, loading, error }) => {
   return (
     <Card className="rounded-2xl border border-slate-200">
       <CardHeader className="space-y-1 pb-3">
@@ -54,17 +54,11 @@ export const RecentReviewsCard = ({ reviews, loading, error, unavailable = false
           <p className="font-inter text-sm text-red-600">{error}</p>
         )}
 
-        {!loading && !error && unavailable && (
-          <p className="font-inter text-sm text-slate-500">
-            Endpoint recent review user belum tersedia di backend (`GET /user/my-reviews`).
-          </p>
-        )}
-
-        {!loading && !error && !unavailable && reviews.length === 0 && (
+        {!loading && !error && reviews.length === 0 && (
           <p className="font-inter text-sm text-slate-500">Belum ada review yang kamu kirim.</p>
         )}
 
-        {!loading && !error && !unavailable && reviews.length > 0 && (
+        {!loading && !error && reviews.length > 0 && (
           <div className="space-y-3">
             {reviews.map((review, index) => {
               const reviewId = getReviewId(review);
