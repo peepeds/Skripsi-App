@@ -20,10 +20,13 @@ export const rejectCompanyRequest = async (requestId, reviewNote = "") => {
   return response.data;
 };
 
-export const getCompanies = async (cursor = null, limit = 15) => {
+export const getCompanies = async (cursor = null, limit = 15, sort = "all") => {
   const params = { limit };
   if (cursor !== null) {
     params.cursor = cursor;
+  }
+  if (sort && sort !== "all") {
+    params.sort = sort;
   }
   const response = await axiosInstance.get("/company", { params });
   return response.data;
