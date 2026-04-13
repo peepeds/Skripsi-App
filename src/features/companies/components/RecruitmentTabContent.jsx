@@ -71,7 +71,11 @@ export const RecruitmentTabContent = ({ companySlug, companyName }) => {
           {items.length > 0 && (
             <div className="space-y-4">
               {items.map((item) => (
-                <RecruitmentProcessCard key={item.internshipDetailId} data={item} />
+                <RecruitmentProcessCard
+                  key={item.internshipDetailId ?? item.id}
+                  data={item}
+                  companySlug={companySlug}
+                />
               ))}
             </div>
           )}

@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useCompanyDetail } from "../hooks/useCompanyDetail";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Container } from "@/components/layout/Container";
@@ -74,11 +74,11 @@ export const CompanyDetailPage = () => {
     <>
       {/* Section 1: General Information (Full-width Hero Style) */}
       <CompanyGeneralInfoSection
-        companyId={company.companyId}
         companySlug={companySlug}
         companyName={company.companyName}
         companyAbbreviation={company.companyAbbreviation}
         website={company.website}
+        initialIsSaved={company.isSaved}
         isPartner={company.isPartner}
         subcategoryName={company.subcategoryName}
         rating={company.rating}

@@ -45,7 +45,11 @@ export const ReviewsTabContent = ({ companySlug, companyName, summaryData }) => 
           {!loading && !error && reviews.length > 0 && (
             <div className="space-y-4">
               {reviews.map((review, idx) => (
-                <ReviewItemCard key={review.reviewId ?? idx} review={review} />
+                <ReviewItemCard
+                  key={review.reviewId ?? review.id ?? idx}
+                  review={review}
+                  companySlug={companySlug}
+                />
               ))}
             </div>
           )}

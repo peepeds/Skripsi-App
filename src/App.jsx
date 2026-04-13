@@ -4,7 +4,8 @@ import { useNavigate, BrowserRouter as Router, useLocation, matchRoutes } from "
 import { Navbar } from "@/components/common";
 import { Toaster } from "sonner";
 import { setNavigator } from '@/utils/history'; // Sesuaikan path jika perlu
-import { AppRoutes, appRoutes } from "@/routes/AppRoutes";
+import { AppRoutes } from "@/routes/AppRoutes";
+import { appRoutes } from "@/routes/routesConfig";
 import { SkeletonProvider } from "@/context/skeletonContext";
 import { Footer } from "@/components/layout/Footer";
 

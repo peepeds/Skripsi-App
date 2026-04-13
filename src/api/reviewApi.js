@@ -31,6 +31,18 @@ export const getCompanyRecruitmentProcess = async (companySlug, params = {}) => 
   return response.data;
 };
 
+export const likeReview = async (internshipHeaderId, isLike = true) => {
+  const response = await axiosInstance.post("/review/like", {
+    internshipHeaderId,
+    isLike,
+  });
+  return response.data;
+};
+
+export const unlikeReview = async (internshipHeaderId) => {
+  return likeReview(internshipHeaderId, false);
+};
+
 export const getRecruitmentProcessSummary = async (companySlug) => {
   const response = await axiosInstance.get(`/review/${companySlug}/process/summary`);
   return response.data;

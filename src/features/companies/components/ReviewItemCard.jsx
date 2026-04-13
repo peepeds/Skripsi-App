@@ -1,6 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { StarRating } from "@/components/ui/StarRating";
 import { getInitials, getAvatarColor } from "@/utils/avatar";
+import { useAuth } from "@/hooks/useAuth";
+import { likeReview, unlikeReview } from "@/api/reviewApi";
+import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
 import { Share2, ThumbsUp } from "lucide-react";
 
 const RATING_ROWS = [
@@ -42,8 +47,16 @@ const InfoBadge = ({ children }) => (
   </span>
 );
 
-export const ReviewItemCard = ({ review }) => {
+export const ReviewItemCard = ({ review, companySlug }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
   const [copied, setCopied] = useState(false);
+  const [liked, setLiked] = useState(Boolean(review?.isLiked));
+  const [likeLoading, setLikeLoading] = useState(false);
+  const [likeCount, setLikeCount] = useState(
+    review?.totalLikes ?? review?.likeCount ?? review?.helpfulCount ?? review?.helpful ?? 0
+  );
 
   const {
     createdByName,
@@ -62,20 +75,124 @@ export const ReviewItemCard = ({ review }) => {
 
   const displayName = createdByName ?? "Anonim";
   const overallRating = computeOverallRating(ratings);
-  const helpfulCount = review.helpfulCount ?? review.helpful ?? 0;
+  const reviewDetailId =
+    review?.internshipDetailId ??
+    review?.reviewId ??
+    review?.id ??
+    review?.detailId;
+  const internshipHeaderId =
+    review?.internshipHeaderId ??
+    review?.headerId ??
+    review?.internshipReviewId ??
+    review?.reviewID ??
+    review?.review_id;
+
+  useEffect(() => {
+    setLiked(Boolean(review?.isLiked));
+    setLikeCount(
+      review?.totalLikes ?? review?.likeCount ?? review?.helpfulCount ?? review?.helpful ?? 0
+    );
+  }, [review]);
 
   const handleShare = async () => {
+    if (!reviewDetailId || !companySlug) {
+      toast.error("Link review tidak dapat dibuat karena data belum lengkap");
+      return;
+    }
+
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      const reviewPath = `/company/${companySlug}/review/${reviewDetailId}`;
+      const shareUrl = `${window.location.origin}${reviewPath}`;
+
+      await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
+      toast.success("Link review berhasil disalin");
     } catch {
       setCopied(false);
+      toast.error("Gagal menyalin link review");
+    }
+  };
+
+  const handleOpenDetail = () => {
+    if (!reviewDetailId) {
+      toast.error("Review ID tidak ditemukan");
+      return;
+    }
+    if (!companySlug) {
+      toast.error("Slug company tidak ditemukan");
+      return;
+    }
+
+    navigate(`/company/${companySlug}/review/${reviewDetailId}`);
+  };
+
+  const handleLikeClick = async () => {
+    if (likeLoading) return;
+
+    if (!internshipHeaderId) {
+      toast.error("Review Header ID tidak ditemukan");
+      return;
+    }
+
+    if (!isAuthenticated) {
+      navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+      return;
+    }
+
+    const previousLiked = liked;
+    const previousCount = likeCount;
+    const nextLiked = !previousLiked;
+    const nextCount = Math.max(0, previousCount + (nextLiked ? 1 : -1));
+
+    setLiked(nextLiked);
+    setLikeCount(nextCount);
+    setLikeLoading(true);
+
+    try {
+      const response = nextLiked
+        ? await likeReview(internshipHeaderId)
+        : await unlikeReview(internshipHeaderId);
+      const { success, message, data } = handleApiResponse(response);
+
+      if (!success) {
+        setLiked(previousLiked);
+        setLikeCount(previousCount);
+        toast.error(message || "Gagal memperbarui like review");
+        return;
+      }
+
+      const serverCount =
+        data?.totalLikes ?? data?.likeCount ?? data?.helpfulCount ?? data?.helpful ?? null;
+      if (typeof serverCount === "number") {
+        setLikeCount(serverCount);
+      }
+
+      if (typeof data?.isLiked === "boolean") {
+        setLiked(data.isLiked);
+      }
+    } catch (error) {
+      setLiked(previousLiked);
+      setLikeCount(previousCount);
+      toast.error(normalizeErrorMessage(error, "Gagal memperbarui like review"));
+    } finally {
+      setLikeLoading(false);
     }
   };
 
   return (
-    <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+    <div
+      onClick={handleOpenDetail}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          handleOpenDetail();
+        }
+      }}
+      className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md md:p-6"
+    >
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">
           <div
@@ -156,11 +273,20 @@ export const ReviewItemCard = ({ review }) => {
 
       <div className="flex items-center justify-between border-t border-slate-200 pt-3">
         <button
-          className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 font-inter text-sm font-semibold text-slate-600 hover:bg-slate-50"
+          onClick={(event) => {
+            event.stopPropagation();
+            handleLikeClick();
+          }}
+          disabled={likeLoading}
+          className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 font-inter text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${
+            liked
+              ? "border-orange-200 bg-orange-50 text-orange-600"
+              : "border-slate-200 text-slate-600 hover:bg-slate-50"
+          }`}
           type="button"
         >
-          <ThumbsUp className="h-4 w-4" />
-          Helpful ({helpfulCount})
+          <ThumbsUp className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
+          {likeLoading ? "Saving..." : `Helpful (${likeCount})`}
         </button>
 
         <div className="flex items-center gap-2">
@@ -169,7 +295,10 @@ export const ReviewItemCard = ({ review }) => {
           )}
           <button
             className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50"
-            onClick={handleShare}
+            onClick={(event) => {
+              event.stopPropagation();
+              handleShare();
+            }}
             type="button"
             title={copied ? "Copied" : "Share"}
           >

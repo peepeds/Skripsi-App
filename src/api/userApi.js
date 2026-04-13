@@ -19,3 +19,23 @@ export const submitCertificate = async (certificateData) => {
   const response = await axiosInstance.post("/user/certificate", certificateData);
   return response.data;
 };
+
+export const getMyReviews = async (cursor = null, limit = 10) => {
+  const params = { limit };
+  if (cursor !== null) {
+    params.cursor = cursor;
+  }
+
+  const response = await axiosInstance.get("/user/my-reviews", { params });
+  return response.data;
+};
+
+export const getSavedCompanies = async (cursor = null, limit = 20) => {
+  const params = { limit };
+  if (cursor !== null) {
+    params.cursor = cursor;
+  }
+
+  const response = await axiosInstance.get("/user/my-bookmarks", { params });
+  return response.data;
+};

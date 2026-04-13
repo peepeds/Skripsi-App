@@ -1,4 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
+import { likeReview, unlikeReview } from "@/api/reviewApi";
+import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
 import { Clock, Lightbulb, MessageCircle, Share2, ThumbsUp } from "lucide-react";
 
 const AVATAR_COLORS = [
@@ -25,8 +30,16 @@ const DIFFICULTY_MAP = {
   5: { label: "Sangat Sulit", emoji: "🤬", className: "bg-red-50 text-red-700 border-red-200" },
 };
 
-export const RecruitmentProcessCard = ({ data }) => {
+export const RecruitmentProcessCard = ({ data, companySlug }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
   const [copied, setCopied] = useState(false);
+  const [liked, setLiked] = useState(Boolean(data?.isLiked));
+  const [likeLoading, setLikeLoading] = useState(false);
+  const [likeCount, setLikeCount] = useState(
+    data?.totalLikes ?? data?.likeCount ?? data?.helpfulCount ?? data?.helpful ?? 0
+  );
 
   const {
     jobTitle,
@@ -43,20 +56,122 @@ export const RecruitmentProcessCard = ({ data }) => {
 
   const displayName = createdByName ?? "Anonim";
   const difficulty = DIFFICULTY_MAP[interviewDifficulty];
-  const helpfulCount = data.helpfulCount ?? data.helpful ?? 0;
+  const processDetailId =
+    data?.internshipDetailId ??
+    data?.id ??
+    data?.detailId;
+  const internshipHeaderId =
+    data?.internshipHeaderId ??
+    data?.headerId ??
+    data?.internshipReviewId;
+
+  useEffect(() => {
+    setLiked(Boolean(data?.isLiked));
+    setLikeCount(
+      data?.totalLikes ?? data?.likeCount ?? data?.helpfulCount ?? data?.helpful ?? 0
+    );
+  }, [data]);
 
   const handleShare = async () => {
+    if (!processDetailId || !companySlug) {
+      toast.error("Link recruitment process tidak dapat dibuat karena data belum lengkap");
+      return;
+    }
+
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      const processPath = `/company/${companySlug}/recruitment/${processDetailId}`;
+      const shareUrl = `${window.location.origin}${processPath}`;
+      await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
+      toast.success("Link recruitment process berhasil disalin");
     } catch {
       setCopied(false);
+      toast.error("Gagal menyalin link recruitment process");
+    }
+  };
+
+  const handleOpenDetail = () => {
+    if (!processDetailId) {
+      toast.error("Recruitment process ID tidak ditemukan");
+      return;
+    }
+    if (!companySlug) {
+      toast.error("Slug company tidak ditemukan");
+      return;
+    }
+
+    navigate(`/company/${companySlug}/recruitment/${processDetailId}`);
+  };
+
+  const handleLikeClick = async () => {
+    if (likeLoading) return;
+
+    if (!internshipHeaderId) {
+      toast.error("Recruitment process Header ID tidak ditemukan");
+      return;
+    }
+
+    if (!isAuthenticated) {
+      navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+      return;
+    }
+
+    const previousLiked = liked;
+    const previousCount = likeCount;
+    const nextLiked = !previousLiked;
+    const nextCount = Math.max(0, previousCount + (nextLiked ? 1 : -1));
+
+    setLiked(nextLiked);
+    setLikeCount(nextCount);
+    setLikeLoading(true);
+
+    try {
+      const response = nextLiked
+        ? await likeReview(internshipHeaderId)
+        : await unlikeReview(internshipHeaderId);
+      const { success, message, data: result } = handleApiResponse(response);
+
+      if (!success) {
+        setLiked(previousLiked);
+        setLikeCount(previousCount);
+        toast.error(message || "Gagal memperbarui like recruitment process");
+        return;
+      }
+
+      const serverCount =
+        result?.totalLikes ?? result?.likeCount ?? result?.helpfulCount ?? result?.helpful ?? null;
+      if (typeof serverCount === "number") {
+        setLikeCount(serverCount);
+      }
+
+      if (typeof result?.isLiked === "boolean") {
+        setLiked(result.isLiked);
+      }
+    } catch (error) {
+      setLiked(previousLiked);
+      setLikeCount(previousCount);
+      toast.error(
+        normalizeErrorMessage(error, "Gagal memperbarui like recruitment process")
+      );
+    } finally {
+      setLikeLoading(false);
     }
   };
 
   return (
-    <div className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+    <div
+      onClick={handleOpenDetail}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          handleOpenDetail();
+        }
+      }}
+      className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md md:p-6"
+    >
       <div className="flex items-center gap-3">
         <div
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white ${getAvatarColor(displayName)}`}
@@ -133,20 +248,34 @@ export const RecruitmentProcessCard = ({ data }) => {
 
       <div className="flex items-center justify-between border-t border-slate-200 pt-3">
         <button
-          className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 font-inter text-sm font-semibold text-slate-600 hover:bg-slate-50"
+          onClick={(event) => {
+            event.stopPropagation();
+            handleLikeClick();
+          }}
+          disabled={likeLoading}
+          className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 font-inter text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${
+            liked
+              ? "border-orange-200 bg-orange-50 text-orange-600"
+              : "border-slate-200 text-slate-600 hover:bg-slate-50"
+          }`}
           type="button"
         >
-          <ThumbsUp className="h-4 w-4" />
-          Helpful ({helpfulCount})
+          <ThumbsUp className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
+          {likeLoading ? "Saving..." : `Helpful (${likeCount})`}
         </button>
-        <button
-          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50"
-          onClick={handleShare}
-          type="button"
-          title={copied ? "Copied" : "Share"}
-        >
-          <Share2 className="h-4 w-4" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50"
+            onClick={(event) => {
+              event.stopPropagation();
+              handleShare();
+            }}
+            type="button"
+            title={copied ? "Copied" : "Share"}
+          >
+            <Share2 className="h-4 w-4" />
+          </button>
+        </div>
       </div>
     </div>
   );

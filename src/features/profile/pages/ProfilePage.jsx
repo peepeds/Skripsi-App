@@ -1,9 +1,10 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/context/userContext";
 import { useNavigate } from "react-router-dom";
 import { SkeletonCircle, SkeletonLine } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { submitCertificate } from "@/api/userApi";
+import { getMyReviews, getSavedCompanies, submitCertificate } from "@/api/userApi";
+import { unsaveCompany } from "@/api/companyApi";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { toast } from "sonner";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
@@ -12,6 +13,20 @@ import { AcademicDetailsCard } from "@/components/profile/AcademicDetailsCard";
 import { CampusLocationCard } from "@/components/profile/CampusLocationCard";
 import { CertificateModal } from "@/components/profile/CertificateModal";
 import { CertificateCard } from "@/components/profile/CertificateCard";
+import { RecentReviewsCard } from "@/components/profile/RecentReviewsCard";
+import { SavedCompaniesCard } from "@/components/profile/SavedCompaniesCard";
+import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
+
+const normalizeList = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.items)) return data.items;
+  if (Array.isArray(data?.result)) return data.result;
+  if (Array.isArray(data?.content)) return data.content;
+  return [];
+};
+
+const getCompanySlug = (company) =>
+  company?.companySlug ?? company?.slug ?? company?.company?.companySlug;
 
 export function ProfilePage() {
   // Get user info and loading state from UserContext
@@ -20,6 +35,13 @@ export function ProfilePage() {
   
   // State for certificate modal
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [recentReviews, setRecentReviews] = useState([]);
+  const [savedCompanies, setSavedCompanies] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState(null);
+  const [recentUnavailable, setRecentUnavailable] = useState(false);
+  const [savedError, setSavedError] = useState(null);
+  const [unsaveLoadingSlug, setUnsaveLoadingSlug] = useState(null);
   
   // File upload hook
   const {
@@ -32,6 +54,93 @@ export function ProfilePage() {
     handleFileChange,
     handleUpload: uploadToMinio,
   } = useFileUpload();
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchProfileHistories = async () => {
+      setHistoryLoading(true);
+      setHistoryError(null);
+      setRecentUnavailable(false);
+      setSavedError(null);
+      setRecentReviews([]);
+
+      try {
+        const [reviewsResult, savedResult] = await Promise.allSettled([
+          getMyReviews(),
+          getSavedCompanies(),
+        ]);
+
+        if (reviewsResult.status === "fulfilled") {
+          const parsedReviews = handleApiResponse(reviewsResult.value);
+          if (parsedReviews.success) {
+            setRecentReviews(normalizeList(parsedReviews.data));
+          } else {
+            const reviewsMessage = parsedReviews.message || "Gagal memuat riwayat review";
+            if (reviewsMessage.includes("No endpoint GET /user/my-reviews")) {
+              setRecentUnavailable(true);
+            } else {
+              setHistoryError(reviewsMessage);
+            }
+          }
+        } else {
+          const reviewsMessage = normalizeErrorMessage(
+            reviewsResult.reason,
+            "Gagal memuat riwayat review"
+          );
+          if (reviewsMessage.includes("No endpoint GET /user/my-reviews")) {
+            setRecentUnavailable(true);
+          } else {
+            setHistoryError(reviewsMessage);
+          }
+        }
+
+        if (savedResult.status === "fulfilled") {
+          const parsedSaved = handleApiResponse(savedResult.value);
+          if (!parsedSaved.success) {
+            setSavedError(parsedSaved.message || "Gagal memuat perusahaan tersimpan");
+          } else {
+            setSavedCompanies(normalizeList(parsedSaved.data));
+          }
+        } else {
+          setSavedError(
+            normalizeErrorMessage(savedResult.reason, "Gagal memuat perusahaan tersimpan")
+          );
+        }
+      } finally {
+        setHistoryLoading(false);
+      }
+    };
+
+    fetchProfileHistories();
+  }, [user]);
+
+  const handleUnsaveFromProfile = async (company) => {
+    const companySlug = getCompanySlug(company);
+
+    if (!companySlug) {
+      toast.error("Slug company tidak ditemukan untuk proses unsave");
+      return;
+    }
+
+    setUnsaveLoadingSlug(companySlug);
+    try {
+      const response = await unsaveCompany(companySlug);
+      const { success, message } = handleApiResponse(response);
+
+      if (!success) {
+        toast.error(message || "Gagal menghapus simpanan company");
+        return;
+      }
+
+      setSavedCompanies((prev) => prev.filter((item) => getCompanySlug(item) !== companySlug));
+      toast.success("Company berhasil dihapus dari simpanan");
+    } catch (error) {
+      toast.error(normalizeErrorMessage(error, "Gagal menghapus simpanan company"));
+    } finally {
+      setUnsaveLoadingSlug(null);
+    }
+  };
   
   // Handle certificate submission
   const handleSubmitCertificate = async (data) => {
@@ -130,6 +239,22 @@ export function ProfilePage() {
           <CampusLocationCard user={user} />
           <CertificateCard user={user} />
         </div>
+      </div>
+
+      <div className="mt-6 grid gap-5 lg:grid-cols-2">
+        <RecentReviewsCard
+          reviews={recentReviews}
+          loading={historyLoading}
+          error={historyError}
+          unavailable={recentUnavailable}
+        />
+        <SavedCompaniesCard
+          companies={savedCompanies}
+          loading={historyLoading}
+          error={savedError}
+          onUnsave={handleUnsaveFromProfile}
+          unsaveLoadingSlug={unsaveLoadingSlug}
+        />
       </div>
 
       <CertificateModal
