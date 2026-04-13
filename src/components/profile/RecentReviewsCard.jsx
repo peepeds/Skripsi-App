@@ -37,7 +37,7 @@ export const RecentReviewsCard = ({ reviews, loading, error, unavailable = false
     <Card className="rounded-2xl border border-slate-200">
       <CardHeader className="space-y-1 pb-3">
         <h2 className="font-plus-jakarta text-xl font-bold text-slate-900">
-          Review ({reviews.length})
+          Recent Review ({reviews.length})
         </h2>
         <p className="font-inter text-sm text-slate-500">Riwayat review yang pernah kamu buat</p>
       </CardHeader>
