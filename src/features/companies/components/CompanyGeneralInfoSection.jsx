@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { StarRating } from "@/components/ui/StarRating";
 import { CompanyLogo } from "@/components/common/CompanyLogo";
 import { BackButton } from "@/components/common/BackButton";
+import { useAuth } from "@/hooks/useAuth";
+import { useSaveCompany } from "../hooks/useSaveCompany";
 import { CompanySelectModal } from "./CompanySelectModal";
 import { ArrowLeftRight, Bookmark, BriefcaseBusiness, Share2 } from "lucide-react";
 
@@ -13,14 +15,21 @@ export const CompanyGeneralInfoSection = ({
   companyName,
   companyAbbreviation,
   website,
+  initialIsSaved,
   isPartner,
   subcategoryName,
   rating,
   totalReviews,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+  const { isSaved, saving, toggleSave } = useSaveCompany({
+    companySlug,
+    initialIsSaved,
+  });
 
   const handleShareClick = async () => {
     const currentUrl = window.location.href;
@@ -31,6 +40,15 @@ export const CompanyGeneralInfoSection = ({
     } catch (err) {
       console.error("Failed to copy URL:", err);
     }
+  };
+
+  const handleSaveClick = async () => {
+    if (!isAuthenticated) {
+      navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+      return;
+    }
+
+    await toggleSave();
   };
 
   return (
@@ -51,9 +69,15 @@ export const CompanyGeneralInfoSection = ({
               <Share2 className="h-4 w-4" />
               {copiedUrl ? "Copied!" : "Share"}
             </button>
-            <button className="inline-flex h-10 items-center gap-2 rounded-xl border border-white/70 bg-white px-4 font-inter text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
-              <Bookmark className="h-4 w-4" />
-              Save
+            <button
+              onClick={handleSaveClick}
+              disabled={saving}
+              className={`inline-flex h-10 items-center gap-2 rounded-xl border border-white/70 bg-white px-4 font-inter text-sm font-semibold transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70 ${
+                isSaved ? "text-orange-600" : "text-slate-700"
+              }`}
+            >
+              <Bookmark className={`h-4 w-4 ${isSaved ? "fill-current" : ""}`} />
+              {saving ? "Saving..." : isSaved ? "Saved" : "Save"}
             </button>
             <button
               onClick={() => setIsCompareModalOpen(true)}

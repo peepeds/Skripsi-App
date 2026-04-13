@@ -1,3 +1,4 @@
+
 import { axiosInstance } from "./axiosInstance";
 
 export const getCompanyRequest = async (requestId) => {
@@ -38,6 +39,17 @@ export const searchCompanies = async (query) => {
 export const getCompanyBySlug = async (slug) => {
   const response = await axiosInstance.get(`/company/${slug}`);
   return response.data;
+};
+
+export const saveCompany = async (companySlug, isSave = true) => {
+  const response = await axiosInstance.post(`/company/${companySlug}/save`, {
+    isSave,
+  });
+  return response.data;
+};
+
+export const unsaveCompany = async (companySlug) => {
+  return saveCompany(companySlug, false);
 };
 
 export const getCompaniesBySubcategory = async (subCategoryName, type, page = 0, size = 20) => {
