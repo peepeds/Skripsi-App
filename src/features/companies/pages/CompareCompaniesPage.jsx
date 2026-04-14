@@ -9,12 +9,6 @@ import { ComparisonDataGrid } from "../components/ComparisonDataGrid";
 import { CompanySelectModal } from "../components/CompanySelectModal";
 import { ArrowLeft, ArrowLeftRight, Star } from "lucide-react";
 
-const formatDifficulty = (difficulty) => {
-  if (!difficulty || difficulty.rating === null || difficulty.rating === undefined) return "-";
-  const count = difficulty.count ?? 0;
-  return `${difficulty.rating.toFixed(1)} / 5.0 (${count} reviews)`;
-};
-
 const formatObjectEntries = (value) => {
   if (!value || typeof value !== "object") return "-";
 
@@ -25,23 +19,120 @@ const formatObjectEntries = (value) => {
 };
 
 const SectionCard = ({ title, children }) => (
-  <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_8px_24px_rgba(15,23,42,0.06)] md:p-6">
-    <h2 className="mb-4 font-plus-jakarta text-[24px] font-bold text-slate-900">{title}</h2>
+  <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_8px_24px_rgba(15,23,42,0.06)] md:p-6">
+    <h2 className="mb-4 font-plus-jakarta text-[22px] font-bold tracking-[-0.02em] text-slate-900">{title}</h2>
     {children}
   </div>
 );
+
+const RATING_ITEMS = [
+  { key: "workCulture", label: "Work Culture" },
+  { key: "learningOpp", label: "Learning Opportunity" },
+  { key: "mentorship", label: "Mentorship" },
+  { key: "benefit", label: "Benefit" },
+  { key: "workLifeBalance", label: "Work-Life Balance" },
+];
+
+const DifficultyPill = ({ rating, count }) => {
+  const safeRating = typeof rating === "number" ? rating : null;
+  const ratio = safeRating ? (safeRating / 5) * 100 : 0;
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+      <div className="mb-2 flex items-end justify-between gap-3">
+        <p className="font-plus-jakarta text-3xl font-bold text-slate-900">
+          {safeRating !== null ? safeRating.toFixed(1) : "-"}
+        </p>
+        <p className="font-inter text-xs text-slate-500">{count || 0} reviews</p>
+      </div>
+      <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+        <div className="h-full rounded-full bg-orange-500" style={{ width: `${ratio}%` }} />
+      </div>
+      <p className="mt-2 font-inter text-xs text-slate-500">Average difficulty level</p>
+    </div>
+  );
+};
+
+const CompareRatingsSection = ({ leftRatings, rightRatings, leftLabel, rightLabel }) => (
+  <div className="space-y-4">
+    <div className="hidden grid-cols-[200px_minmax(0,1fr)_minmax(0,1fr)] items-center gap-4 border-b border-slate-200 pb-2 md:grid">
+      <p className="font-inter text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Metrics</p>
+      <p className="font-inter text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">{leftLabel}</p>
+      <p className="font-inter text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">{rightLabel}</p>
+    </div>
+    {RATING_ITEMS.map((item) => {
+      const left = leftRatings?.[item.key] ?? null;
+      const right = rightRatings?.[item.key] ?? null;
+      return (
+        <div key={item.key} className="grid gap-3 md:grid-cols-[200px_minmax(0,1fr)_minmax(0,1fr)] md:items-center">
+          <p className="font-inter text-sm font-semibold text-slate-800">{item.label}</p>
+          {[{ value: left, label: leftLabel }, { value: right, label: rightLabel }].map((entry, idx) => {
+            const ratio = typeof entry.value === 'number' ? (entry.value / 5) * 100 : 0;
+            return (
+              <div key={`${item.key}-${idx}`} className="space-y-1 rounded-2xl border border-slate-200 bg-white p-3">
+                <div className="flex items-center justify-between">
+                  <p className="font-inter text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 md:hidden">{entry.label}</p>
+                  <p className="font-inter text-sm font-semibold text-slate-900">{typeof entry.value === 'number' ? entry.value.toFixed(1) : '-'}</p>
+                </div>
+                <div className="h-1.5 overflow-hidden rounded-full bg-slate-200">
+                  <div className="h-full rounded-full bg-orange-500" style={{ width: `${ratio}%` }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      );
+    })}
+  </div>
+);
+
+const CompareRecruitmentSection = ({ leftStats, rightStats, leftLabel, rightLabel }) => {
+  const leftTrack = formatObjectEntries(leftStats?.admissionTrack);
+  const rightTrack = formatObjectEntries(rightStats?.admissionTrack);
+  const leftDuration = leftStats?.recruitmentDuration || '-';
+  const rightDuration = rightStats?.recruitmentDuration || '-';
+  const leftSelection = formatObjectEntries(leftStats?.frequentSelectionProcess);
+  const rightSelection = formatObjectEntries(rightStats?.frequentSelectionProcess);
+
+  const RecruitmentRow = ({ label, leftValue, rightValue }) => (
+    <div className="grid gap-3 rounded-2xl bg-slate-50/80 p-4 md:grid-cols-[200px_minmax(0,1fr)_minmax(0,1fr)] md:items-start">
+      <p className="font-inter text-sm font-semibold text-slate-800">{label}</p>
+      <div className="rounded-2xl border border-slate-200 bg-white p-3">
+        <p className="mb-1 font-inter text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 md:hidden">{leftLabel}</p>
+        <p className="font-inter text-sm leading-6 text-slate-700">{leftValue}</p>
+      </div>
+      <div className="rounded-2xl border border-slate-200 bg-white p-3">
+        <p className="mb-1 font-inter text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 md:hidden">{rightLabel}</p>
+        <p className="font-inter text-sm leading-6 text-slate-700">{rightValue}</p>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-3">
+      <div className="hidden grid-cols-[200px_minmax(0,1fr)_minmax(0,1fr)] items-center gap-4 border-b border-slate-200 pb-2 md:grid">
+        <p className="font-inter text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Metrics</p>
+        <p className="font-inter text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">{leftLabel}</p>
+        <p className="font-inter text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">{rightLabel}</p>
+      </div>
+      <RecruitmentRow label="Popular Admission Track" leftValue={leftTrack} rightValue={rightTrack} />
+      <RecruitmentRow label="Recruitment Duration" leftValue={leftDuration} rightValue={rightDuration} />
+      <RecruitmentRow label="Frequent Selection Process" leftValue={leftSelection} rightValue={rightSelection} />
+    </div>
+  );
+};
 
 const CompanyHeader = ({ data }) => {
   const company = data?.company;
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_6px_18px_rgba(15,23,42,0.06)]">
+    <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_6px_18px_rgba(15,23,42,0.06)]">
       <div className="flex items-center justify-between gap-3">
         <CompanyLogo
           website={company?.website}
           companyName={company?.companyName}
           companyAbbreviation={company?.companyAbbreviation}
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white"
+          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white"
           imgClassName="h-11 w-11 object-contain"
           fallbackClassName="text-xl font-bold text-slate-600"
         />
@@ -131,56 +222,10 @@ export const CompareCompaniesPage = () => {
     ];
   }, [leftCompanyData, rightCompanyData]);
 
-  const ratingRows = useMemo(() => {
-    const leftRatings = leftCompanyData?.ratings;
-    const rightRatings = rightCompanyData?.ratings;
-
-    return [
-      { key: "workCulture", label: "Work Culture", leftValue: leftRatings?.workCulture?.toFixed(1), rightValue: rightRatings?.workCulture?.toFixed(1) },
-      { key: "learningOpp", label: "Learning Opportunity", leftValue: leftRatings?.learningOpp?.toFixed(1), rightValue: rightRatings?.learningOpp?.toFixed(1) },
-      { key: "mentorship", label: "Mentorship", leftValue: leftRatings?.mentorship?.toFixed(1), rightValue: rightRatings?.mentorship?.toFixed(1) },
-      { key: "benefit", label: "Benefit", leftValue: leftRatings?.benefit?.toFixed(1), rightValue: rightRatings?.benefit?.toFixed(1) },
-      { key: "workLifeBalance", label: "Work-Life Balance", leftValue: leftRatings?.workLifeBalance?.toFixed(1), rightValue: rightRatings?.workLifeBalance?.toFixed(1) },
-    ];
-  }, [leftCompanyData, rightCompanyData]);
-
-  const difficultyRows = useMemo(
-    () => [
-      {
-        key: "averageDifficulty",
-        label: "Average Difficulty",
-        leftValue: formatDifficulty(leftCompanyData?.difficulty),
-        rightValue: formatDifficulty(rightCompanyData?.difficulty),
-      },
-    ],
-    [leftCompanyData, rightCompanyData]
-  );
-
-  const recruitmentRows = useMemo(() => {
-    const leftStatistics = leftCompanyData?.recruitmentStatistics;
-    const rightStatistics = rightCompanyData?.recruitmentStatistics;
-
-    return [
-      {
-        key: "admissionTrack",
-        label: "Popular Admission Track",
-        leftValue: formatObjectEntries(leftStatistics?.admissionTrack),
-        rightValue: formatObjectEntries(rightStatistics?.admissionTrack),
-      },
-      {
-        key: "recruitmentDuration",
-        label: "Recruitment Duration",
-        leftValue: leftStatistics?.recruitmentDuration,
-        rightValue: rightStatistics?.recruitmentDuration,
-      },
-      {
-        key: "frequentSelectionProcess",
-        label: "Frequent Selection Process",
-        leftValue: formatObjectEntries(leftStatistics?.frequentSelectionProcess),
-        rightValue: formatObjectEntries(rightStatistics?.frequentSelectionProcess),
-      },
-    ];
-  }, [leftCompanyData, rightCompanyData]);
+  const leftRatings = leftCompanyData?.ratings;
+  const rightRatings = rightCompanyData?.ratings;
+  const leftStats = leftCompanyData?.recruitmentStatistics;
+  const rightStats = rightCompanyData?.recruitmentStatistics;
 
   if (isInvalidComparePair) {
     return (
@@ -223,7 +268,7 @@ export const CompareCompaniesPage = () => {
 
   return (
     <>
-      <section className="border-b border-slate-200 bg-slate-50 py-7 md:py-9">
+      <section className="border-b border-slate-200 bg-linear-to-br from-slate-50 via-white to-slate-100 py-7 md:py-9">
         <Container>
           <div className="space-y-3">
             <Button
@@ -247,12 +292,12 @@ export const CompareCompaniesPage = () => {
       </section>
 
       <Container className="py-7">
-        <div className="mb-4 flex flex-wrap items-center justify-end gap-2">
+          <div className="mb-4 flex flex-wrap items-center justify-end gap-2">
           <Button
             type="button"
             variant="outline"
             onClick={() => setIsPickerOpen(true)}
-            className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-100"
+              className="rounded-full border-slate-200 text-slate-700 hover:bg-slate-100"
           >
             Choose Different Company
           </Button>
@@ -284,24 +329,35 @@ export const CompareCompaniesPage = () => {
           </SectionCard>
 
           <SectionCard title="Reviews Rating">
-            <ComparisonDataGrid
-              rows={ratingRows}
+            <CompareRatingsSection
+              leftRatings={leftRatings}
+              rightRatings={rightRatings}
               leftLabel={leftCompanyData.company.companyAbbreviation || "Left"}
               rightLabel={rightCompanyData.company.companyAbbreviation || "Right"}
             />
           </SectionCard>
 
           <SectionCard title="Average Difficulty">
-            <ComparisonDataGrid
-              rows={difficultyRows}
-              leftLabel={leftCompanyData.company.companyAbbreviation || "Left"}
-              rightLabel={rightCompanyData.company.companyAbbreviation || "Right"}
-            />
+            <div className="grid gap-3 md:grid-cols-2">
+              <div>
+                <p className="mb-2 font-inter text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+                  {leftCompanyData.company.companyAbbreviation || "Left"}
+                </p>
+                <DifficultyPill rating={leftCompanyData?.difficulty?.rating} count={leftCompanyData?.difficulty?.count} />
+              </div>
+              <div>
+                <p className="mb-2 font-inter text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+                  {rightCompanyData.company.companyAbbreviation || "Right"}
+                </p>
+                <DifficultyPill rating={rightCompanyData?.difficulty?.rating} count={rightCompanyData?.difficulty?.count} />
+              </div>
+            </div>
           </SectionCard>
 
           <SectionCard title="Recruitment Process">
-            <ComparisonDataGrid
-              rows={recruitmentRows}
+            <CompareRecruitmentSection
+              leftStats={leftStats}
+              rightStats={rightStats}
               leftLabel={leftCompanyData.company.companyAbbreviation || "Left"}
               rightLabel={rightCompanyData.company.companyAbbreviation || "Right"}
             />

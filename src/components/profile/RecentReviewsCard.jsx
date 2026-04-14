@@ -6,15 +6,33 @@ import { SkeletonLine } from "@/components/ui/skeleton";
 const pickFirstString = (...values) =>
   values.find((value) => typeof value === "string" && value.trim().length > 0)?.trim();
 
+const slugify = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+
 const getReviewCompanySlug = (review) =>
   pickFirstString(
     review?.companySlug,
     review?.company?.companySlug,
     review?.company?.slug
-  );
+  ) || slugify(getCompanyName(review));
 
 const getReviewId = (review) =>
   review?.internshipDetailId ?? review?.reviewId ?? review?.id ?? review?.detailId;
+
+const getReviewPathId = (review) =>
+  review?.internshipDetailId ??
+  review?.reviewId ??
+  review?.internshipHeaderId ??
+  review?.id ??
+  review?.detailId ??
+  review?.internshipDetail?.internshipDetailId ??
+  review?.internshipDetail?.id ??
+  review?.internshipHeader?.internshipHeaderId;
 
 const getReviewText = (review) =>
   pickFirstString(review?.testimony, review?.review, review?.content) || "-";
@@ -35,7 +53,7 @@ export const RecentReviewsCard = ({ reviews, loading, error, unavailable = false
         <h2 className="font-plus-jakarta text-xl font-bold text-slate-900">
           Review ({reviews.length})
         </h2>
-        <p className="font-inter text-sm text-slate-500">Riwayat review yang pernah kamu buat</p>
+        <p className="font-inter text-sm text-slate-500">Your review history</p>
       </CardHeader>
 
       <CardContent>
@@ -52,26 +70,25 @@ export const RecentReviewsCard = ({ reviews, loading, error, unavailable = false
 
         {!loading && !error && unavailable && (
           <p className="font-inter text-sm text-slate-500">
-            Fitur Recent Reviews masih dalam tahap pengembangan. Nantikan update selanjutnya!
+            Recent Reviews feature is still in development. Stay tuned for updates!
           </p>
         )}
 
         {!loading && !error && !unavailable && reviews.length === 0 && (
-          <p className="font-inter text-sm text-slate-500">Belum ada review yang kamu kirim.</p>
+          <p className="font-inter text-sm text-slate-500">No reviews submitted yet.</p>
         )}
 
         {!loading && !error && !unavailable && reviews.length > 0 && (
           <div className="space-y-3">
             {reviews.map((review, index) => {
               const reviewId = getReviewId(review);
+              const pathId = getReviewPathId(review);
               const companySlug = getReviewCompanySlug(review);
-              const reviewPath = review?.reviewUrl
-                ? `/${review.reviewUrl}`
-                : reviewId && companySlug
-                ? `/company/${companySlug}/review/${reviewId}`
+              const reviewPath = companySlug && pathId
+                ? `/company/${companySlug}/review/${pathId}`
                 : null;
-              const recruitmentPath = review?.recruitmentUrl
-                ? `/${review.recruitmentUrl}`
+              const recruitmentPath = companySlug && pathId
+                ? `/company/${companySlug}/recruitment/${pathId}`
                 : null;
 
               return (
@@ -95,7 +112,7 @@ export const RecentReviewsCard = ({ reviews, loading, error, unavailable = false
                         to={reviewPath}
                         className="font-inter rounded-lg border border-orange-600 px-3 py-1.5 text-xs font-semibold text-orange-600 hover:bg-orange-50"
                       >
-                        Lihat Review
+                        View Review
                       </Link>
                     )}
                     {recruitmentPath && (
@@ -103,7 +120,7 @@ export const RecentReviewsCard = ({ reviews, loading, error, unavailable = false
                         to={recruitmentPath}
                         className="font-inter rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
                       >
-                        Lihat Rekrutmen
+                        View Recruitment Process
                       </Link>
                     )}
                   </div>

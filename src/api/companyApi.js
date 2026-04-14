@@ -55,9 +55,14 @@ export const unsaveCompany = async (companySlug) => {
   return saveCompany(companySlug, false);
 };
 
-export const getCompaniesBySubcategory = async (subCategoryName, type, page = 0, size = 20) => {
+export const getCompaniesBySubcategory = async (subCategoryName, type, cursor = null, limit = 20) => {
+  const params = { type, limit };
+  if (cursor !== null && cursor !== undefined) {
+    params.cursor = cursor;
+  }
+
   const response = await axiosInstance.get(`/subcategory/${encodeURIComponent(subCategoryName)}/companies`, {
-    params: { type, page, size }
+    params
   });
   return response.data;
 };

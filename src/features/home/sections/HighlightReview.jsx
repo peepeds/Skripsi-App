@@ -1,108 +1,72 @@
 import React, { useState, useEffect } from 'react';
-import { User, Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getRecentReviews } from '@/api/reviewApi';
-import { useLogoValidation } from '@/features/companies/hooks/useLogoValidation';
+import { getCompanies } from '@/api/companyApi';
+import { RecentReviewCard } from '@/features/reviews/components/RecentReviewCard';
 
-const RecentReviewCard = ({
-  testimony,
-  createdBy,
-  averageRating,
-  companyName,
-  companyCategory,
-  companySubCategory,
-  companySubcategory,
-  subCategory,
-  subcategory,
-  subcategoryName,
-  subCategoryName,
-  company,
-  subCategoryObj,
-  subcategoryObj,
-  companyWebsite,
-  jobTitle,
-}) => {
-  const pickLabel = (...values) =>
-    values.find(value => typeof value === 'string' && value.trim().length > 0)?.trim();
+const normalizeText = (value) =>
+  String(value || '')
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, ' ');
 
-  const initials = createdBy
-    ? createdBy
-        .trim()
-        .split(/\s+/)
-        .filter(Boolean)
-        .slice(0, 2)
-        .map(name => name[0]?.toUpperCase())
-        .join('')
-    : '';
-  const resolvedCompanyName =
-    pickLabel(companyName, company?.companyName, company?.name, company?.companyAbbreviation) || 'Perusahaan';
-  const resolvedCompanyWebsite =
-    pickLabel(companyWebsite, company?.website, company?.companyWebsite) || '';
+const slugify = (value) =>
+  String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
 
-  const { logoUrl, logoValid } = useLogoValidation(resolvedCompanyWebsite);
-  const companyInitial = resolvedCompanyName?.charAt(0)?.toUpperCase() || '?';
-  const companySubCategoryLabel =
-    pickLabel(
-      companySubCategory,
-      companySubcategory,
-      subCategory,
-      subcategory,
-      subcategoryName,
-      subCategoryName,
-      company?.subcategoryName,
-      company?.subCategoryName,
-      company?.subcategory?.subCategoryName,
-      company?.subCategory?.subCategoryName,
-      company?.subcategory?.name,
-      company?.subCategory?.name,
-      subCategoryObj?.subCategoryName,
-      subCategoryObj?.name,
-      subcategoryObj?.subCategoryName,
-      subcategoryObj?.name
-    ) || '-';
+const getHost = (url) => {
+  try {
+    const parsed = new URL(url);
+    return parsed.hostname.replace(/^www\./, '');
+  } catch {
+    return null;
+  }
+};
 
-  return (
-    <div className="flex w-[320px] shrink-0 snap-start flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md sm:w-[340px]">
-      <div className="mb-3 flex items-start justify-between gap-2">
-        <div className="flex min-w-0 flex-1 items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EA580C] text-xs font-semibold text-white">
-            {initials || <User className="w-4 h-4 text-white" />}
-          </div>
-          <div className="min-w-0 space-y-0.5">
-            <h4 className="font-plus-jakarta truncate text-sm font-semibold leading-tight text-slate-900">{createdBy || 'Anonim'}</h4>
-            <p className="font-inter truncate text-[11px] leading-tight text-slate-600">{jobTitle || 'Intern'}</p>
-          </div>
-        </div>
-        <div className="font-inter flex shrink-0 items-center rounded-lg bg-orange-50 px-2 py-1 text-xs font-semibold text-orange-600">
-          <Star className="mr-1 h-3 w-3 fill-[#F97316] text-[#F97316]" />
-          {averageRating?.toFixed(1).replace('.', ',')}
-        </div>
-      </div>
+const getReviewId = (review) =>
+  review?.reviewId ??
+  review?.internshipDetailId ??
+  review?.internshipHeaderId ??
+  review?.id ??
+  review?.detailId ??
+  review?.internshipDetail?.internshipDetailId ??
+  review?.internshipDetail?.id ??
+  review?.internshipHeader?.internshipHeaderId;
 
-      <blockquote className="font-inter line-clamp-4 text-[13px] leading-relaxed text-slate-700">
-        "{testimony}"
-      </blockquote>
+const getReviewCompanyName = (review) =>
+  review?.companyName ?? review?.company?.companyName ?? review?.company?.name;
 
-      <div className="mt-auto border-t border-slate-100 pt-2.5">
-        <div className="flex items-center gap-2">
-          <div className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-md bg-slate-50">
-            {logoValid === true ? (
-              <img src={logoUrl} alt={resolvedCompanyName} className="h-full w-full object-contain" />
-            ) : logoValid === false ? (
-              <span className="font-inter text-[10px] font-semibold text-slate-600">{companyInitial}</span>
-            ) : (
-              <Skeleton className="h-full w-full" />
-            )}
-          </div>
+const getReviewerName = (review) =>
+  review?.createdBy ?? review?.createdByName ?? review?.authorName ?? review?.name ?? "Anonim";
 
-          <div className="min-w-0 leading-tight">
-            <p className="font-plus-jakarta truncate text-xs font-semibold text-slate-900">{resolvedCompanyName}</p>
-            <p className="font-inter mt-0.5 truncate text-[11px] text-slate-500">{companySubCategoryLabel}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+const getReviewWebsite = (review) =>
+  review?.companyWebsite ?? review?.company?.website ?? review?.website;
+
+const getReviewCompanySlug = (review, companyByName, companyByHost) => {
+  const directSlug =
+    review?.companySlug ??
+    review?.company?.companySlug ??
+    review?.company?.slug ??
+    review?.internshipHeader?.company?.companySlug;
+
+  if (directSlug) return directSlug;
+
+  const host = getHost(getReviewWebsite(review));
+  if (host && companyByHost.has(host)) {
+    return companyByHost.get(host);
+  }
+
+  const byName = normalizeText(getReviewCompanyName(review));
+  if (byName && companyByName.has(byName)) {
+    return companyByName.get(byName);
+  }
+
+  return slugify(getReviewCompanyName(review));
 };
 
 export function HighlightReview() {
@@ -110,9 +74,53 @@ export function HighlightReview() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getRecentReviews()
-      .then(data => { if (data.success) setReviews(data.result.items); })
-      .finally(() => setLoading(false));
+    const fetchRecent = async () => {
+      try {
+        const [recentResponse, companiesResponse] = await Promise.all([
+          getRecentReviews({ limit: 16 }),
+          getCompanies(null, 200),
+        ]);
+
+        if (!recentResponse?.success) {
+          setReviews([]);
+          return;
+        }
+
+        const items = Array.isArray(recentResponse?.result?.items)
+          ? recentResponse.result.items
+          : Array.isArray(recentResponse?.result)
+          ? recentResponse.result
+          : [];
+
+        const companies = Array.isArray(companiesResponse?.result) ? companiesResponse.result : [];
+        const companyByName = new Map();
+        const companyByHost = new Map();
+
+        companies.forEach((company) => {
+          const slug = company?.companySlug || company?.slug;
+          if (!slug) return;
+
+          const name = normalizeText(company?.companyName);
+          if (name) companyByName.set(name, slug);
+
+          const host = getHost(company?.website);
+          if (host) companyByHost.set(host, slug);
+        });
+
+        const enriched = items.map((review) => ({
+          ...review,
+          resolvedReviewId: getReviewId(review),
+          resolvedCompanySlug: getReviewCompanySlug(review, companyByName, companyByHost),
+          resolvedReviewerSlug: slugify(getReviewerName(review)),
+        }));
+
+        setReviews(enriched);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecent();
   }, []);
 
   return (
@@ -123,21 +131,28 @@ export function HighlightReview() {
             <h2 className="font-plus-jakarta mb-1 text-xl font-bold tracking-tight text-slate-900 md:text-2xl">Recent Reviews</h2>
             <p className="font-inter text-sm text-slate-500">Cerita nyata dari mereka yang telah magang</p>
           </div>
-          <a href="#" className="font-inter flex items-center gap-1 text-sm font-semibold text-[#F97316] transition hover:opacity-80">
+          <Link to="/reviews" className="font-inter flex items-center gap-1 text-sm font-semibold text-[#F97316] transition hover:opacity-80">
             Read more reviews <span aria-hidden="true">&rarr;</span>
-          </a>
+          </Link>
         </div>
 
         <div className="hide-scrollbar overflow-x-auto pb-2">
-          <div className="flex min-w-max snap-x snap-mandatory gap-3">
-          {loading
-            ? Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="w-[320px] shrink-0 rounded-xl sm:w-[340px]">
-                  <Skeleton className="h-[210px] rounded-xl" />
-                </div>
-              ))
-            : reviews.map((review, i) => <RecentReviewCard key={i} {...review} />)
-          }
+          <div className="flex min-w-max items-start snap-x snap-mandatory gap-3">
+            {loading
+              ? Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="w-[320px] shrink-0 rounded-xl sm:w-[340px]">
+                    <Skeleton className="h-[210px] rounded-xl" />
+                  </div>
+                ))
+              : reviews.map((review, i) => (
+                  <RecentReviewCard
+                    key={review.resolvedReviewId ?? review.reviewId ?? review.internshipDetailId ?? i}
+                    {...review}
+                    clickVariant="author"
+                    reviewerSlug={review.resolvedReviewerSlug}
+                    className="w-[320px] shrink-0 snap-start sm:w-[340px]"
+                  />
+                ))}
           </div>
         </div>
       </div>

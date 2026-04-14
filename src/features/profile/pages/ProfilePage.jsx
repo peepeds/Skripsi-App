@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { SkeletonCircle, SkeletonLine } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { getMyReviews, getSavedCompanies, submitCertificate } from "@/api/userApi";
+import { getRecentReviews } from "@/api/reviewApi";
 import { unsaveCompany } from "@/api/companyApi";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { toast } from "sonner";
@@ -15,14 +16,105 @@ import { CertificateModal } from "@/components/profile/CertificateModal";
 import { CertificateCard } from "@/components/profile/CertificateCard";
 import { RecentReviewsCard } from "@/components/profile/RecentReviewsCard";
 import { SavedCompaniesCard } from "@/components/profile/SavedCompaniesCard";
-import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
+import { normalizeErrorMessage } from "@/helpers/apiUtils";
 
 const normalizeList = (data) => {
   if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.items)) return data.items;
-  if (Array.isArray(data?.result)) return data.result;
-  if (Array.isArray(data?.content)) return data.content;
+  
+  // Check common wrapper keys  
+  const keys = ["items", "result", "content", "data", "payload", "reviews", "list", "rows", "records"];
+  for (const key of keys) {
+    if (Array.isArray(data?.[key])) return data[key];
+  }
+  
   return [];
+};
+
+const parseFlexibleResponse = (response) => {
+  if (!response) {
+    return { success: false, message: "No response", data: null };
+  }
+
+  const { success, message } = response;
+
+  if (success === undefined || success === null) {
+    return { success: false, message: "Invalid response format", data: null };
+  }
+
+  if (!success) {
+    return { success: false, message: message || "Request failed", data: null };
+  }
+
+  // Try multiple wrapper patterns
+  let data = null;
+  
+  // Direct fields
+  if (Array.isArray(response.result)) data = response.result;
+  else if (Array.isArray(response.data)) data = response.data;
+  else if (Array.isArray(response.items)) data = response.items;
+  else if (Array.isArray(response.payload)) data = response.payload;
+  else if (Array.isArray(response.reviews)) data = response.reviews;
+  else if (Array.isArray(response.list)) data = response.list;
+  else if (Array.isArray(response.rows)) data = response.rows;
+  else if (Array.isArray(response.records)) data = response.records;
+  else if (Array.isArray(response.content)) data = response.content;
+  
+  // Nested one-level deep (e.g., response.data.result, response.result.items)
+  if (!data) {
+    for (const wrapper of ["data", "result", "payload"]) {
+      if (response[wrapper] && typeof response[wrapper] === "object") {
+        for (const inner of ["items", "result", "content", "reviews", "list", "rows", "records"]) {
+          if (Array.isArray(response[wrapper][inner])) {
+            data = response[wrapper][inner];
+            break;
+          }
+        }
+        if (data) break;
+      }
+    }
+  }
+
+  return {
+    success: true,
+    message: message || "Success",
+    data: data || null,
+  };
+};
+
+const normalizeText = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ");
+
+const getReviewAuthorName = (review) =>
+  review?.createdBy ?? review?.createdByName ?? review?.authorName ?? review?.name ?? "";
+
+const getUserMatchers = (user) => {
+  const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim();
+  const values = [
+    user?.name,
+    user?.fullName,
+    fullName,
+    user?.firstName,
+    user?.lastName,
+    user?.username,
+    user?.email,
+  ]
+    .map((value) => normalizeText(value))
+    .filter(Boolean);
+
+  return new Set(values);
+};
+
+const filterReviewsForUser = (reviews, user) => {
+  const matchers = getUserMatchers(user);
+  if (!matchers.size) return [];
+
+  return reviews.filter((review) => {
+    const author = normalizeText(getReviewAuthorName(review));
+    return matchers.has(author);
+  });
 };
 
 const getCompanySlug = (company) =>
@@ -39,8 +131,7 @@ export function ProfilePage() {
   const [savedCompanies, setSavedCompanies] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyError, setHistoryError] = useState(null);
-  const [recentUnavailable, setRecentUnavailable] = useState(false);
-  const [savedError, setSavedError] = useState(null);
+    const [savedError, setSavedError] = useState(null);
   const [unsaveLoadingSlug, setUnsaveLoadingSlug] = useState(null);
   
   // File upload hook
@@ -61,7 +152,6 @@ export function ProfilePage() {
     const fetchProfileHistories = async () => {
       setHistoryLoading(true);
       setHistoryError(null);
-      setRecentUnavailable(false);
       setSavedError(null);
       setRecentReviews([]);
 
@@ -71,32 +161,45 @@ export function ProfilePage() {
           getSavedCompanies(),
         ]);
 
+        let resolvedReviews = [];
+
         if (reviewsResult.status === "fulfilled") {
-          const parsedReviews = handleApiResponse(reviewsResult.value);
+          const parsedReviews = parseFlexibleResponse(reviewsResult.value);
           if (parsedReviews.success) {
-            setRecentReviews(normalizeList(parsedReviews.data));
-          } else {
-            const reviewsMessage = parsedReviews.message || "Gagal memuat riwayat review";
-            if (reviewsMessage.includes("No endpoint GET /user/my-reviews")) {
-              setRecentUnavailable(true);
-            } else {
-              setHistoryError(reviewsMessage);
-            }
+            resolvedReviews = normalizeList(parsedReviews.data);
+          } else if (parsedReviews.message && !parsedReviews.message.includes("GET /user/my-reviews")) {
+            setHistoryError(parsedReviews.message || "Gagal memuat riwayat review");
           }
         } else {
           const reviewsMessage = normalizeErrorMessage(
             reviewsResult.reason,
             "Gagal memuat riwayat review"
           );
-          if (reviewsMessage.includes("No endpoint GET /user/my-reviews")) {
-            setRecentUnavailable(true);
-          } else {
+          if (!reviewsMessage.includes("GET /user/my-reviews")) {
             setHistoryError(reviewsMessage);
           }
         }
 
+        if (resolvedReviews.length === 0) {
+          try {
+            const fallbackResponse = await getRecentReviews({ limit: 200 });
+            const parsedFallback = parseFlexibleResponse(fallbackResponse);
+
+            if (parsedFallback.success) {
+              resolvedReviews = filterReviewsForUser(
+                normalizeList(parsedFallback.data),
+                user
+              );
+            }
+          } catch {
+            // Keep empty state if the fallback source also fails.
+          }
+        }
+
+        setRecentReviews(resolvedReviews);
+
         if (savedResult.status === "fulfilled") {
-          const parsedSaved = handleApiResponse(savedResult.value);
+          const parsedSaved = parseFlexibleResponse(savedResult.value);
           if (!parsedSaved.success) {
             setSavedError(parsedSaved.message || "Gagal memuat perusahaan tersimpan");
           } else {
@@ -126,7 +229,7 @@ export function ProfilePage() {
     setUnsaveLoadingSlug(companySlug);
     try {
       const response = await unsaveCompany(companySlug);
-      const { success, message } = handleApiResponse(response);
+      const { success, message } = parseFlexibleResponse(response);
 
       if (!success) {
         toast.error(message || "Gagal menghapus simpanan company");
@@ -246,7 +349,6 @@ export function ProfilePage() {
           reviews={recentReviews}
           loading={historyLoading}
           error={historyError}
-          unavailable={recentUnavailable}
         />
         <SavedCompaniesCard
           companies={savedCompanies}

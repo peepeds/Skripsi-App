@@ -1,6 +1,10 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useCompanyDetail } from "../hooks/useCompanyDetail";
+import { useAuth } from "@/hooks/useAuth";
+import { useEffect, useState } from "react";
+import { getSavedCompanies } from "@/api/userApi";
+import { handleApiResponse } from "@/helpers/apiUtils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
@@ -10,6 +14,41 @@ import { CompanyTabsPanel } from "../components/CompanyTabsPanel";
 export const CompanyDetailPage = () => {
   const { companySlug } = useParams();
   const { company, loading, error } = useCompanyDetail(companySlug);
+  const { isAuthenticated } = useAuth();
+  const [savedCompanySlugs, setSavedCompanySlugs] = useState([]);
+
+  useEffect(() => {
+    const loadSavedCompanies = async () => {
+      if (!isAuthenticated) {
+        setSavedCompanySlugs([]);
+        return;
+      }
+
+      try {
+        const response = await getSavedCompanies(null, 200);
+        const { success, data } = handleApiResponse(response);
+
+        if (!success) {
+          setSavedCompanySlugs([]);
+          return;
+        }
+
+        const items = Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : [];
+        const slugs = items
+          .map((item) => item?.companySlug ?? item?.slug ?? item?.company?.companySlug)
+          .filter(Boolean);
+
+        setSavedCompanySlugs(slugs);
+      } catch {
+        setSavedCompanySlugs([]);
+      }
+    };
+
+    loadSavedCompanies();
+  }, [companySlug, isAuthenticated]);
+
+  const resolvedIsSaved =
+    savedCompanySlugs.includes(companySlug) || Boolean(company?.isSaved);
 
   if (loading) {
     return (
@@ -78,7 +117,7 @@ export const CompanyDetailPage = () => {
         companyName={company.companyName}
         companyAbbreviation={company.companyAbbreviation}
         website={company.website}
-        initialIsSaved={company.isSaved}
+        initialIsSaved={resolvedIsSaved}
         isPartner={company.isPartner}
         subcategoryName={company.subcategoryName}
         rating={company.rating}

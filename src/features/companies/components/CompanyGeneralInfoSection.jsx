@@ -53,8 +53,9 @@ export const CompanyGeneralInfoSection = ({
 
   return (
     <>
-      <section className="relative overflow-hidden bg-linear-to-br from-slate-500 via-slate-600 to-slate-700 py-10 md:py-12">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.2),transparent_45%)]" />
+      <section className="relative overflow-hidden bg-linear-to-br from-slate-900 via-slate-800 to-slate-700 py-10 md:py-12">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.22),transparent_42%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(249,115,22,0.16),transparent_34%)]" />
 
       <Container className="relative z-10">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -63,7 +64,7 @@ export const CompanyGeneralInfoSection = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handleShareClick}
-              className="inline-flex h-10 items-center gap-2 rounded-xl border border-white/70 bg-white px-4 font-inter text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="inline-flex h-10 items-center gap-2 rounded-full border border-white/70 bg-white px-4 font-inter text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
               title="Copy link to clipboard"
             >
               <Share2 className="h-4 w-4" />
@@ -72,7 +73,7 @@ export const CompanyGeneralInfoSection = ({
             <button
               onClick={handleSaveClick}
               disabled={saving}
-              className={`inline-flex h-10 items-center gap-2 rounded-xl border border-white/70 bg-white px-4 font-inter text-sm font-semibold transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70 ${
+              className={`inline-flex h-10 items-center gap-2 rounded-full border border-white/70 bg-white px-4 font-inter text-sm font-semibold transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70 ${
                 isSaved ? "text-orange-600" : "text-slate-700"
               }`}
             >
@@ -81,14 +82,14 @@ export const CompanyGeneralInfoSection = ({
             </button>
             <button
               onClick={() => setIsCompareModalOpen(true)}
-              className="inline-flex h-10 items-center gap-2 rounded-xl border border-white/70 bg-white px-4 font-inter text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="inline-flex h-10 items-center gap-2 rounded-full border border-white/70 bg-white px-4 font-inter text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
               <ArrowLeftRight className="h-4 w-4" />
               Compare
             </button>
             <Button
               onClick={() => navigate(`/review/${companySlug}`)}
-              className="h-10 rounded-xl bg-orange-500 px-5 font-inter text-sm font-semibold text-white hover:bg-orange-600"
+              className="h-10 rounded-full bg-orange-500 px-5 font-inter text-sm font-semibold text-white hover:bg-orange-600"
             >
               Write Review
             </Button>
@@ -101,15 +102,15 @@ export const CompanyGeneralInfoSection = ({
               website={website}
               companyName={companyName}
               companyAbbreviation={companyAbbreviation}
-              className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-white/60 bg-white shadow-lg"
-              imgClassName="h-20 w-20 object-contain"
-              fallbackClassName="text-blue-600 font-bold text-3xl"
+              className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border border-white/60 bg-white shadow-lg md:h-24 md:w-24"
+              imgClassName="h-16 w-16 object-contain md:h-20 md:w-20"
+              fallbackClassName="text-blue-600 font-bold text-2xl md:text-3xl"
             />
           </div>
 
           <div className="flex-1 min-w-0">
             <div className="mb-3 flex flex-wrap items-start gap-3">
-              <h1 className="font-plus-jakarta text-4xl font-bold leading-tight text-white md:text-[42px]">
+              <h1 className="font-plus-jakarta text-3xl font-bold leading-tight text-white md:text-[42px]">
                 {companyName}
               </h1>
               {isPartner && (
@@ -130,7 +131,7 @@ export const CompanyGeneralInfoSection = ({
 
             <div className="mb-4 flex flex-wrap items-center gap-2">
               {subcategoryName && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-white/40 bg-white/20 px-4 py-1.5 font-inter text-sm text-white/95">
+                <span className="inline-flex items-center gap-1 rounded-full border border-white/40 bg-white/15 px-4 py-1.5 font-inter text-sm text-white/95 backdrop-blur-sm">
                   <BriefcaseBusiness className="h-4 w-4" />
                   {subcategoryName}
                 </span>
@@ -139,12 +140,12 @@ export const CompanyGeneralInfoSection = ({
 
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-1.5">
-                <span className="font-inter text-[28px] font-semibold leading-none text-white md:text-[30px]">
+                <span className="font-inter text-[20px] font-semibold leading-none text-white md:text-[22px]">
                   {rating !== null && rating !== undefined
                     ? rating.toFixed(1).replace(".", ",")
                     : "—"}
                 </span>
-                <StarRating rating={rating} size="md" />
+                <StarRating rating={rating} size="sm" />
               </div>
               <span className="font-inter text-sm text-white/90">
                 {totalReviews || 0} {totalReviews === 1 ? 'ulasan' : 'ulasan'}

@@ -35,7 +35,9 @@ export const ReviewsTabContent = ({ companySlug, companyName, summaryData }) => 
       leftClassName="space-y-4"
       left={
         <>
-          <h2 className="text-xl font-bold text-gray-900">All Reviews</h2>
+          <div className="space-y-1">
+            <h2 className="font-plus-jakarta text-2xl font-bold tracking-[-0.02em] text-slate-900">All Reviews</h2>
+          </div>
 
           {loading && <ReviewListSkeleton />}
           {!loading && error && <ErrorMessage message={error} />}
