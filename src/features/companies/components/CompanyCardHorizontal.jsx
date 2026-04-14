@@ -67,7 +67,7 @@ export const CompanyCardHorizontal = ({
         <div className="flex flex-1 flex-col">
           <div className="mb-2 flex items-start gap-2">
             <h3 className="font-plus-jakarta line-clamp-2 text-[20px] font-semibold leading-tight text-slate-900">
-              {companyAbbreviation ? `${companyName} (${companyAbbreviation})` : companyName}
+              {companyName}
             </h3>
             {isPartner && (
               <svg className="h-4.5 w-4.5 shrink-0 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
