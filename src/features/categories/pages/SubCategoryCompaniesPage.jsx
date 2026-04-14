@@ -102,6 +102,9 @@ export const SubCategoryCompaniesPage = () => {
   const { subCategoryName: subCategoryNameParam } = useParams();
   const location = useLocation();
   const subCategoryName = location.state?.subCategoryName || decodeURIComponent(subCategoryNameParam) || 'Subcategory';
+  const queryType = new URLSearchParams(location.search).get('type');
+  const resolvedType = (location.state?.type || queryType || 'companies').toLowerCase();
+  const categoryType = resolvedType === 'jobs' ? 'jobs' : 'companies';
 
   const [companies, setCompanies] = useState([]);
   const [meta, setMeta] = useState(null);
@@ -117,7 +120,7 @@ export const SubCategoryCompaniesPage = () => {
       setError(null);
       try {
         const [companiesData, summaryResult] = await Promise.allSettled([
-          getCompaniesBySubcategory(subCategoryName, 'companies', null, 80),
+          getCompaniesBySubcategory(subCategoryName, categoryType, null, 80),
           getSubCategorySummary(subCategoryName),
         ]);
 
@@ -169,7 +172,7 @@ export const SubCategoryCompaniesPage = () => {
     };
 
     fetchCompanies();
-  }, [subCategoryName]);
+  }, [subCategoryName, categoryType]);
 
   const stats = React.useMemo(() => {
     const totalCompanies = summary?.totalCompanies ?? companies.length;
