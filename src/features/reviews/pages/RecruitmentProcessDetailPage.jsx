@@ -30,7 +30,19 @@ const humanizeSlug = (slug) =>
     .trim();
 
 const getProcessIdentifier = (item) =>
-  item?.internshipDetailId ?? item?.id ?? item?.detailId;
+  item?.internshipDetailId ??
+  item?.id ??
+  item?.detailId ??
+  item?.internshipHeaderId ??
+  item?.headerId ??
+  item?.reviewId ??
+  item?.reviewID ??
+  item?.review_id ??
+  item?.internshipDetail?.internshipDetailId ??
+  item?.internshipDetail?.id ??
+  item?.internshipDetail?.internshipHeaderId ??
+  item?.internshipHeader?.internshipHeaderId ??
+  item?.internshipHeader?.id;
 
 const getAuthorName = (item) =>
   pickString(item?.createdByName, item?.createdBy, item?.authorName, item?.name) || "Anonim";
