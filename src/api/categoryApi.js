@@ -11,3 +11,8 @@ export const getTopCategories = async () => {
   const response = await axiosInstance.get('/top-categories');
   return response.data;
 };
+
+export const getSubCategorySummary = async (subCategoryName) => {
+  const response = await axiosInstance.get(`/subcategory/${encodeURIComponent(subCategoryName)}/summary`);
+  return response.data;
+};

@@ -3,14 +3,32 @@ import { Link } from "react-router-dom";
 import { StarRating } from "@/components/ui/StarRating";
 import { CompanyLogo } from "@/components/common/CompanyLogo";
 
+const toNumberOrNull = (value) => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+
+  return null;
+};
+
 const RatingStars = ({ rating, totalReviews }) => {
+  const normalizedRating = toNumberOrNull(rating);
+  const normalizedTotalReviews = toNumberOrNull(totalReviews);
+
   return (
     <div className="flex items-center gap-2">
-      <StarRating rating={rating} size="sm" />
+      <StarRating rating={normalizedRating} size="sm" />
       <span className="font-inter text-[15px] font-semibold text-slate-900">
-        {rating !== null ? rating.toFixed(1).replace(".", ",") : "—"}
+        {normalizedRating !== null ? normalizedRating.toFixed(1).replace(".", ",") : "—"}
       </span>
-      <span className="font-inter text-[15px] text-slate-500">({totalReviews || 0})</span>
+      <span className="font-inter text-[15px] text-slate-500">({normalizedTotalReviews ?? 0})</span>
     </div>
   );
 };
@@ -24,6 +42,7 @@ export const CompanyCardHorizontal = ({
   subcategoryName,
   rating,
   totalReviews,
+  hideSubcategoryBadge = false,
 }) => {
   return (
     <Link to={`/company/${companySlug}`} className="block h-full">
@@ -62,7 +81,7 @@ export const CompanyCardHorizontal = ({
           </div>
 
           <div className="pt-0.5">
-            {subcategoryName && (
+            {!hideSubcategoryBadge && subcategoryName && (
               <span className="font-inter inline-block w-fit rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
                 {subcategoryName}
               </span>

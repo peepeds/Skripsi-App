@@ -56,7 +56,6 @@ export const RecruitmentTabContent = ({ companySlug, companyName }) => {
       left={
         <>
           <div className="space-y-1">
-            <p className="font-inter text-xs font-semibold uppercase tracking-[0.12em] text-orange-600">Recruitment Process</p>
             <h2 className="font-plus-jakarta text-2xl font-bold tracking-[-0.02em] text-slate-900">Alumni Recruitment Experience</h2>
           </div>
 

@@ -124,7 +124,6 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
     "Anonim";
 
   const jobTitle = review?.jobTitle ?? review?.role ?? review?.position ?? "-";
-  const companyName = resolveCompanyName(review);
   const resolvedCompanySlug = resolveCompanySlug(review, companySlug);
   const durationMonths = review?.durationMonths;
   const year = review?.year;
@@ -251,22 +250,21 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
           handleOpenDetail();
         }
       }}
-      className={`space-y-3 rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm transition md:p-4 ${
+      className={`space-y-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition md:p-5 ${
         interactive ? "cursor-pointer hover:shadow-md" : ""
       }`}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <div
-            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white ${getAvatarColor(displayName)}`}
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white ${getAvatarColor(displayName)}`}
           >
             {getInitials(displayName)}
           </div>
-          <div className="space-y-0.5">
+          <div className="space-y-1">
             <p className="font-plus-jakarta text-[18px] font-semibold tracking-[-0.02em] text-slate-900 md:text-[19px]">{displayName}</p>
             <p className="font-inter text-sm text-slate-600">{jobTitle ?? "-"}</p>
-            <p className="font-inter text-sm text-slate-500">{companyName}</p>
-            <div className="mt-0.5 flex flex-wrap gap-1.5">
+            <div className="mt-1 flex flex-wrap gap-1.5">
               {durationMonths && (
                 <InfoBadge>{durationMonths} bulan</InfoBadge>
               )}
@@ -302,12 +300,12 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
         </div>
       )}
 
-      <div className="space-y-1 rounded-lg border border-slate-200 bg-slate-50 p-3">
+      <div className="space-y-1.5 rounded-lg border border-slate-200 bg-slate-50 p-3.5 md:p-4">
         {RATING_ROWS.map((row, rowIdx) => (
-          <div key={rowIdx} className="grid grid-cols-2 gap-x-4 gap-y-1">
+          <div key={rowIdx} className="grid grid-cols-2 gap-x-5 gap-y-1">
             {row.map(({ key, label }) => (
               <div key={key} className="flex items-center justify-between gap-2">
-                <span className="font-inter whitespace-nowrap text-[13px] text-slate-600">{label}</span>
+                <span className="font-inter whitespace-nowrap text-[15px] text-slate-600">{label}</span>
                 <StarRating rating={ratings[key] ?? 0} size="xs" />
               </div>
             ))}
@@ -315,18 +313,18 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
         ))}
       </div>
 
-      {testimony && <p className="font-inter text-[14px] leading-relaxed text-slate-800">"{testimony}"</p>}
+      {testimony && <p className="font-inter text-[15px] leading-relaxed text-slate-800">"{testimony}"</p>}
 
       {(pros || cons) && (
-        <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {pros && (
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3">
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 md:p-4">
               <SectionLabel>Kelebihan (Pros)</SectionLabel>
               <p className="font-inter text-sm leading-relaxed text-emerald-800">{pros}</p>
             </div>
           )}
           {cons && (
-            <div className="rounded-lg border border-rose-200 bg-rose-50 p-3">
+            <div className="rounded-xl border border-rose-200 bg-rose-50 p-3.5 md:p-4">
               <SectionLabel>Kekurangan (Cons)</SectionLabel>
               <p className="font-inter text-sm leading-relaxed text-rose-800">{cons}</p>
             </div>
@@ -334,14 +332,14 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
         </div>
       )}
 
-      <div className="flex items-center justify-between border-t border-slate-200 pt-2">
+      <div className="flex items-center justify-between border-t border-slate-200 pt-3">
         <button
           onClick={(event) => {
             event.stopPropagation();
             handleLikeClick();
           }}
           disabled={likeLoading}
-          className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1 font-inter text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${
+          className={`inline-flex items-center gap-2 rounded-lg border px-3.5 py-1.5 font-inter text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${
             liked
               ? "border-orange-200 bg-orange-50 text-orange-600"
               : "border-slate-200 text-slate-600 hover:bg-slate-50"
@@ -354,10 +352,10 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
 
         <div className="flex items-center gap-2">
           {createdAt && (
-            <p className="font-inter text-xs text-slate-400">{formatDate(createdAt)}</p>
+            <p className="font-inter text-sm text-slate-400">{formatDate(createdAt)}</p>
           )}
           <button
-            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50"
             onClick={(event) => {
               event.stopPropagation();
               handleShare();

@@ -146,13 +146,13 @@ export const RecentReviewCard = ({
   return (
     <CardContainer
       {...cardProps}
-      className={`flex h-[228px] min-h-[228px] max-h-[228px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md ${
+      className={`self-start flex h-[170px] min-h-[170px] max-h-[170px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md ${
         detailPath ? "cursor-pointer" : ""
       } ${className}`}
     >
       <div className="mb-2.5 flex items-start justify-between gap-2">
-        <div className="flex min-w-0 flex-1 items-start gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EA580C] text-xs font-semibold text-white">
+        <div className="flex min-w-0 flex-1 items-start gap-2">
+          <div className="flex h-7.5 w-7.5 shrink-0 items-center justify-center rounded-full bg-[#EA580C] text-[11px] font-semibold text-white">
             {initialsValue || <User className="h-4 w-4 text-white" />}
           </div>
           <div className="min-w-0 space-y-0.5">
@@ -162,9 +162,6 @@ export const RecentReviewCard = ({
             <p className="font-inter truncate text-[11px] leading-tight text-slate-600">
               {jobTitleLabel}
             </p>
-            <p className="font-inter truncate text-[11px] leading-tight text-slate-500">
-              {resolvedCompanyName}
-            </p>
           </div>
         </div>
         <div className="font-inter flex shrink-0 items-center rounded-full bg-orange-50 px-2 py-0.5 text-xs font-semibold text-orange-600">
@@ -173,11 +170,11 @@ export const RecentReviewCard = ({
         </div>
       </div>
 
-      <blockquote className="font-inter line-clamp-4 text-[14px] leading-relaxed text-slate-700">
+      <blockquote className="font-inter line-clamp-3 text-[13px] leading-[1.45] text-slate-700">
         "{resolvedTestimony}"
       </blockquote>
 
-      <div className="mt-auto border-t border-slate-100 pt-2.5">
+      <div className="mt-auto border-t border-slate-100 pt-1.5">
         <div className="flex items-center gap-2">
           <div className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-md bg-slate-50">
             {logoValid === true ? (

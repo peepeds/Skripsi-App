@@ -6,15 +6,33 @@ import { SkeletonLine } from "@/components/ui/skeleton";
 const pickFirstString = (...values) =>
   values.find((value) => typeof value === "string" && value.trim().length > 0)?.trim();
 
+const slugify = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+
 const getReviewCompanySlug = (review) =>
   pickFirstString(
     review?.companySlug,
     review?.company?.companySlug,
     review?.company?.slug
-  );
+  ) || slugify(getCompanyName(review));
 
 const getReviewId = (review) =>
   review?.internshipDetailId ?? review?.reviewId ?? review?.id ?? review?.detailId;
+
+const getReviewPathId = (review) =>
+  review?.internshipDetailId ??
+  review?.reviewId ??
+  review?.internshipHeaderId ??
+  review?.id ??
+  review?.detailId ??
+  review?.internshipDetail?.internshipDetailId ??
+  review?.internshipDetail?.id ??
+  review?.internshipHeader?.internshipHeaderId;
 
 const getReviewText = (review) =>
   pickFirstString(review?.testimony, review?.review, review?.content) || "-";
@@ -64,14 +82,13 @@ export const RecentReviewsCard = ({ reviews, loading, error, unavailable = false
           <div className="space-y-3">
             {reviews.map((review, index) => {
               const reviewId = getReviewId(review);
+              const pathId = getReviewPathId(review);
               const companySlug = getReviewCompanySlug(review);
-              const reviewPath = review?.reviewUrl
-                ? `/${review.reviewUrl}`
-                : reviewId && companySlug
-                ? `/company/${companySlug}/review/${reviewId}`
+              const reviewPath = companySlug && pathId
+                ? `/company/${companySlug}/review/${pathId}`
                 : null;
-              const recruitmentPath = review?.recruitmentUrl
-                ? `/${review.recruitmentUrl}`
+              const recruitmentPath = companySlug && pathId
+                ? `/company/${companySlug}/recruitment/${pathId}`
                 : null;
 
               return (

@@ -196,11 +196,8 @@ export const ReviewsPage = () => {
       <Container>
         <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div className="space-y-2">
-            <p className="font-inter text-sm font-semibold uppercase tracking-[0.12em] text-orange-600">
-              Reviews Feed
-            </p>
             <h1 className="font-plus-jakarta text-3xl font-bold tracking-[-0.03em] text-slate-900 md:text-[38px]">
-              Semua review terbaru
+              All Recent Reviews
             </h1>
             <p className="max-w-2xl font-inter text-sm leading-6 text-slate-600 md:text-base">
               Jelajahi ulasan terbaru dari para intern dan buka detail review untuk melihat pengalaman lengkapnya.

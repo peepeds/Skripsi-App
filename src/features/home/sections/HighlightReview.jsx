@@ -137,7 +137,7 @@ export function HighlightReview() {
         </div>
 
         <div className="hide-scrollbar overflow-x-auto pb-2">
-          <div className="flex min-w-max snap-x snap-mandatory gap-3">
+          <div className="flex min-w-max items-start snap-x snap-mandatory gap-3">
             {loading
               ? Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="w-[320px] shrink-0 rounded-xl sm:w-[340px]">
