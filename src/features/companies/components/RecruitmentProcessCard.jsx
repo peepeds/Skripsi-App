@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { UnauthenticatedModal } from "@/components/common/UnauthenticatedModal";
 import { useAuth } from "@/hooks/useAuth";
 import { likeReview, unlikeReview } from "@/api/reviewApi";
 import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
@@ -37,6 +38,7 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
   const [copied, setCopied] = useState(false);
   const [liked, setLiked] = useState(Boolean(data?.isLiked));
   const [likeLoading, setLikeLoading] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [likeCount, setLikeCount] = useState(
     data?.totalLikes ?? data?.likeCount ?? data?.helpfulCount ?? data?.helpful ?? 0
   );
@@ -124,7 +126,7 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
     }
 
     if (!isAuthenticated) {
-      navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+      setShowAuthModal(true);
       return;
     }
 
@@ -288,6 +290,13 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
           </button>
         </div>
       </div>
+      {showAuthModal && (
+        <UnauthenticatedModal
+          redirectPath={location.pathname}
+          onClose={() => setShowAuthModal(false)}
+          message="You need to log in first to continue this action."
+        />
+      )}
     </div>
   );
 };

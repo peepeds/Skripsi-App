@@ -1,15 +1,27 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { UnauthenticatedModal } from "@/components/common/UnauthenticatedModal";
 import {
   Card,
-  CardHeader,
-  CardTitle,
   CardContent,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export const CompanyInternedCTACard = ({ companySlug, companyName }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const handleWriteReview = () => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    navigate(`/review/${companySlug}`);
+  };
 
   return (
     <Card className="border border-orange-100 bg-linear-to-br from-orange-50 to-orange-100 shadow-sm">
@@ -22,13 +34,21 @@ export const CompanyInternedCTACard = ({ companySlug, companyName }) => {
             Help other students by sharing your internship experience at {companyName}
           </p>
           <Button
-            onClick={() => navigate(`/review/${companySlug}`)}
+            onClick={handleWriteReview}
             className="mt-1 w-full rounded-full bg-orange-500 py-3 text-sm font-semibold text-white transition-colors hover:bg-orange-600"
           >
             Write Review Here
           </Button>
         </div>
       </CardContent>
+
+      {showAuthModal && (
+        <UnauthenticatedModal
+          redirectPath={location.pathname}
+          onClose={() => setShowAuthModal(false)}
+          message="You need to log in first to start sharing your internship experience."
+        />
+      )}
     </Card>
   );
 };

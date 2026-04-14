@@ -1,31 +1,107 @@
-import React from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 /**
  * UnauthenticatedModal
- * Modal untuk menampilkan pesan ketika user belum terautentikasi
- * dan mencoba mengakses fitur yang memerlukan autentikasi
+ * Reusable auth-required modal.
+ * - If onClose is provided, Cancel closes modal in-place.
+ * - If onClose is not provided, Cancel falls back to history back.
  */
-export function UnauthenticatedModal({ redirectPath = "/" }) {
+export function UnauthenticatedModal({
+  redirectPath = "/",
+  onClose,
+  title = "Restricted Access",
+  message = "You need to log in first to continue this action.",
+  cancelLabel = "Cancel",
+  loginLabel = "Log In",
+}) {
   const navigate = useNavigate();
+  const dialogRef = useRef(null);
 
-  const handleLogin = () => {
-    // Navigate to login dengan redirect path sebagai query parameter
+  const handleLogin = useCallback(() => {
     navigate(`/login?redirect=${encodeURIComponent(redirectPath)}`);
-  };
+  }, [navigate, redirectPath]);
 
-  const handleGoBack = () => {
+  const handleClose = useCallback(() => {
+    if (typeof onClose === "function") {
+      onClose();
+      return;
+    }
+
     navigate(-1);
-  };
+  }, [navigate, onClose]);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const focusableSelector = [
+      "a[href]",
+      "button:not([disabled])",
+      "input:not([disabled])",
+      "select:not([disabled])",
+      "textarea:not([disabled])",
+      "[tabindex]:not([tabindex='-1'])",
+    ].join(",");
+
+    const getFocusable = () => Array.from(dialog.querySelectorAll(focusableSelector));
+    const focusableEls = getFocusable();
+    if (focusableEls.length > 0) {
+      focusableEls[0].focus();
+    }
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        handleClose();
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+
+      const candidates = getFocusable();
+      if (candidates.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const first = candidates[0];
+      const last = candidates[candidates.length - 1];
+      const active = document.activeElement;
+
+      if (event.shiftKey) {
+        if (active === first || !dialog.contains(active)) {
+          event.preventDefault();
+          last.focus();
+        }
+        return;
+      }
+
+      if (active === last || !dialog.contains(active)) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleClose]);
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-[2px] flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg max-w-md w-full mx-4 shadow-lg">
-        {/* Header Icon */}
-        <div className="flex justify-center mb-4">
-          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/35 p-4 backdrop-blur-[2px]">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className="w-full max-w-[390px] rounded-[24px] bg-white p-5 shadow-2xl md:p-6"
+      >
+        <div className="mb-3 flex justify-center">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-orange-100/60">
             <svg
-              className="w-6 h-6 text-red-600"
+              className="h-5 w-5 text-orange-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -40,29 +116,28 @@ export function UnauthenticatedModal({ redirectPath = "/" }) {
           </div>
         </div>
 
-        {/* Title */}
-        <h2 className="text-xl font-bold text-center mb-2">
-          Autentikasi Diperlukan
+        <h2 className="mb-2 text-center font-plus-jakarta text-[28px] font-bold leading-tight tracking-[-0.02em] text-slate-900 md:text-[32px]">
+          {title}
         </h2>
 
-        {/* Message */}
-        <p className="text-gray-600 text-center mb-6">
-          Anda belum terautentikasi. Silakan login untuk melanjutkan aksi ini.
+        <p className="mx-auto mb-5 max-w-[320px] text-center font-inter text-base leading-relaxed text-slate-600 md:text-[16px] md:leading-7">
+          {message}
         </p>
 
-        {/* Action Buttons */}
         <div className="flex gap-3">
           <button
-            onClick={handleGoBack}
-            className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+            type="button"
+            onClick={handleClose}
+            className="h-11 flex-1 rounded-xl border border-slate-300 bg-white px-4 font-plus-jakarta text-[15px] font-bold text-slate-900 transition-colors hover:bg-slate-50"
           >
-            Kembali
+            {cancelLabel}
           </button>
           <button
+            type="button"
             onClick={handleLogin}
-            className="flex-1 px-4 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            className="h-11 flex-1 rounded-xl bg-orange-500 px-4 font-plus-jakarta text-[15px] font-bold text-white transition-colors hover:bg-orange-600"
           >
-            Login
+            {loginLabel}
           </button>
         </div>
       </div>
