@@ -18,30 +18,57 @@ const getReviewCompanySlug = (review) =>
   pickFirstString(
     review?.companySlug,
     review?.company?.companySlug,
-    review?.company?.slug
+    review?.company?.slug,
+    review?.internshipHeader?.company?.companySlug,
+    review?.internshipHeader?.company?.slug,
+    review?.internshipDetail?.company?.companySlug,
+    review?.internshipDetail?.company?.slug
   ) || slugify(getCompanyName(review));
 
 const getReviewId = (review) =>
-  review?.internshipDetailId ?? review?.reviewId ?? review?.id ?? review?.detailId;
-
-const getReviewPathId = (review) =>
   review?.internshipDetailId ??
   review?.reviewId ??
   review?.internshipHeaderId ??
   review?.id ??
   review?.detailId ??
+  review?.headerId ??
+  review?.reviewID ??
+  review?.review_id ??
   review?.internshipDetail?.internshipDetailId ??
   review?.internshipDetail?.id ??
+  review?.internshipHeader?.id ??
   review?.internshipHeader?.internshipHeaderId;
+
+const getReviewDetailPathId = (review) =>
+  review?.reviewId ??
+  review?.internshipDetailId ??
+  review?.id ??
+  review?.detailId ??
+  review?.internshipHeaderId ??
+  review?.headerId ??
+  review?.reviewID ??
+  review?.review_id ??
+  review?.internshipDetail?.internshipDetailId ??
+  review?.internshipDetail?.id ??
+  review?.internshipHeader?.internshipDetailId ??
+  review?.internshipHeader?.id;
 
 const getReviewText = (review) =>
   pickFirstString(review?.testimony, review?.review, review?.content) || "-";
+
+const getReviewAuthorName = (review) =>
+  pickFirstString(review?.createdByName, review?.createdBy, review?.authorName, review?.name) ||
+  "user";
 
 const getCompanyName = (review) =>
   pickFirstString(
     review?.companyName,
     review?.company?.companyName,
-    review?.company?.name
+    review?.company?.name,
+    review?.internshipHeader?.company?.companyName,
+    review?.internshipHeader?.companyName,
+    review?.internshipDetail?.company?.companyName,
+    review?.internshipDetail?.companyName
   ) || "Perusahaan";
 
 const getJobTitle = (review) => pickFirstString(review?.jobTitle, review?.role) || "-";
@@ -82,17 +109,18 @@ export const RecentReviewsCard = ({ reviews, loading, error, unavailable = false
           <div className="space-y-3">
             {reviews.map((review, index) => {
               const reviewId = getReviewId(review);
-              const pathId = getReviewPathId(review);
+              const reviewDetailId = getReviewDetailPathId(review);
               const companySlug = getReviewCompanySlug(review);
-              const reviewPath = companySlug && pathId
-                ? `/company/${companySlug}/review/${pathId}`
+              const reviewerSlug = slugify(getReviewAuthorName(review));
+              const reviewPath = companySlug && reviewDetailId
+                ? `/company/${companySlug}/review/${reviewDetailId}`
+                : reviewerSlug && reviewId
+                ? `/reviews/user/${reviewerSlug}/${reviewId}`
+                : reviewerSlug
+                ? `/reviews/user/${reviewerSlug}/latest`
                 : null;
-              const recruitmentPath = companySlug && pathId
-                ? `/company/${companySlug}/recruitment/${pathId}`
-                : null;
-
-              return (
-                <div key={reviewId ?? index} className="rounded-xl border border-slate-200 p-4">
+              const content = (
+                <>
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-plus-jakarta text-base font-semibold text-slate-900">
@@ -105,25 +133,24 @@ export const RecentReviewsCard = ({ reviews, loading, error, unavailable = false
                   <p className="font-inter mt-2 line-clamp-2 text-sm text-slate-700">
                     "{getReviewText(review)}"
                   </p>
+                </>
+              );
 
-                  <div className="mt-3 flex gap-2">
-                    {reviewPath && (
-                      <Link
-                        to={reviewPath}
-                        className="font-inter rounded-lg border border-orange-600 px-3 py-1.5 text-xs font-semibold text-orange-600 hover:bg-orange-50"
-                      >
-                        View Review
-                      </Link>
-                    )}
-                    {recruitmentPath && (
-                      <Link
-                        to={recruitmentPath}
-                        className="font-inter rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
-                      >
-                        View Recruitment Process
-                      </Link>
-                    )}
-                  </div>
+              if (reviewPath) {
+                return (
+                  <Link
+                    key={reviewId ?? index}
+                    to={reviewPath}
+                    className="block rounded-xl border border-slate-200 p-4 transition hover:border-orange-300 hover:shadow-sm"
+                  >
+                    {content}
+                  </Link>
+                );
+              }
+
+              return (
+                <div key={reviewId ?? index} className="rounded-xl border border-slate-200 p-4">
+                  {content}
                 </div>
               );
             })}
