@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { StarRating } from "@/components/ui/StarRating";
+import { UnauthenticatedModal } from "@/components/common/UnauthenticatedModal";
 import { getInitials, getAvatarColor } from "@/utils/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { likeReview, unlikeReview } from "@/api/reviewApi";
@@ -104,6 +105,7 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
   const [copied, setCopied] = useState(false);
   const [liked, setLiked] = useState(Boolean(review?.isLiked));
   const [likeLoading, setLikeLoading] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [likeCount, setLikeCount] = useState(
     review?.totalLikes ?? review?.likeCount ?? review?.helpfulCount ?? review?.helpful ?? 0
   );
@@ -194,7 +196,7 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
     }
 
     if (!isAuthenticated) {
-      navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+      setShowAuthModal(true);
       return;
     }
 
@@ -367,6 +369,13 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
           </button>
         </div>
       </div>
+      {showAuthModal && (
+        <UnauthenticatedModal
+          redirectPath={location.pathname}
+          onClose={() => setShowAuthModal(false)}
+          message="You need to log in first to continue this action."
+        />
+      )}
     </div>
   );
 };

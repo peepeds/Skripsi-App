@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { StarRating } from "@/components/ui/StarRating";
 import { CompanyLogo } from "@/components/common/CompanyLogo";
 import { BackButton } from "@/components/common/BackButton";
+import { UnauthenticatedModal } from "@/components/common/UnauthenticatedModal";
 import { useAuth } from "@/hooks/useAuth";
 import { useSaveCompany } from "../hooks/useSaveCompany";
 import { CompanySelectModal } from "./CompanySelectModal";
@@ -26,12 +27,22 @@ export const CompanyGeneralInfoSection = ({
   const { isAuthenticated } = useAuth();
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const { isSaved, saving, toggleSave } = useSaveCompany({
     companySlug,
     initialIsSaved,
   });
 
+  const openAuthModal = () => {
+    setShowAuthModal(true);
+  };
+
   const handleShareClick = async () => {
+    if (!isAuthenticated) {
+      openAuthModal();
+      return;
+    }
+
     const currentUrl = window.location.href;
     try {
       await navigator.clipboard.writeText(currentUrl);
@@ -44,11 +55,29 @@ export const CompanyGeneralInfoSection = ({
 
   const handleSaveClick = async () => {
     if (!isAuthenticated) {
-      navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+      openAuthModal();
       return;
     }
 
     await toggleSave();
+  };
+
+  const handleCompareClick = () => {
+    if (!isAuthenticated) {
+      openAuthModal();
+      return;
+    }
+
+    setIsCompareModalOpen(true);
+  };
+
+  const handleWriteReviewClick = () => {
+    if (!isAuthenticated) {
+      openAuthModal();
+      return;
+    }
+
+    navigate(`/review/${companySlug}`);
   };
 
   return (
@@ -81,14 +110,14 @@ export const CompanyGeneralInfoSection = ({
               {saving ? "Saving..." : isSaved ? "Saved" : "Save"}
             </button>
             <button
-              onClick={() => setIsCompareModalOpen(true)}
+              onClick={handleCompareClick}
               className="inline-flex h-10 items-center gap-2 rounded-full border border-white/70 bg-white px-4 font-inter text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
               <ArrowLeftRight className="h-4 w-4" />
               Compare
             </button>
             <Button
-              onClick={() => navigate(`/review/${companySlug}`)}
+              onClick={handleWriteReviewClick}
               className="h-10 rounded-full bg-orange-500 px-5 font-inter text-sm font-semibold text-white hover:bg-orange-600"
             >
               Write Review
@@ -161,6 +190,14 @@ export const CompanyGeneralInfoSection = ({
         currentCompanySlug={companySlug}
         onClose={() => setIsCompareModalOpen(false)}
       />
+
+      {showAuthModal && (
+        <UnauthenticatedModal
+          redirectPath={location.pathname}
+          onClose={() => setShowAuthModal(false)}
+          message="You need to log in first to start sharing your internship experience."
+        />
+      )}
     </>
   );
 };
