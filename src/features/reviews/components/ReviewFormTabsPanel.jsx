@@ -24,6 +24,7 @@ export const ReviewFormTabsPanel = ({ company, onSubmit: onFinalSubmit, loading,
   }, []);
 
   const stepProps = { form, lookupData, categories, company };
+  const isFirstStep = step === 0;
 
   const renderStepContent = () => {
     switch (step) {
@@ -75,11 +76,11 @@ export const ReviewFormTabsPanel = ({ company, onSubmit: onFinalSubmit, loading,
 
             <div className="flex justify-between items-center pt-6 border-t border-gray-200">
               <button
-                onClick={onBack}
-                disabled={step === 0}
+                onClick={isFirstStep ? onCancel : onBack}
+                disabled={isFirstStep && !onCancel}
                 className="px-8 py-3 border border-gray-200 rounded-xl font-semibold text-gray-900 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Kembali
+                {isFirstStep ? "Batal" : "Kembali"}
               </button>
 
               {isLastStep ? (
@@ -100,15 +101,6 @@ export const ReviewFormTabsPanel = ({ company, onSubmit: onFinalSubmit, loading,
                 </button>
               )}
             </div>
-
-            {step === 0 && onCancel && (
-              <button
-                onClick={onCancel}
-                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 rounded-lg transition-colors"
-              >
-                Batal
-              </button>
-            )}
           </div>
         </Container>
       </div>

@@ -74,8 +74,18 @@ export function RegisterPage() {
 
         <div className="space-y-6">{steps[step]}</div>
 
-        <div className="flex gap-3 pt-1">
-          {step > 0 ? (
+        {step === 0 ? (
+          <div className="pt-1">
+            <Button
+              onClick={onNext}
+              disabled={!form.formState.isValid}
+              className="h-12 w-full rounded-xl bg-[#F97316] text-base font-semibold text-white shadow-lg shadow-orange-500/25 transition-all hover:bg-[#EA580C] hover:shadow-orange-500/30"
+            >
+              Next
+            </Button>
+          </div>
+        ) : (
+          <div className="flex gap-3 pt-1">
             <Button
               variant="outline"
               onClick={onBack}
@@ -83,18 +93,16 @@ export function RegisterPage() {
             >
               Back
             </Button>
-          ) : (
-            <div className="hidden flex-1 sm:block" />
-          )}
 
-          <Button
-            onClick={isLastStep ? onSubmit : onNext}
-            disabled={!form.formState.isValid}
-            className="h-12 flex-1 rounded-xl bg-[#F97316] text-base font-semibold text-white shadow-lg shadow-orange-500/25 transition-all hover:bg-[#EA580C] hover:shadow-orange-500/30"
-          >
-            {isLastStep ? "Submit" : "Next"}
-          </Button>
-        </div>
+            <Button
+              onClick={isLastStep ? onSubmit : onNext}
+              disabled={!form.formState.isValid}
+              className="h-12 flex-1 rounded-xl bg-[#F97316] text-base font-semibold text-white shadow-lg shadow-orange-500/25 transition-all hover:bg-[#EA580C] hover:shadow-orange-500/30"
+            >
+              {isLastStep ? "Submit" : "Next"}
+            </Button>
+          </div>
+        )}
 
         <p className="text-center text-sm text-slate-500">
           Already have an account?{" "}
