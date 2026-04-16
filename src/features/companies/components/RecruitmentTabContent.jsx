@@ -110,7 +110,7 @@ export const RecruitmentTabContent = ({ companySlug, companyName }) => {
         <ErrorMessage message={listError} />
       )}
       {!listLoading && !listError && items.length === 0 && (
-        <EmptyStateCard message="Belum ada informasi rekrutmen untuk perusahaan ini." />
+        <EmptyStateCard message="There is no recruitment information for this company yet." />
       )}
       {items.length > 0 && (
         <div className="space-y-4">
@@ -130,7 +130,7 @@ export const RecruitmentTabContent = ({ companySlug, companyName }) => {
             disabled={listLoading}
             className="rounded-full border border-slate-200 px-6 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {listLoading ? "Memuat..." : "Muat Lebih Banyak"}
+            {listLoading ? "Loading..." : "Load More"}
           </button>
         </div>
       )}

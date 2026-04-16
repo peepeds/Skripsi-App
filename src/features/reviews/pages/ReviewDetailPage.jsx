@@ -16,9 +16,48 @@ const pickString = (...values) =>
 const getReviewIdentifier = (item) =>
   item?.internshipDetailId ??
   item?.reviewId ??
+  item?.internshipReviewId ??
   item?.id ??
   item?.detailId ??
-  item?.internshipHeaderId;
+  item?.internshipHeaderId ??
+  item?.headerId ??
+  item?.reviewID ??
+  item?.review_id ??
+  item?.internshipDetail?.internshipDetailId ??
+  item?.internshipDetail?.id ??
+  item?.internshipDetail?.reviewId ??
+  item?.internshipHeader?.internshipHeaderId ??
+  item?.internshipHeader?.id ??
+  item?.internshipHeader?.reviewId;
+
+const collectReviewIdentifiers = (item) => {
+  const values = [
+    item?.internshipDetailId,
+    item?.detailId,
+    item?.reviewId,
+    item?.internshipReviewId,
+    item?.reviewID,
+    item?.review_id,
+    item?.id,
+    item?.internshipHeaderId,
+    item?.headerId,
+    item?.internshipDetail?.internshipDetailId,
+    item?.internshipDetail?.id,
+    item?.internshipDetail?.reviewId,
+    item?.internshipHeader?.internshipDetailId,
+    item?.internshipHeader?.internshipHeaderId,
+    item?.internshipHeader?.id,
+    item?.internshipHeader?.reviewId,
+  ];
+
+  return Array.from(
+    new Set(
+      values
+        .filter((value) => value !== null && value !== undefined && String(value).trim().length > 0)
+        .map((value) => String(value))
+    )
+  );
+};
 
 const getCompanyName = (item) =>
   pickString(
@@ -151,8 +190,8 @@ export const ReviewDetailPage = () => {
         }
 
         const list = Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : [];
-        const foundReview = list.find(
-          (item) => String(getReviewIdentifier(item)) === String(reviewId)
+        const foundReview = list.find((item) =>
+          collectReviewIdentifiers(item).includes(String(reviewId))
         );
 
         setReview(foundReview ?? null);

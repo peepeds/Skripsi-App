@@ -34,13 +34,13 @@ export const ReviewWritePage = () => {
 
     try {
       await submitReview(companySlug, payload);
-      toast.success("Review berhasil dikirim");
+      toast.success("Review submitted successfully.");
       // After successful submission
       navigate(`/company/${companySlug}`);
     } catch (error) {
       console.error("Error submitting review:", error);
       const errorMessage =
-        error.response?.data?.message || "Gagal mengirim review. Silakan coba lagi.";
+        error.response?.data?.message || "Failed to submit review. Please try again.";
       toast.error(errorMessage);
     } finally {
       setLoading(false);

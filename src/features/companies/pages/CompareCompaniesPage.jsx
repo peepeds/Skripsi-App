@@ -15,7 +15,7 @@ const formatObjectEntries = (value) => {
   const entries = Object.entries(value);
   if (entries.length === 0) return "-";
 
-  return entries.map(([key, val]) => `${key}: ${val}`).join(" | ");
+  return `• ${entries.map(([key, val]) => `${key}: ${val}`).join("\n• ")}`;
 };
 
 const SectionCard = ({ title, children }) => (
@@ -27,7 +27,7 @@ const SectionCard = ({ title, children }) => (
 
 const RATING_ITEMS = [
   { key: "workCulture", label: "Work Culture" },
-  { key: "learningOpp", label: "Learning Opportunity" },
+  { key: "learningOpp", label: "Learning Opportunities" },
   { key: "mentorship", label: "Mentorship" },
   { key: "benefit", label: "Benefit" },
   { key: "workLifeBalance", label: "Work-Life Balance" },
@@ -95,21 +95,21 @@ const CompareRecruitmentSection = ({ leftStats, rightStats, leftLabel, rightLabe
   const rightSelection = formatObjectEntries(rightStats?.frequentSelectionProcess);
 
   const RecruitmentRow = ({ label, leftValue, rightValue }) => (
-    <div className="grid gap-3 rounded-2xl bg-slate-50/80 p-4 md:grid-cols-[200px_minmax(0,1fr)_minmax(0,1fr)] md:items-start">
-      <p className="font-inter text-sm font-semibold text-slate-800">{label}</p>
-      <div className="rounded-2xl border border-slate-200 bg-white p-3">
+    <div className="grid gap-3 rounded-3xl border border-slate-200 bg-slate-50/80 p-4 md:grid-cols-[200px_minmax(0,1fr)_minmax(0,1fr)] md:items-start md:gap-4">
+      <p className="font-inter text-sm font-semibold text-slate-800 md:pt-2">{label}</p>
+      <div className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
         <p className="mb-1 font-inter text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 md:hidden">{leftLabel}</p>
-        <p className="font-inter text-sm leading-6 text-slate-700">{leftValue}</p>
+        <p className="whitespace-pre-line break-words font-inter text-sm leading-7 text-slate-700">{leftValue}</p>
       </div>
-      <div className="rounded-2xl border border-slate-200 bg-white p-3">
+      <div className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
         <p className="mb-1 font-inter text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 md:hidden">{rightLabel}</p>
-        <p className="font-inter text-sm leading-6 text-slate-700">{rightValue}</p>
+        <p className="whitespace-pre-line break-words font-inter text-sm leading-7 text-slate-700">{rightValue}</p>
       </div>
     </div>
   );
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="hidden grid-cols-[200px_minmax(0,1fr)_minmax(0,1fr)] items-center gap-4 border-b border-slate-200 pb-2 md:grid">
         <p className="font-inter text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Metrics</p>
         <p className="font-inter text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">{leftLabel}</p>
@@ -197,25 +197,25 @@ export const CompareCompaniesPage = () => {
     return [
       {
         key: "workScheme",
-        label: "Work Scheme",
+        label: "Skema Kerja",
         leftValue: leftInfo?.workScheme?.join(", "),
         rightValue: rightInfo?.workScheme?.join(", "),
       },
       {
         key: "duration",
-        label: "Avg. Duration",
+        label: "Durasi Rata-rata",
         leftValue: leftInfo?.duration,
         rightValue: rightInfo?.duration,
       },
       {
         key: "popularCategories",
-        label: "Popular Categories",
+        label: "Kategori Populer",
         leftValue: leftInfo?.subCategories?.join(", "),
         rightValue: rightInfo?.subCategories?.join(", "),
       },
       {
         key: "internshipType",
-        label: "Internship Type",
+        label: "Jenis Magang",
         leftValue: leftInfo?.type,
         rightValue: rightInfo?.type,
       },
@@ -235,8 +235,8 @@ export const CompareCompaniesPage = () => {
           <p className="mt-2 text-sm text-red-600">
             Please select two different companies to compare.
           </p>
-          <Button onClick={() => navigate("/companies")} className="mt-5 rounded-xl bg-orange-500 text-white hover:bg-orange-600">
-            Back To Companies
+            <Button onClick={() => navigate("/companies")} className="mt-5 rounded-xl bg-orange-500 text-white hover:bg-orange-600">
+              Back to Companies
           </Button>
         </div>
       </Container>
@@ -270,7 +270,7 @@ export const CompareCompaniesPage = () => {
     <>
       <section className="border-b border-slate-200 bg-linear-to-br from-slate-50 via-white to-slate-100 py-7 md:py-9">
         <Container>
-          <div className="space-y-3">
+          <div className="space-y-4">
             <Button
               type="button"
               variant="ghost"
@@ -281,28 +281,30 @@ export const CompareCompaniesPage = () => {
               Back to {leftCompanyData.company.companyAbbreviation || "company"}
             </Button>
 
-            <h1 className="font-plus-jakarta text-[30px] font-bold leading-[1.2] tracking-[-0.02em] text-slate-900 md:text-[36px] lg:text-[38px]">
-              Compare Companies
-            </h1>
-            <p className="font-inter text-base text-slate-600">
-              {leftCompanyData.company.companyName} vs {rightCompanyData.company.companyName}: Compare internship experiences between two companies.
-            </p>
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
+              <div className="max-w-4xl space-y-3">
+                <h1 className="font-plus-jakarta text-[30px] font-bold leading-[1.2] tracking-[-0.02em] text-slate-900 md:text-[36px] lg:text-[38px]">
+                  Compare Companies
+                </h1>
+                <p className="max-w-3xl font-inter text-base leading-7 text-slate-600">
+                  {leftCompanyData.company.companyName} vs {rightCompanyData.company.companyName}: Bandingkan pengalaman magang di dua perusahaan ini untuk melihat perbedaan budaya kerja, proses rekrutmen, dan peluang belajar.
+                </p>
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsPickerOpen(true)}
+                className="w-full rounded-full border-slate-200 px-5 text-slate-700 hover:bg-slate-100 lg:w-auto"
+              >
+                Choose Different Company
+              </Button>
+            </div>
           </div>
         </Container>
       </section>
 
       <Container className="py-7">
-          <div className="mb-4 flex flex-wrap items-center justify-end gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setIsPickerOpen(true)}
-              className="rounded-full border-slate-200 text-slate-700 hover:bg-slate-100"
-          >
-            Choose Different Company
-          </Button>
-        </div>
-
         <div className="space-y-4 rounded-2xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)] md:p-6">
           <div className="grid items-center gap-4 lg:grid-cols-[1fr_auto_1fr]">
             <CompanyHeader data={leftCompanyData} />

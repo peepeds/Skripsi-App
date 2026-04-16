@@ -162,10 +162,10 @@ export const SubCategoryCompaniesPage = () => {
           setCompanies(enrichedCompanies);
           setMeta(data.meta);
         } else {
-          setError(data.message || 'Failed to fetch companies');
+          setError(data.message || 'Failed to load companies');
         }
       } catch {
-        setError('Error fetching companies');
+        setError('An error occurred while loading companies');
       } finally {
         setLoading(false);
       }
@@ -237,9 +237,9 @@ export const SubCategoryCompaniesPage = () => {
               className="mb-6 inline-flex items-center gap-2 text-white/90 hover:bg-white/15 hover:text-white"
             />
 
-              <Skeleton className="h-12 w-80 bg-white/25" />
-              <Skeleton className="mt-3 h-5 w-full max-w-2xl bg-white/20" />
-              <Skeleton className="mt-2 h-5 w-full max-w-xl bg-white/20" />
+            <Skeleton className="h-12 w-80 bg-white/25" />
+            <Skeleton className="mt-3 h-5 w-full max-w-2xl bg-white/20" />
+            <Skeleton className="mt-2 h-5 w-full max-w-xl bg-white/20" />
           </Container>
         </section>
 
@@ -299,12 +299,14 @@ export const SubCategoryCompaniesPage = () => {
             className="mb-6 inline-flex items-center gap-2 text-white/90 hover:bg-white/15 hover:text-white"
           />
 
-            <h1 className="font-plus-jakarta text-3xl font-bold tracking-[-0.03em] text-white md:text-[56px] md:leading-[1.02]">
+          <div className="space-y-4">
+            <h1 className="max-w-4xl font-plus-jakarta text-3xl font-bold tracking-[-0.03em] text-white md:text-[42px] md:leading-[1.05] lg:text-[46px]">
               {subCategoryName}
             </h1>
-            <p className="mt-3 max-w-2xl font-inter text-sm leading-7 text-slate-200 md:text-base">
-              Temukan perusahaan terbaik di subcategory ini, bandingkan rating, dan baca review magang untuk menentukan pilihan yang tepat.
+            <p className="max-w-3xl font-inter text-sm leading-7 text-slate-200 md:text-base md:leading-8">
+              Temukan perusahaan terbaik di subkategori ini, bandingkan rating, dan baca ulasan magang untuk menemukan yang paling sesuai.
             </p>
+          </div>
         </Container>
       </section>
 
@@ -350,7 +352,7 @@ export const SubCategoryCompaniesPage = () => {
               <Input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Cari perusahaan..."
+                placeholder="Search companies..."
                 className="h-10 rounded-xl border-slate-200 bg-white pl-10 font-inter text-sm"
               />
             </div>
@@ -370,7 +372,7 @@ export const SubCategoryCompaniesPage = () => {
 
           {filteredCompanies.length === 0 ? (
             <div className="rounded-2xl border border-slate-200 bg-white py-12 text-center shadow-sm">
-              <p className="font-inter text-base text-slate-500">Tidak ada perusahaan yang cocok dengan filter saat ini.</p>
+              <p className="font-inter text-base text-slate-500">No companies match the current filter.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">

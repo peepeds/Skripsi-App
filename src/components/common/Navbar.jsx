@@ -80,17 +80,17 @@ export function Navbar() {
           </a>
         </div>
         {/* Right side */}
-        <div className="flex items-center justify-end gap-4 md:gap-6">
+        <div className="flex items-center justify-end gap-2 md:gap-6">
           {loading ? (
             <div className="w-10 h-10">
               <SkeletonCircle size={40} />
             </div>
           ) : isAuthenticated ? (
             <>
-              <Button asChild variant="ghost" size="sm" className="text-sm">
+              <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex">
                 <a href="/categories">Categories</a>
               </Button>
-              <Button asChild variant="ghost" size="sm" className="text-sm">
+              <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex">
                 <a href="/companies">Companies</a>
               </Button>
               <InboxDropdown
@@ -142,6 +142,7 @@ export function Navbar() {
           )}
         </div>
       </div>
+
     </header>
   );
 }

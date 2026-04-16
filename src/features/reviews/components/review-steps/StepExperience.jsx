@@ -1,11 +1,12 @@
 import React from "react";
+import { CircleCheckBig, Smile, Meh, Frown, OctagonAlert } from "lucide-react";
 
 const DIFFICULTY_OPTIONS = [
-  { value: 1, label: "Sangat Mudah", emoji: "😊" },
-  { value: 2, label: "Mudah", emoji: "🙂" },
-  { value: 3, label: "Sedang", emoji: "😐" },
-  { value: 4, label: "Sulit", emoji: "🤯" },
-  { value: 5, label: "Sangat Sulit", emoji: "🤬" },
+  { value: 1, label: "Sangat Mudah", Icon: CircleCheckBig },
+  { value: 2, label: "Mudah", Icon: Smile },
+  { value: 3, label: "Sedang", Icon: Meh },
+  { value: 4, label: "Sulit", Icon: Frown },
+  { value: 5, label: "Sangat Sulit", Icon: OctagonAlert },
 ];
 
 export const Step3Experience = ({ form, lookupData }) => {
@@ -145,7 +146,7 @@ export const Step3Experience = ({ form, lookupData }) => {
                   : "border-gray-200 bg-white hover:border-gray-300"
               }`}
             >
-              <span className="text-2xl leading-none">{opt.emoji}</span>
+              <opt.Icon className="h-6 w-6 text-slate-500" />
               <span className={`text-sm font-medium ${interviewDifficulty === opt.value ? "text-orange-500" : "text-gray-700"}`}>
                 {opt.label}
               </span>

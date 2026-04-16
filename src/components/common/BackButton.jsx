@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 
 const VARIANTS = {
-  ghost: "p-2 hover:bg-white/20 rounded-lg transition text-white",
+  ghost: "inline-flex items-center gap-2 p-2 hover:bg-white/20 rounded-lg transition text-white",
   default: "flex items-center gap-2 text-slate-600 hover:text-slate-900 transition",
 };
 

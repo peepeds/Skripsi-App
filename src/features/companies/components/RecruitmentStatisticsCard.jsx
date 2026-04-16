@@ -5,11 +5,11 @@ const parsePercent = (str) => parseFloat(str?.replace("%", "")) || 0;
 
 const ProgressBar = ({ label, value }) => (
   <div className="space-y-1.5">
-    <div className="flex justify-between items-center">
+  <div className="flex items-center justify-between">
       <span className="text-sm text-gray-800">{label}</span>
       <span className="text-sm text-gray-400 tabular-nums">{value}</span>
     </div>
-    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+    <div className="h-1.5 overflow-hidden rounded-full bg-gray-100">
       <div
         className="h-full bg-slate-800 rounded-full transition-all"
         style={{ width: value }}
@@ -19,7 +19,7 @@ const ProgressBar = ({ label, value }) => (
 );
 
 const SectionLabel = ({ children }) => (
-  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">{children}</p>
+  <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">{children}</p>
 );
 
 export const RecruitmentStatisticsCard = ({ statistics }) => {
@@ -35,13 +35,12 @@ export const RecruitmentStatisticsCard = ({ statistics }) => {
   );
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-6">
+    <div className="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <h3 className="text-xl font-bold text-gray-900">Recruitment Statistics</h3>
 
-      {/* Jalur Pendaftaran Populer */}
       {admissionEntries.length > 0 && (
         <div>
-          <SectionLabel>Jalur Pendaftaran Populer</SectionLabel>
+          <SectionLabel>Popular Application Tracks</SectionLabel>
           <div className="space-y-3">
             {admissionEntries.map(([track, pct]) => (
               <ProgressBar key={track} label={track} value={pct} />
@@ -50,29 +49,27 @@ export const RecruitmentStatisticsCard = ({ statistics }) => {
         </div>
       )}
 
-      {/* Durasi Proses Seleksi */}
       {recruitmentDuration && (
         <div className="border-t border-gray-100 pt-6">
-          <SectionLabel>Durasi Proses Seleksi</SectionLabel>
-          <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-4">
+          <SectionLabel>Selection Duration</SectionLabel>
+          <div className="flex items-center gap-3 rounded-xl bg-gray-50 p-4">
             <Clock size={18} className="text-gray-400 shrink-0" />
             <div>
               <p className="text-sm font-bold text-gray-900">{recruitmentDuration}</p>
-              <p className="text-xs text-gray-400">Rata-rata durasi seleksi</p>
+              <p className="text-xs text-gray-400">Average selection duration</p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Tahapan Paling Umum */}
       {selectionEntries.length > 0 && (
         <div className="border-t border-gray-100 pt-6">
-          <SectionLabel>Tahapan Paling Umum</SectionLabel>
+          <SectionLabel>Most Common Stages</SectionLabel>
           <div className="flex flex-wrap gap-2">
             {selectionEntries.map(([step, pct]) => (
               <span
                 key={step}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-800"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-800"
               >
                 {step}
                 <span className="text-gray-400 text-xs">({pct})</span>

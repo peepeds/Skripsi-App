@@ -32,6 +32,14 @@ export const CompanyGeneralInfoSection = ({
     companySlug,
     initialIsSaved,
   });
+  const trimmedCompanyName = typeof companyName === "string" ? companyName.trim() : "";
+  const trimmedCompanyAbbreviation = typeof companyAbbreviation === "string" ? companyAbbreviation.trim() : "";
+  const titleText =
+    trimmedCompanyAbbreviation &&
+    trimmedCompanyName &&
+    trimmedCompanyAbbreviation.toLowerCase() !== trimmedCompanyName.toLowerCase()
+      ? `${companyName} (${trimmedCompanyAbbreviation})`
+      : companyName;
 
   const openAuthModal = () => {
     setShowAuthModal(true);
@@ -87,13 +95,17 @@ export const CompanyGeneralInfoSection = ({
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(249,115,22,0.16),transparent_34%)]" />
 
       <Container className="relative z-10">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <BackButton variant="ghost" className="text-white/90 hover:bg-white/15 hover:text-white" />
+        <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <BackButton
+            variant="ghost"
+            label="Back to Companies"
+            className="text-white/90 hover:bg-white/15 hover:text-white"
+          />
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 md:flex-nowrap md:justify-end">
             <button
               onClick={handleShareClick}
-              className="inline-flex h-10 items-center gap-2 rounded-full border border-white/70 bg-white px-4 font-inter text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="inline-flex h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-white/70 bg-white px-4 font-inter text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
               title="Copy link to clipboard"
             >
               <Share2 className="h-4 w-4" />
@@ -102,7 +114,7 @@ export const CompanyGeneralInfoSection = ({
             <button
               onClick={handleSaveClick}
               disabled={saving}
-              className={`inline-flex h-10 items-center gap-2 rounded-full border border-white/70 bg-white px-4 font-inter text-sm font-semibold transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70 ${
+              className={`inline-flex h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-white/70 bg-white px-4 font-inter text-sm font-semibold transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70 ${
                 isSaved ? "text-orange-600" : "text-slate-700"
               }`}
             >
@@ -111,14 +123,14 @@ export const CompanyGeneralInfoSection = ({
             </button>
             <button
               onClick={handleCompareClick}
-              className="inline-flex h-10 items-center gap-2 rounded-full border border-white/70 bg-white px-4 font-inter text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="inline-flex h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-white/70 bg-white px-4 font-inter text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
               <ArrowLeftRight className="h-4 w-4" />
               Compare
             </button>
             <Button
               onClick={handleWriteReviewClick}
-              className="h-10 rounded-full bg-orange-500 px-5 font-inter text-sm font-semibold text-white hover:bg-orange-600"
+              className="h-10 shrink-0 whitespace-nowrap rounded-full bg-orange-500 px-5 font-inter text-sm font-semibold text-white hover:bg-orange-600"
             >
               Write Review
             </Button>
@@ -140,7 +152,7 @@ export const CompanyGeneralInfoSection = ({
           <div className="flex-1 min-w-0">
             <div className="mb-3 flex flex-wrap items-start gap-3">
               <h1 className="font-plus-jakarta text-3xl font-bold leading-tight text-white md:text-[42px]">
-                {companyName}
+                {titleText}
               </h1>
               {isPartner && (
                 <div className="group relative mt-2 shrink-0">
@@ -167,17 +179,17 @@ export const CompanyGeneralInfoSection = ({
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-1.5">
-                <span className="font-inter text-[20px] font-semibold leading-none text-white md:text-[22px]">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1">
+                <span className="font-inter text-lg font-semibold leading-none text-white md:text-xl">
                   {rating !== null && rating !== undefined
                     ? rating.toFixed(1).replace(".", ",")
                     : "—"}
                 </span>
-                <StarRating rating={rating} size="sm" />
+                <StarRating rating={rating} size="xs" />
               </div>
-              <span className="font-inter text-sm text-white/90">
-                {totalReviews || 0} {totalReviews === 1 ? 'ulasan' : 'ulasan'}
+              <span className="font-inter text-xs text-white/90">
+                {totalReviews || 0} {totalReviews === 1 ? "review" : "reviews"}
               </span>
             </div>
           </div>
