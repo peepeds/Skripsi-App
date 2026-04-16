@@ -6,6 +6,11 @@ export const getJobOptions = async (query) => {
   return response.data;
 };
 
+export const submitReview = async (companySlug, payload) => {
+  const response = await axiosInstance.post(`/review/${companySlug}`, payload);
+  return response.data;
+};
+
 export const getReviewSummary = async (companySlug) => {
   const response = await axiosInstance.get(`/review/${companySlug}/summary`);
   return response.data;
