@@ -30,6 +30,7 @@ const reviewSchema = z.object({
   exampleQuestions: isRequiredString(1),
   selectionProcess: isRequiredString(1),
   tipsTricks: isRequiredString(1),
+  honestyStatement: z.boolean().refine((val) => val === true, "Wajib setuju dengan Pernyataan Kejujuran"),
 });
 
 const SANITIZED_FIELDS = ["jobTitle", "testimony", "pros", "cons", "exampleQuestions", "selectionProcess", "tipsTricks"];
@@ -38,6 +39,7 @@ const STEP_KEYS = [
   ["internshipType", "workScheme", "duration", "year", "jobTitle", "category", "SubCategoryIds"],
   ["ratings", "testimony", "pros", "cons"],
   ["admissionTrack", "recruitmentSteps", "recruitmentDurationCode", "interviewDifficulty", "exampleQuestions", "selectionProcess", "tipsTricks"],
+  ["honestyStatement"],
 ];
 
 export const useReviewWizard = (onFinalSubmit) => {
@@ -70,6 +72,7 @@ export const useReviewWizard = (onFinalSubmit) => {
       exampleQuestions: "",
       selectionProcess: "",
       tipsTricks: "",
+      honestyStatement: false,
     },
     mode: "onTouched",
   });

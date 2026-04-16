@@ -36,11 +36,18 @@ const getReviewId = (review) =>
   review?.reviewId ??
   review?.internshipDetailId ??
   review?.internshipHeaderId ??
+  review?.internshipReviewId ??
   review?.id ??
   review?.detailId ??
+  review?.headerId ??
+  review?.reviewID ??
+  review?.review_id ??
   review?.internshipDetail?.internshipDetailId ??
   review?.internshipDetail?.id ??
-  review?.internshipHeader?.internshipHeaderId;
+  review?.internshipDetail?.reviewId ??
+  review?.internshipHeader?.internshipHeaderId ??
+  review?.internshipHeader?.id ??
+  review?.internshipHeader?.reviewId;
 
 const getReviewCompanyName = (review) =>
   review?.companyName ?? review?.company?.companyName ?? review?.company?.name;
@@ -96,7 +103,7 @@ export const ReviewsPage = () => {
     const { success, message, data } = handleApiResponse(response);
 
     if (!success) {
-      throw new Error(message || "Gagal memuat review terbaru");
+      throw new Error(message || "Failed to load the latest reviews.");
     }
 
     const items = Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : [];
@@ -153,7 +160,7 @@ export const ReviewsPage = () => {
         const { success, message, data } = handleApiResponse(response);
 
         if (!success) {
-          setError(message || "Gagal memuat review terbaru");
+          setError(message || "Failed to load the latest reviews.");
           return;
         }
 
@@ -169,7 +176,7 @@ export const ReviewsPage = () => {
         setNextCursor(resolvedNextCursor);
         setHasMore(resolvedHasMore);
       } catch (err) {
-        setError(normalizeErrorMessage(err, "Gagal memuat review terbaru"));
+        setError(normalizeErrorMessage(err, "Failed to load the latest reviews."));
       } finally {
         setLoading(false);
       }
@@ -185,14 +192,14 @@ export const ReviewsPage = () => {
     try {
       await fetchMore(nextCursor, true);
     } catch (err) {
-      setError(normalizeErrorMessage(err, "Gagal memuat review berikutnya"));
+      setError(normalizeErrorMessage(err, "Failed to load more reviews."));
     } finally {
       setLoadingMore(false);
     }
   };
 
   return (
-    <div className="bg-slate-50/70 py-10 md:py-14">
+    <div className="bg-slate-50 py-10 md:py-14">
       <Container>
         <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div className="space-y-2">
@@ -200,15 +207,15 @@ export const ReviewsPage = () => {
               All Recent Reviews
             </h1>
             <p className="max-w-2xl font-inter text-sm leading-6 text-slate-600 md:text-base">
-              Jelajahi ulasan terbaru dari para intern dan buka detail review untuk melihat pengalaman lengkapnya.
+              Jelajahi ulasan magang terbaru dari mahasiswa dan buka setiap review untuk melihat pengalaman lengkapnya.
             </p>
           </div>
 
           <Link
             to="/companies"
-            className="font-inter inline-flex items-center gap-2 self-start rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-orange-200 hover:text-orange-700"
+            className="font-inter inline-flex items-center gap-2 self-start rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-orange-200 hover:text-orange-700"
           >
-            Lihat companies
+            Explore Companies
           </Link>
         </div>
 
@@ -216,7 +223,7 @@ export const ReviewsPage = () => {
         {!loading && error && <ErrorMessage message={error} />}
         {!loading && !error && reviews.length === 0 && (
           <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-            <p className="font-inter text-sm text-slate-500">Belum ada review yang tersedia.</p>
+            <p className="font-inter text-sm text-slate-500">No reviews are available yet.</p>
           </div>
         )}
         {!loading && !error && reviews.length > 0 && (
@@ -246,7 +253,7 @@ export const ReviewsPage = () => {
                   disabled={loadingMore}
                   className="rounded-full border-slate-200 px-6"
                 >
-                  {loadingMore ? "Memuat..." : "Muat lebih banyak review"}
+                  {loadingMore ? "Loading..." : "Load More Reviews"}
                 </Button>
               </div>
             )}

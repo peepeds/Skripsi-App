@@ -27,7 +27,7 @@ export const useSaveCompany = ({ companySlug, initialIsSaved = false }) => {
 
       if (!success) {
         setIsSaved(previousState);
-        toast.error(message || "Gagal memperbarui status simpan perusahaan");
+        toast.error(message || "Failed to update the company save status.");
         return false;
       }
 
@@ -35,12 +35,12 @@ export const useSaveCompany = ({ companySlug, initialIsSaved = false }) => {
         setIsSaved(data.isSaved);
       }
 
-      toast.success(nextState ? "Perusahaan disimpan" : "Simpanan perusahaan dihapus");
+      toast.success(nextState ? "Company saved" : "Company removed from saved list");
       return true;
     } catch (error) {
       setIsSaved(previousState);
       toast.error(
-        normalizeErrorMessage(error, "Gagal memperbarui status simpan perusahaan")
+        normalizeErrorMessage(error, "Failed to update the company save status.")
       );
       return false;
     } finally {

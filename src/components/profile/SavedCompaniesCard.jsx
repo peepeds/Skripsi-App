@@ -11,7 +11,7 @@ const getCompanySlug = (company) =>
   pickFirstString(company?.companySlug, company?.slug, company?.company?.companySlug);
 
 const getCompanyName = (company) =>
-  pickFirstString(company?.companyName, company?.name, company?.company?.companyName) || "Perusahaan";
+  pickFirstString(company?.companyName, company?.name, company?.company?.companyName) || "Company";
 
 const getCompanyMeta = (company) =>
   pickFirstString(
@@ -31,7 +31,7 @@ export const SavedCompaniesCard = ({
     <Card className="rounded-2xl border border-slate-200">
       <CardHeader className="space-y-1 pb-3">
         <h2 className="font-plus-jakarta text-xl font-bold text-slate-900">Saved Companies</h2>
-        <p className="font-inter text-sm text-slate-500">Daftar perusahaan yang kamu simpan</p>
+        <p className="font-inter text-sm text-slate-500">Companies you saved for later</p>
       </CardHeader>
 
       <CardContent>
@@ -47,7 +47,7 @@ export const SavedCompaniesCard = ({
         )}
 
         {!loading && !error && companies.length === 0 && (
-          <p className="font-inter text-sm text-slate-500">Belum ada perusahaan yang disimpan.</p>
+          <p className="font-inter text-sm text-slate-500">No saved companies yet.</p>
         )}
 
         {!loading && !error && companies.length > 0 && (
@@ -71,7 +71,7 @@ export const SavedCompaniesCard = ({
                       disabled={isUnsaveLoading || !companySlug}
                       type="button"
                       className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 disabled:opacity-60"
-                      title="Hapus dari simpanan"
+                      title="Remove from saved companies"
                     >
                       <BookmarkMinus className="h-3.5 w-3.5" />
                       {isUnsaveLoading ? "Removing..." : "Unsave"}
@@ -83,7 +83,7 @@ export const SavedCompaniesCard = ({
                       to={`/company/${companySlug}`}
                       className="font-inter mt-2 inline-block text-xs font-semibold text-orange-600 hover:text-orange-700"
                     >
-                      Buka halaman company
+                      Open company page
                     </Link>
                   ) : null}
                 </div>

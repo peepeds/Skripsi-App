@@ -85,7 +85,7 @@ export const ReviewsTabContent = ({ companySlug, companyName, summaryData }) => 
       {loading && <ReviewListSkeleton />}
       {!loading && error && <ErrorMessage message={error} />}
       {!loading && !error && reviews.length === 0 && (
-        <EmptyStateCard message="Belum ada ulasan untuk perusahaan ini." />
+        <EmptyStateCard message="There are no reviews for this company yet." />
       )}
       {!loading && !error && reviews.length > 0 && (
         <div className="space-y-4">

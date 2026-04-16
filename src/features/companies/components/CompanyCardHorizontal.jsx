@@ -44,9 +44,13 @@ export const CompanyCardHorizontal = ({
   totalReviews,
   hideSubcategoryBadge = false,
 }) => {
+  const cardHeightClass = hideSubcategoryBadge ? "min-h-[158px]" : "min-h-[186px]";
+
   return (
     <Link to={`/company/${companySlug}`} className="block h-full">
-      <div className="flex h-full min-h-[186px] flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
+      <div
+        className={`flex h-full ${cardHeightClass} flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md`}
+      >
         <a
           href={website ? `https://${website}` : undefined}
           target="_blank"
@@ -80,13 +84,13 @@ export const CompanyCardHorizontal = ({
             <RatingStars rating={rating} totalReviews={totalReviews} />
           </div>
 
-          <div className="pt-0.5">
-            {!hideSubcategoryBadge && subcategoryName && (
+          {!hideSubcategoryBadge && subcategoryName && (
+            <div className="pt-0.5">
               <span className="font-inter inline-block w-fit rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
                 {subcategoryName}
               </span>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </Link>

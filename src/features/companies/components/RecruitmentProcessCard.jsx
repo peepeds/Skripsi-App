@@ -5,7 +5,19 @@ import { UnauthenticatedModal } from "@/components/common/UnauthenticatedModal";
 import { useAuth } from "@/hooks/useAuth";
 import { likeReview, unlikeReview } from "@/api/reviewApi";
 import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
-import { Clock, Lightbulb, MessageCircle, Share2, ThumbsUp } from "lucide-react";
+import {
+  CircleCheckBig,
+  Clock,
+  Frown,
+  Globe,
+  Lightbulb,
+  Meh,
+  MessageCircle,
+  OctagonAlert,
+  Share2,
+  Smile,
+  ThumbsUp,
+} from "lucide-react";
 
 const AVATAR_COLORS = [
   "bg-red-500", "bg-orange-500", "bg-amber-500", "bg-green-500",
@@ -24,11 +36,11 @@ const getInitials = (name) =>
   name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase();
 
 const DIFFICULTY_MAP = {
-  1: { label: "Sangat Mudah", emoji: "😊", className: "bg-green-50 text-green-700 border-green-200" },
-  2: { label: "Mudah", emoji: "🙂", className: "bg-green-50 text-green-700 border-green-200" },
-  3: { label: "Sedang", emoji: "😐", className: "bg-yellow-50 text-yellow-700 border-yellow-200" },
-  4: { label: "Sulit", emoji: "🤯", className: "bg-orange-50 text-orange-700 border-orange-200" },
-  5: { label: "Sangat Sulit", emoji: "🤬", className: "bg-red-50 text-red-700 border-red-200" },
+  1: { label: "Very Easy", Icon: CircleCheckBig, className: "bg-green-50 text-green-700 border-green-200" },
+  2: { label: "Easy", Icon: Smile, className: "bg-green-50 text-green-700 border-green-200" },
+  3: { label: "Moderate", Icon: Meh, className: "bg-yellow-50 text-yellow-700 border-yellow-200" },
+  4: { label: "Hard", Icon: Frown, className: "bg-orange-50 text-orange-700 border-orange-200" },
+  5: { label: "Very Hard", Icon: OctagonAlert, className: "bg-red-50 text-red-700 border-red-200" },
 };
 
 export const RecruitmentProcessCard = ({ data, companySlug }) => {
@@ -56,7 +68,7 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
     createdByName,
   } = data;
 
-  const displayName = createdByName ?? "Anonim";
+  const displayName = createdByName ?? "Anonymous";
   const difficulty = DIFFICULTY_MAP[interviewDifficulty];
   const processDetailId =
     data?.internshipDetailId ??
@@ -87,7 +99,7 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
 
   const handleShare = async () => {
     if (!processDetailId || !companySlug) {
-      toast.error("Link recruitment process tidak dapat dibuat karena data belum lengkap");
+      toast.error("The recruitment process link cannot be created because the data is incomplete.");
       return;
     }
 
@@ -97,20 +109,20 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
-      toast.success("Link recruitment process berhasil disalin");
+      toast.success("Recruitment process link copied successfully.");
     } catch {
       setCopied(false);
-      toast.error("Gagal menyalin link recruitment process");
+      toast.error("Failed to copy the recruitment process link.");
     }
   };
 
   const handleOpenDetail = () => {
     if (!processDetailId) {
-      toast.error("Recruitment process ID tidak ditemukan");
+      toast.error("Recruitment process ID was not found.");
       return;
     }
     if (!companySlug) {
-      toast.error("Slug company tidak ditemukan");
+      toast.error("Company slug was not found.");
       return;
     }
 
@@ -121,7 +133,7 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
     if (likeLoading) return;
 
     if (!internshipHeaderId) {
-      toast.error("Recruitment process Header ID tidak ditemukan");
+      toast.error("Recruitment process header ID was not found.");
       return;
     }
 
@@ -148,7 +160,7 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
       if (!success) {
         setLiked(previousLiked);
         setLikeCount(previousCount);
-        toast.error(message || "Gagal memperbarui like recruitment process");
+        toast.error(message || "Failed to update the recruitment process like.");
         return;
       }
 
@@ -165,7 +177,7 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
       setLiked(previousLiked);
       setLikeCount(previousCount);
       toast.error(
-        normalizeErrorMessage(error, "Gagal memperbarui like recruitment process")
+        normalizeErrorMessage(error, "Failed to update the recruitment process like.")
       );
     } finally {
       setLikeLoading(false);
@@ -183,7 +195,7 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
           handleOpenDetail();
         }
       }}
-      className="space-y-3.5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md md:p-5"
+      className="space-y-3.5 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md md:p-5"
     >
       <div className="flex items-center gap-2.5">
         <div
@@ -195,24 +207,24 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
           <p className="font-plus-jakarta text-[19px] font-semibold text-slate-900 md:text-[20px]">{displayName}</p>
           <p className="font-inter text-sm text-slate-600">{jobTitle}</p>
           {durationMonths && (
-            <p className="font-inter text-xs text-slate-400">Magang {durationMonths} bulan</p>
+            <p className="font-inter text-xs text-slate-400">Internship duration: {durationMonths} months</p>
           )}
         </div>
       </div>
 
       <div className="flex flex-wrap gap-1.5">
         {admissionTrack && (
-            <span className="inline-flex items-center gap-1 rounded-lg border border-sky-200 bg-sky-100/70 px-2.5 py-1 font-inter text-sm font-semibold text-sky-700">
-            🌐 {admissionTrack}
+            <span className="inline-flex max-w-full items-center gap-1 rounded-lg border border-sky-200 bg-sky-100/70 px-2.5 py-1 font-inter text-sm font-semibold text-sky-700">
+            <Globe className="h-3.5 w-3.5 shrink-0" /> {admissionTrack}
           </span>
         )}
         {difficulty && (
-            <span className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 font-inter text-sm font-semibold ${difficulty.className}`}>
-            {difficulty.emoji} {difficulty.label}
+            <span className={`inline-flex max-w-full items-center gap-1 rounded-lg border px-2.5 py-1 font-inter text-sm font-semibold ${difficulty.className}`}>
+            <difficulty.Icon className="h-3.5 w-3.5 shrink-0" /> {difficulty.label}
           </span>
         )}
         {recruitmentDuration && (
-            <span className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-100/80 px-2.5 py-1 font-inter text-sm font-semibold text-slate-600">
+            <span className="inline-flex max-w-full items-center gap-1 rounded-lg border border-slate-200 bg-slate-100/80 px-2.5 py-1 font-inter text-sm font-semibold text-slate-600">
             <Clock size={12} /> {recruitmentDuration}
           </span>
         )}
@@ -220,12 +232,12 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
 
       {recruitmentSteps.length > 0 && (
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-3.5">
-          <p className="mb-2 font-inter text-xs font-semibold uppercase tracking-wide text-slate-500">Tahapan Seleksi</p>
-          <div className="flex flex-wrap gap-1.5">
+          <p className="mb-2 font-inter text-xs font-semibold uppercase tracking-wide text-slate-500">Selection Process</p>
+          <div className="flex flex-wrap gap-2">
             {recruitmentSteps.map((step, idx) => (
               <span
                 key={idx}
-                className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 font-inter text-sm text-slate-700"
+                className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 font-inter text-sm text-slate-700"
               >
                 <span className="text-orange-400">○</span> {step}
               </span>
@@ -236,26 +248,26 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
 
       {selectionProcess && (
         <div>
-            <p className="mb-2 font-inter text-xs font-semibold uppercase tracking-wide text-slate-500">Pengalaman Seleksi</p>
-          <p className="font-inter text-[15px] leading-relaxed text-slate-700 whitespace-pre-line">{selectionProcess}</p>
+            <p className="mb-2 font-inter text-xs font-semibold uppercase tracking-wide text-slate-500">Selection Experience</p>
+          <p className="whitespace-pre-line font-inter text-[15px] leading-7 text-slate-700">{selectionProcess}</p>
         </div>
       )}
 
       {exampleQuestions && (
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-3.5">
           <p className="mb-2 flex items-center gap-2 font-inter text-xs font-semibold uppercase tracking-wide text-slate-500">
-            <MessageCircle size={13} /> Contoh Pertanyaan Wawancara
+            <MessageCircle size={13} /> Interview Questions
           </p>
-          <p className="font-inter text-[15px] leading-relaxed text-slate-700 whitespace-pre-line">{exampleQuestions}</p>
+          <p className="whitespace-pre-line font-inter text-[15px] leading-7 text-slate-700">{exampleQuestions}</p>
         </div>
       )}
 
       {tipsTricks && (
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-3.5">
           <p className="mb-2 flex items-center gap-2 font-inter text-xs font-semibold uppercase tracking-wide text-amber-700">
-            <Lightbulb size={13} /> Tips Lolos Seleksi
+            <Lightbulb size={13} /> Tips to Succeed
           </p>
-          <p className="font-inter text-[15px] leading-relaxed text-amber-800 whitespace-pre-line">{tipsTricks}</p>
+          <p className="whitespace-pre-line font-inter text-[15px] leading-7 text-amber-800">{tipsTricks}</p>
         </div>
       )}
 

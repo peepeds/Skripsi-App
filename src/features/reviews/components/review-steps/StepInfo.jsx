@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { CalendarDays, BadgeCheck } from "lucide-react";
 import { getJobOptions } from "@/api/reviewApi";
 
 export const Step1InternshipInfo = ({ form, lookupData, categories, company }) => {
@@ -232,7 +233,7 @@ export const Step1InternshipInfo = ({ form, lookupData, categories, company }) =
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="duration" className="flex items-center gap-2 text-sm font-semibold text-gray-900 mb-3">
-                <span className="text-gray-400">📅</span>
+                <CalendarDays className="h-4 w-4 text-gray-400" />
                 Durasi Magang <span className="text-red-500">*</span>
               </label>
               <select
@@ -250,7 +251,7 @@ export const Step1InternshipInfo = ({ form, lookupData, categories, company }) =
 
             <div>
               <label htmlFor="year" className="flex items-center gap-2 text-sm font-semibold text-gray-900 mb-3">
-                <span className="text-gray-400">☑</span>
+                <BadgeCheck className="h-4 w-4 text-gray-400" />
                 Tahun Magang <span className="text-red-500">*</span>
               </label>
               <input

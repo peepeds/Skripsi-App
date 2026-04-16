@@ -12,7 +12,7 @@ import { Share2, ThumbsUp } from "lucide-react";
 const RATING_ROWS = [
   [
     { key: "workCulture", label: "Budaya Kerja" },
-    { key: "learningOpp", label: "Belajar" },
+    { key: "learningOpp", label: "Kesempatan Belajar" },
   ],
   [
     { key: "mentorship", label: "Mentorship" },
@@ -22,7 +22,16 @@ const RATING_ROWS = [
 ];
 
 const computeOverallRating = (ratings = {}) => {
-  const values = Object.values(ratings).filter((v) => typeof v === "number");
+  const values = Object.values(ratings)
+    .map((value) => {
+      if (typeof value === "number" && Number.isFinite(value)) return value;
+      if (typeof value === "string" && value.trim() !== "") {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : null;
+      }
+      return null;
+    })
+    .filter((v) => typeof v === "number");
   if (!values.length) return null;
   return values.reduce((sum, v) => sum + v, 0) / values.length;
 };
@@ -64,7 +73,10 @@ const resolveCompanyName = (review) =>
   review?.internshipHeader?.companyName ??
   review?.internshipDetail?.company?.companyName ??
   review?.internshipDetail?.companyName ??
-  "Perusahaan";
+  "Company";
+
+const resolveReviewerSlug = (review, displayName) =>
+  review?.resolvedReviewerSlug ?? review?.reviewerSlug ?? slugify(displayName);
 
 const resolveCompanySlug = (review, companySlug) =>
   companySlug ??
@@ -93,12 +105,23 @@ const resolveInternshipHeaderId = (review) =>
   review?.internshipReviewId ??
   review?.reviewID ??
   review?.review_id ??
+  review?.reviewId ??
+  review?.resolvedReviewId ??
+  review?.id ??
+  review?.detailId ??
   review?.internshipHeader?.internshipHeaderId ??
   review?.internshipHeader?.id ??
   review?.internshipDetail?.internshipHeaderId ??
-  review?.internshipDetail?.headerId;
+  review?.internshipDetail?.headerId ??
+  review?.internshipDetail?.id;
 
-export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
+export const ReviewItemCard = ({
+  review,
+  companySlug,
+  interactive = true,
+  hideRatings = false,
+  hideHelpful = false,
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuth();
@@ -118,12 +141,21 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
     workLifeBalance: review?.workLifeBalance ?? review?.ratingWorkLifeBalance ?? 0,
   };
 
+  const normalizeRating = (value) => {
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (typeof value === "string" && value.trim() !== "") {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+    return 0;
+  };
+
   const displayName =
     review?.createdByName ??
     review?.createdBy ??
     review?.authorName ??
     review?.user?.name ??
-    "Anonim";
+    "Anonymous";
 
   const jobTitle = review?.jobTitle ?? review?.role ?? review?.position ?? "-";
   const resolvedCompanySlug = resolveCompanySlug(review, companySlug);
@@ -137,6 +169,7 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
   const pros = review?.pros;
   const cons = review?.cons;
   const createdAt = review?.createdAt;
+  const resolvedReviewerSlug = resolveReviewerSlug(review, displayName);
 
   const overallRating =
     typeof review?.averageRating === "number"
@@ -153,22 +186,27 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
   }, [review]);
 
   const handleShare = async () => {
-    if (!reviewDetailId || !resolvedCompanySlug) {
-      toast.error("Link review tidak dapat dibuat karena data belum lengkap");
+    const reviewPath = reviewDetailId && resolvedCompanySlug
+      ? `/company/${resolvedCompanySlug}/review/${reviewDetailId}`
+      : resolvedReviewerSlug
+      ? `/reviews/user/${resolvedReviewerSlug}/${reviewDetailId ?? "latest"}`
+      : null;
+
+    if (!reviewPath) {
+      toast.error("The review link cannot be generated because the data is incomplete.");
       return;
     }
 
     try {
-      const reviewPath = `/company/${resolvedCompanySlug}/review/${reviewDetailId}`;
       const shareUrl = `${window.location.origin}${reviewPath}`;
 
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
-      toast.success("Link review berhasil disalin");
+      toast.success("Review link copied successfully.");
     } catch {
       setCopied(false);
-      toast.error("Gagal menyalin link review");
+      toast.error("Failed to copy the review link.");
     }
   };
 
@@ -176,11 +214,11 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
     if (!interactive) return;
 
     if (!reviewDetailId) {
-      toast.error("Review ID tidak ditemukan");
+      toast.error("Review ID was not found.");
       return;
     }
     if (!resolvedCompanySlug) {
-      toast.error("Slug company tidak ditemukan");
+      toast.error("Company slug was not found.");
       return;
     }
 
@@ -191,7 +229,7 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
     if (likeLoading) return;
 
     if (!internshipHeaderId) {
-      toast.error("Review Header ID tidak ditemukan");
+      toast.error("Review header ID was not found.");
       return;
     }
 
@@ -218,7 +256,7 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
       if (!success) {
         setLiked(previousLiked);
         setLikeCount(previousCount);
-        toast.error(message || "Gagal memperbarui like review");
+        toast.error(message || "Failed to update the review like.");
         return;
       }
 
@@ -234,7 +272,7 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
     } catch (error) {
       setLiked(previousLiked);
       setLikeCount(previousCount);
-      toast.error(normalizeErrorMessage(error, "Gagal memperbarui like review"));
+      toast.error(normalizeErrorMessage(error, "Failed to update the review like."));
     } finally {
       setLikeLoading(false);
     }
@@ -252,7 +290,7 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
           handleOpenDetail();
         }
       }}
-      className={`space-y-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition md:p-5 ${
+      className={`space-y-4 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition md:p-5 ${
         interactive ? "cursor-pointer hover:shadow-md" : ""
       }`}
     >
@@ -268,7 +306,7 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
             <p className="font-inter text-sm text-slate-600">{jobTitle ?? "-"}</p>
             <div className="mt-1 flex flex-wrap gap-1.5">
               {durationMonths && (
-                <InfoBadge>{durationMonths} bulan</InfoBadge>
+                <InfoBadge>{durationMonths} months</InfoBadge>
               )}
               {year && <InfoBadge>{year}</InfoBadge>}
               {type && <InfoBadge>{type}</InfoBadge>}
@@ -302,18 +340,22 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
         </div>
       )}
 
-      <div className="space-y-1.5 rounded-lg border border-slate-200 bg-slate-50 p-3.5 md:p-4">
-        {RATING_ROWS.map((row, rowIdx) => (
-          <div key={rowIdx} className="grid grid-cols-2 gap-x-5 gap-y-1">
-            {row.map(({ key, label }) => (
-              <div key={key} className="flex items-center justify-between gap-2">
-                <span className="font-inter whitespace-nowrap text-[15px] text-slate-600">{label}</span>
-                <StarRating rating={ratings[key] ?? 0} size="xs" />
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+      {!hideRatings && (
+        <div className="space-y-1.5 rounded-2xl border border-slate-200 bg-slate-50 p-3.5 sm:p-4">
+          {RATING_ROWS.map((row, rowIdx) => (
+            <div key={rowIdx} className="grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-1">
+              {row.map(({ key, label }) => (
+                <div key={key} className="flex min-w-0 items-center justify-between gap-2">
+                  <span className="font-inter text-[14px] text-slate-600 sm:text-[15px]">{label}</span>
+                  <div className="shrink-0">
+                    <StarRating rating={normalizeRating(ratings[key])} size="xs" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
 
       {testimony && <p className="font-inter text-[15px] leading-relaxed text-slate-800">"{testimony}"</p>}
 
@@ -334,23 +376,29 @@ export const ReviewItemCard = ({ review, companySlug, interactive = true }) => {
         </div>
       )}
 
-      <div className="flex items-center justify-between border-t border-slate-200 pt-3">
-        <button
-          onClick={(event) => {
-            event.stopPropagation();
-            handleLikeClick();
-          }}
-          disabled={likeLoading}
-          className={`inline-flex items-center gap-2 rounded-lg border px-3.5 py-1.5 font-inter text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${
-            liked
-              ? "border-orange-200 bg-orange-50 text-orange-600"
-              : "border-slate-200 text-slate-600 hover:bg-slate-50"
-          }`}
-          type="button"
-        >
-          <ThumbsUp className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
-          {likeLoading ? "Saving..." : `Helpful (${likeCount})`}
-        </button>
+      <div
+        className={`flex items-center border-t border-slate-200 pt-3 ${
+          hideHelpful ? "justify-end" : "justify-between"
+        }`}
+      >
+        {!hideHelpful && (
+          <button
+            onClick={(event) => {
+              event.stopPropagation();
+              handleLikeClick();
+            }}
+            disabled={likeLoading}
+            className={`inline-flex items-center gap-2 rounded-lg border px-3.5 py-1.5 font-inter text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${
+              liked
+                ? "border-orange-200 bg-orange-50 text-orange-600"
+                : "border-slate-200 text-slate-600 hover:bg-slate-50"
+            }`}
+            type="button"
+          >
+            <ThumbsUp className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
+            {likeLoading ? "Saving..." : `Helpful (${likeCount})`}
+          </button>
+        )}
 
         <div className="flex items-center gap-2">
           {createdAt && (

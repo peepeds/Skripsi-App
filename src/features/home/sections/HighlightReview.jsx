@@ -32,11 +32,18 @@ const getReviewId = (review) =>
   review?.reviewId ??
   review?.internshipDetailId ??
   review?.internshipHeaderId ??
+  review?.internshipReviewId ??
   review?.id ??
   review?.detailId ??
+  review?.headerId ??
+  review?.reviewID ??
+  review?.review_id ??
   review?.internshipDetail?.internshipDetailId ??
   review?.internshipDetail?.id ??
-  review?.internshipHeader?.internshipHeaderId;
+  review?.internshipDetail?.reviewId ??
+  review?.internshipHeader?.internshipHeaderId ??
+  review?.internshipHeader?.id ??
+  review?.internshipHeader?.reviewId;
 
 const getReviewCompanyName = (review) =>
   review?.companyName ?? review?.company?.companyName ?? review?.company?.name;
@@ -148,9 +155,8 @@ export function HighlightReview() {
                   <RecentReviewCard
                     key={review.resolvedReviewId ?? review.reviewId ?? review.internshipDetailId ?? i}
                     {...review}
-                    clickVariant="author"
                     reviewerSlug={review.resolvedReviewerSlug}
-                    className="w-[320px] shrink-0 snap-start sm:w-[340px]"
+                    className="w-[320px] shrink-0 snap-start px-5 pt-5 pb-4 sm:w-[340px]"
                   />
                 ))}
           </div>

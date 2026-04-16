@@ -41,9 +41,16 @@ const getReviewId = (review) =>
   review?.internshipHeaderId ??
   review?.id ??
   review?.detailId ??
+  review?.headerId ??
+  review?.reviewID ??
+  review?.review_id ??
   review?.internshipDetail?.internshipDetailId ??
   review?.internshipDetail?.id ??
-  review?.internshipHeader?.internshipHeaderId;
+  review?.internshipHeader?.internshipHeaderId ??
+  review?.internshipHeader?.id ??
+  review?.internshipHeader?.headerId ??
+  review?.internshipDetail?.internshipHeader?.internshipHeaderId ??
+  review?.internshipDetail?.internshipHeader?.id;
 
 const collectReviewIds = (review) => {
   const ids = [
@@ -67,10 +74,10 @@ const collectReviewIds = (review) => {
 };
 
 const getReviewerName = (review) =>
-  pickString(review?.createdBy, review?.createdByName, review?.authorName, review?.name) || "Anonim";
+  pickString(review?.createdBy, review?.createdByName, review?.authorName, review?.name) || "Anonymous";
 
 const getCompanyName = (review) =>
-  pickString(review?.companyName, review?.company?.companyName, review?.company?.name) || "Perusahaan";
+  pickString(review?.companyName, review?.company?.companyName, review?.company?.name) || "Company";
 
 const getReviewWebsite = (review) =>
   pickString(review?.companyWebsite, review?.company?.website, review?.website);
@@ -120,10 +127,18 @@ const toReviewItemPayload = (item) => ({
     item?.internshipReviewId ??
     item?.reviewID ??
     item?.review_id ??
+    item?.reviewId ??
+    item?.resolvedReviewId ??
+    item?.id ??
+    item?.detailId ??
     item?.internshipHeader?.internshipHeaderId ??
     item?.internshipHeader?.id ??
+    item?.internshipHeader?.headerId ??
     item?.internshipDetail?.internshipHeaderId ??
-    item?.internshipDetail?.internshipHeader?.internshipHeaderId,
+    item?.internshipDetail?.internshipHeader?.internshipHeaderId ??
+    item?.internshipDetail?.internshipHeader?.id ??
+    item?.internshipDetail?.headerId ??
+    item?.internshipDetail?.id,
   reviewId: item?.reviewId ?? item?.resolvedReviewId,
   id: item?.id ?? item?.resolvedReviewId,
   detailId: item?.detailId ?? item?.resolvedReviewId,
@@ -150,7 +165,7 @@ export const ReviewerReviewsDetailPage = () => {
 
         const parsedReviews = handleApiResponse(reviewsResponse);
         if (!parsedReviews.success) {
-          setError(parsedReviews.message || "Gagal memuat review user");
+          setError(parsedReviews.message || "Failed to load reviewer data.");
           return;
         }
 
@@ -237,7 +252,7 @@ export const ReviewerReviewsDetailPage = () => {
 
         setReviews(hydrated);
       } catch (err) {
-        setError(normalizeErrorMessage(err, "Gagal memuat review user"));
+        setError(normalizeErrorMessage(err, "Failed to load reviewer data."));
       } finally {
         setLoading(false);
       }
@@ -247,41 +262,70 @@ export const ReviewerReviewsDetailPage = () => {
   }, [reviewId]);
 
   const selectedReview = useMemo(() => {
-    const sameReviewer = reviews
+    const sortedReviews = [...reviews].sort((a, b) => {
+      const aTime = new Date(a?.createdAt ?? a?.created_at ?? 0).getTime();
+      const bTime = new Date(b?.createdAt ?? b?.created_at ?? 0).getTime();
+      return bTime - aTime;
+    });
+
+    const sameReviewer = sortedReviews
       .filter((item) => item?.resolvedReviewerSlug === reviewerSlug)
       .sort((a, b) => {
         const aTime = new Date(a?.createdAt ?? a?.created_at ?? 0).getTime();
         const bTime = new Date(b?.createdAt ?? b?.created_at ?? 0).getTime();
         return bTime - aTime;
       });
+
     if (String(reviewId) === "latest") {
-      return sameReviewer[0] ?? null;
+      return sameReviewer[0] ?? sortedReviews[0] ?? null;
     }
 
+    const matchedBySlugAndId = sameReviewer.find((item) =>
+      collectReviewIds(item).includes(String(reviewId))
+    );
+
+    if (matchedBySlugAndId) return matchedBySlugAndId;
+
+    const matchedByIdOnly = sortedReviews.find((item) =>
+      collectReviewIds(item).includes(String(reviewId))
+    );
+
+    if (matchedByIdOnly) return matchedByIdOnly;
+
     return (
-      sameReviewer.find((item) => String(item?.resolvedReviewId) === String(reviewId)) ??
       sameReviewer[0] ??
+      sortedReviews[0] ??
       null
     );
   }, [reviews, reviewId, reviewerSlug]);
 
   const activeReviewerSlug = useMemo(() => {
     if (selectedReview?.resolvedReviewerSlug) return selectedReview.resolvedReviewerSlug;
-    return reviewerSlug || "unknown-reviewer";
-  }, [selectedReview, reviewerSlug]);
+    const firstSlug = reviews.find((item) => item?.resolvedReviewerSlug)?.resolvedReviewerSlug;
+    return reviewerSlug || firstSlug || "unknown-reviewer";
+  }, [selectedReview, reviewerSlug, reviews]);
 
   const reviewerName = useMemo(() => {
     if (selectedReview?.resolvedReviewerName) return selectedReview.resolvedReviewerName;
 
     const found = reviews.find((item) => item?.resolvedReviewerSlug === activeReviewerSlug);
-    return found?.resolvedReviewerName || "Reviewer";
+    return found?.resolvedReviewerName || reviews[0]?.resolvedReviewerName || "Reviewer";
   }, [selectedReview, reviews, activeReviewerSlug]);
 
   const moreReviews = useMemo(() => {
     if (!selectedReview) return [];
 
+    const selectedSlug = selectedReview?.resolvedReviewerSlug;
+    const selectedName = String(selectedReview?.resolvedReviewerName || "").toLowerCase().trim();
+
     return reviews
-      .filter((item) => item?.resolvedReviewerSlug === activeReviewerSlug)
+      .filter((item) => {
+        if (selectedSlug && item?.resolvedReviewerSlug) {
+          return item.resolvedReviewerSlug === selectedSlug;
+        }
+
+        return String(item?.resolvedReviewerName || "").toLowerCase().trim() === selectedName;
+      })
       .filter((item) => String(item?.resolvedReviewId) !== String(selectedReview?.resolvedReviewId))
       .sort((a, b) => {
         const aTime = new Date(a?.createdAt ?? a?.created_at ?? 0).getTime();
@@ -289,7 +333,7 @@ export const ReviewerReviewsDetailPage = () => {
         return bTime - aTime;
       })
       .slice(0, 2);
-  }, [reviews, selectedReview, activeReviewerSlug]);
+  }, [reviews, selectedReview]);
 
   return (
     <div className="bg-slate-50/70 py-8 md:py-10">
@@ -307,7 +351,7 @@ export const ReviewerReviewsDetailPage = () => {
         {loading && <DetailSkeleton />}
         {!loading && error && <ErrorMessage message={error} />}
         {!loading && !error && !selectedReview && (
-          <ErrorMessage message="Review user tidak ditemukan." />
+          <ErrorMessage message="Reviewer data was not found." />
         )}
 
         {!loading && !error && selectedReview && (
@@ -316,6 +360,8 @@ export const ReviewerReviewsDetailPage = () => {
               review={toReviewItemPayload(selectedReview)}
               companySlug={selectedReview?.resolvedCompanySlug}
               interactive={false}
+              hideRatings={true}
+              hideHelpful={true}
             />
 
             {moreReviews.length > 0 && (
@@ -330,6 +376,8 @@ export const ReviewerReviewsDetailPage = () => {
                       review={toReviewItemPayload(item)}
                       companySlug={item?.resolvedCompanySlug}
                       interactive={false}
+                      hideRatings={true}
+                      hideHelpful={true}
                     />
                   ))}
                 </div>
