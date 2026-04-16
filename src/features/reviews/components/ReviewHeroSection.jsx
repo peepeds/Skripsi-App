@@ -6,14 +6,14 @@ import { Container } from "@/components/layout/Container";
  * Hero section untuk halaman review write
  * Styling sama dengan HeroSection di home page
  */
-export function ReviewHeroSection({ company }) {
+export function ReviewHeroSection() {
   return (
-    <section className="py-24 bg-gray-50">
+    <section className="bg-gray-50 py-16">
       <Container>
-        <h1 className="text-4xl md:text-5xl font-semibold mb-4 text-gray-900">
+        <h1 className="mb-3 text-4xl font-semibold text-gray-900 md:text-5xl">
           Write Review
         </h1>
-        <p className="text-gray-600 mb-8 max-w-2xl">
+        <p className="mb-6 max-w-2xl text-gray-600">
           Bagikan pengalaman magang kamu untuk membantu teman-teman mahasiswa lainnya!
         </p>
       </Container>

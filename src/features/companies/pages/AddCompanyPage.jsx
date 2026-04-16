@@ -80,21 +80,21 @@ export const AddCompanyPage = () => {
 
   return (
     <div className="bg-slate-50">
-      <section className="border-b border-slate-200 bg-slate-100 py-12 md:py-16">
+      <section className="border-b border-slate-200 bg-slate-100 py-8 md:py-12">
         <Container>
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition-colors hover:text-slate-900"
+            className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition-colors hover:text-slate-900"
           >
             <ArrowLeft size={16} />
             Back to Companies
           </button>
 
-          <h1 className="mb-4 text-4xl font-semibold text-gray-900 md:text-5xl">
+          <h1 className="mb-3 text-4xl font-semibold text-gray-900 md:text-5xl">
             Add New Company
           </h1>
-          <p className="mb-8 max-w-2xl text-gray-600">
+          <p className="mb-6 max-w-2xl text-gray-600">
             Bantu mahasiswa lain dengan menambahkan informasi perusahaan. Pengajuan kamu akan diverifikasi sebelum dipublikasikan.
           </p>
         </Container>
