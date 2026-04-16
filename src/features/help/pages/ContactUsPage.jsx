@@ -67,13 +67,13 @@ function ContactCard({ item }) {
 export function ContactUsPage() {
   return (
     <main className="bg-slate-50/50">
-      <section className="py-24 bg-gray-50">
+      <section className="bg-gray-50 py-16">
         <Container>
           <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl font-semibold mb-4 text-gray-900">
+            <h1 className="mb-3 text-4xl font-semibold text-gray-900 md:text-5xl">
               Contact Us
             </h1>
-            <p className="text-gray-600 mb-8 max-w-2xl">
+            <p className="mb-6 max-w-2xl text-gray-600">
               Kami terbuka untuk pertanyaan, masukan, dan laporan agar pengalaman di InternView tetap nyaman.
             </p>
           </div>

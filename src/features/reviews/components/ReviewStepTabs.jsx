@@ -33,7 +33,7 @@ export const ReviewStepTabs = ({
   };
 
   return (
-    <section className="w-full bg-white border-b border-gray-200 py-4">
+    <section className="w-full border-b border-gray-200 bg-white py-4">
       <Container>
         {/* Step Indicators with Connectors */}
         <div className="flex items-center justify-between">

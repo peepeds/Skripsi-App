@@ -20,7 +20,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden border-b border-slate-100 bg-white py-6 md:py-8 lg:py-0">
+    <section className="relative overflow-hidden border-b border-slate-100 bg-white py-4 md:py-6 lg:py-0">
       <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[52vw] lg:block">
         <img
           src={internPics}
@@ -31,16 +31,16 @@ export function HeroSection() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="relative z-10 flex min-h-[420px] items-center md:min-h-[460px] lg:min-h-[560px]">
-          <div className="w-full max-w-[640px] py-2 lg:w-[52%] lg:py-10">
+        <div className="relative z-10 flex min-h-[340px] items-center md:min-h-[380px] lg:min-h-[480px]">
+          <div className="w-full max-w-[640px] py-1 lg:w-[52%] lg:py-6">
               <h1 className="font-plus-jakarta mb-4 text-[34px] font-bold leading-[1.15] tracking-[-0.015em] text-slate-900 md:text-[42px]">
               Temukan Tempat <br className="hidden md:block" /> Magang Impianmu
             </h1>
-            <p className="font-inter mb-7 max-w-[590px] text-[15px] leading-[1.65] text-slate-600 md:text-[17px]">
+            <p className="font-inter mb-5 max-w-[590px] text-[15px] leading-[1.65] text-slate-600 md:text-[17px]">
               Platform ulasan magang dari mahasiswa, untuk mahasiswa. Cari tahu tempat magang terbaik melalui ulasan mahasiswa dan tingkatkan pengalaman magangmu!
             </p>
 
-            <div className="mb-5 w-full max-w-[640px]">
+            <div className="mb-4 w-full max-w-[640px]">
               <SearchBar />
             </div>
 

@@ -31,32 +31,32 @@ export const ReviewFormTabsPanel = ({ company, onSubmit: onFinalSubmit, loading,
       case 0:
         return (
           <>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Informasi Magang</h2>
-            <p className="text-sm text-gray-600 mb-6">Isi informasi dasar tentang pengalaman magang Anda</p>
+            <h2 className="mb-2 text-lg font-semibold text-gray-900">Informasi Magang</h2>
+            <p className="mb-6 text-sm text-gray-600">Isi informasi dasar tentang pengalaman magang Anda</p>
             <Step1InternshipInfo {...stepProps} />
           </>
         );
       case 1:
         return (
           <>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Penilaian & Ulasan</h2>
-            <p className="text-sm text-gray-600 mb-6">Bagikan penilaian objektifmu tentang pengalaman magang di sana.</p>
+            <h2 className="mb-2 text-lg font-semibold text-gray-900">Penilaian & Ulasan</h2>
+            <p className="mb-6 text-sm text-gray-600">Bagikan penilaian objektifmu tentang pengalaman magang di sana.</p>
             <Step2Rating {...stepProps} />
           </>
         );
       case 2:
         return (
           <>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Proses Rekrutmen dan Cara Apply</h2>
-            <p className="text-sm text-gray-600 mb-6">Bantu kandidat lain mendaftar di perusahaan yang mereka inginkan.</p>
+            <h2 className="mb-2 text-lg font-semibold text-gray-900">Proses Rekrutmen dan Cara Apply</h2>
+            <p className="mb-6 text-sm text-gray-600">Bantu kandidat lain mendaftar di perusahaan yang mereka inginkan.</p>
             <Step3Experience {...stepProps} />
           </>
         );
       case 3:
         return (
           <>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Pemeriksaan Ulang (Konfirmasi)</h2>
-            <p className="text-sm text-gray-600 mb-6">Pastikan semua data yang kamu isi sudah benar sebelum diunggah.</p>
+            <h2 className="mb-2 text-lg font-semibold text-gray-900">Pemeriksaan Ulang (Konfirmasi)</h2>
+            <p className="mb-6 text-sm text-gray-600">Pastikan semua data yang kamu isi sudah benar sebelum diunggah.</p>
             <Step4Submit {...stepProps} />
           </>
         );
@@ -74,7 +74,7 @@ export const ReviewFormTabsPanel = ({ company, onSubmit: onFinalSubmit, loading,
           <div className="space-y-6">
             {renderStepContent()}
 
-            <div className="flex justify-between items-center pt-6 border-t border-gray-200">
+            <div className="flex items-center justify-between border-t border-gray-200 pt-6">
               <button
                 onClick={isFirstStep ? onCancel : onBack}
                 disabled={isFirstStep && !onCancel}
