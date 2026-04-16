@@ -12,6 +12,7 @@ import { CompaniesPage } from "@/features/companies/pages/CompaniesPage";
 import { CompanyDetailPage } from "@/features/companies/pages/CompanyDetailPage";
 import { CompareCompaniesPage } from "@/features/companies/pages/CompareCompaniesPage";
 import { AddCompanyPage } from "@/features/companies/pages/AddCompanyPage";
+import { ContactUsPage, FaqPage } from "@/features/help";
 import {
   RecruitmentProcessDetailPage,
   ReviewDetailPage,
@@ -30,6 +31,8 @@ export const appRoutes = [
   { path: "/subcategory/:subCategoryName/companies", element: <SubCategoryCompaniesPage />, showNavbar: true },
   { path: "/companies", element: <CompaniesPage />, showNavbar: true },
   { path: "/reviews", element: <ReviewsPage />, showNavbar: true },
+  { path: "/faq", element: <FaqPage />, showNavbar: true },
+  { path: "/contact", element: <ContactUsPage />, showNavbar: true },
   { path: "/reviews/user/:reviewerSlug/:reviewId", element: <ReviewerReviewsDetailPage />, showNavbar: true },
   { path: "/companies/add", element: <AddCompanyPage />, showNavbar: true },
   { path: "/company/:companySlug", element: <CompanyDetailPage />, showNavbar: true },

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { toast } from "sonner";
 import { isRequiredString, isRequiredNumber } from "@/helpers/validations";
 import { sanitizeFields } from "@/helpers/sanitize";
 
@@ -84,7 +85,12 @@ export const useReviewWizard = (onFinalSubmit) => {
       return;
     }
     const isValid = await form.trigger(keys);
-    if (isValid) setStep((s) => Math.min(s + 1, 3));
+    if (isValid) {
+      setStep((s) => Math.min(s + 1, 3));
+      return;
+    }
+
+    toast.error("Lengkapi semua field wajib di langkah ini sebelum lanjut.");
   };
 
   const onBack = () => setStep((s) => Math.max(s - 1, 0));

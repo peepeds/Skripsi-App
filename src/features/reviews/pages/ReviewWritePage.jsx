@@ -9,6 +9,8 @@ import { Container } from "@/components/layout/Container";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ReviewWriteForm } from "../components/ReviewWriteForm";
 import { ReviewHeroSection } from "../components/ReviewHeroSection";
+import { submitReview } from "@/api/reviewApi";
+import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
 
 /**
  * ReviewWritePage
@@ -32,13 +34,19 @@ export const ReviewWritePage = () => {
     setLoading(true);
 
     try {
-      void payload;
-      toast.success("Review submitted successfully.");
-      // After successful submission
+      const response = await submitReview(companySlug, payload);
+      const { success, message } = handleApiResponse(response);
+
+      if (!success) {
+        toast.error(message);
+        return;
+      }
+
+      toast.success(message || "Review submitted successfully.");
       navigate(`/company/${companySlug}`);
     } catch (error) {
       console.error("Error submitting review:", error);
-      toast.error("Failed to submit review. Please try again.");
+      toast.error(normalizeErrorMessage(error, "Failed to submit review. Please try again."));
     } finally {
       setLoading(false);
     }

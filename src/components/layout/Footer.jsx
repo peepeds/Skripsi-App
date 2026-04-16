@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export function Footer() {
   return (
     <footer className="bg-[#232B38] text-white py-6 sm:py-8 lg:py-9 font-sans">
@@ -23,8 +25,8 @@ export function Footer() {
           <div>
             <h3 className="text-white text-xs sm:text-sm font-semibold mb-2 sm:mb-3">Need Help?</h3>
             <ul className="space-y-2 text-slate-400 text-xs sm:text-sm">
-              <li><a href="/faq" className="hover:text-white transition">FAQ</a></li>
-              <li><a href="/contact" className="hover:text-white transition">Contact Us</a></li>
+              <li><Link to="/faq" className="hover:text-white transition">FAQ</Link></li>
+              <li><Link to="/contact" className="hover:text-white transition">Contact Us</Link></li>
             </ul>
           </div>
         </div>
