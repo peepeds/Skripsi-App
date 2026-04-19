@@ -6,12 +6,12 @@ const parsePercent = (str) => parseFloat(str?.replace("%", "")) || 0;
 const ProgressBar = ({ label, value }) => (
   <div className="space-y-1.5">
   <div className="flex items-center justify-between">
-      <span className="text-sm text-gray-800">{label}</span>
-      <span className="text-sm text-gray-400 tabular-nums">{value}</span>
+      <span className="text-sm text-slate-800">{label}</span>
+      <span className="tabular-nums text-sm text-slate-400">{value}</span>
     </div>
-    <div className="h-1.5 overflow-hidden rounded-full bg-gray-100">
+    <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
       <div
-        className="h-full bg-slate-800 rounded-full transition-all"
+        className="h-full rounded-full bg-slate-800 transition-all"
         style={{ width: value }}
       />
     </div>
@@ -35,8 +35,8 @@ export const RecruitmentStatisticsCard = ({ statistics }) => {
   );
 
   return (
-    <div className="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h3 className="text-xl font-bold text-gray-900">Recruitment Statistics</h3>
+    <div className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h3 className="font-plus-jakarta text-lg font-bold text-slate-900">Recruitment Statistics</h3>
 
       {admissionEntries.length > 0 && (
         <div>
@@ -50,29 +50,29 @@ export const RecruitmentStatisticsCard = ({ statistics }) => {
       )}
 
       {recruitmentDuration && (
-        <div className="border-t border-gray-100 pt-6">
+        <div className="border-t border-slate-100 pt-6">
           <SectionLabel>Selection Duration</SectionLabel>
-          <div className="flex items-center gap-3 rounded-xl bg-gray-50 p-4">
-            <Clock size={18} className="text-gray-400 shrink-0" />
+          <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-4">
+            <Clock size={18} className="shrink-0 text-slate-400" />
             <div>
-              <p className="text-sm font-bold text-gray-900">{recruitmentDuration}</p>
-              <p className="text-xs text-gray-400">Average selection duration</p>
+              <p className="text-sm font-bold text-slate-900">{recruitmentDuration}</p>
+              <p className="text-xs text-slate-400">Average selection duration</p>
             </div>
           </div>
         </div>
       )}
 
       {selectionEntries.length > 0 && (
-        <div className="border-t border-gray-100 pt-6">
+        <div className="border-t border-slate-100 pt-6">
           <SectionLabel>Most Common Stages</SectionLabel>
           <div className="flex flex-wrap gap-2">
             {selectionEntries.map(([step, pct]) => (
               <span
                 key={step}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-800"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-800"
               >
                 {step}
-                <span className="text-gray-400 text-xs">({pct})</span>
+                <span className="text-xs text-slate-400">({pct})</span>
               </span>
             ))}
           </div>

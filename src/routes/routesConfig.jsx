@@ -11,6 +11,7 @@ import { CategoriesPage, SubCategoryCompaniesPage } from "@/features/categories"
 import { CompaniesPage } from "@/features/companies/pages/CompaniesPage";
 import { CompanyDetailPage } from "@/features/companies/pages/CompanyDetailPage";
 import { CompareCompaniesPage } from "@/features/companies/pages/CompareCompaniesPage";
+import { CompareLandingPage } from "@/features/companies/pages/CompareLandingPage";
 import { AddCompanyPage } from "@/features/companies/pages/AddCompanyPage";
 import { ContactUsPage, FaqPage } from "@/features/help";
 import {
@@ -30,6 +31,7 @@ export const appRoutes = [
   { path: "/categories", element: <CategoriesPage />, showNavbar: true },
   { path: "/subcategory/:subCategoryName/companies", element: <SubCategoryCompaniesPage />, showNavbar: true },
   { path: "/companies", element: <CompaniesPage />, showNavbar: true },
+  { path: "/compare", element: <CompareLandingPage />, showNavbar: true },
   { path: "/reviews", element: <ReviewsPage />, showNavbar: true },
   { path: "/faq", element: <FaqPage />, showNavbar: true },
   { path: "/contact", element: <ContactUsPage />, showNavbar: true },

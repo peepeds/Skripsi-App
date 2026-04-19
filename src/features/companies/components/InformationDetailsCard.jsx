@@ -39,8 +39,8 @@ export const InformationDetailsCard = ({ data }) => {
   };
 
   return (
-    <Card className="overflow-hidden rounded-3xl border border-slate-200 shadow-sm">
-      <CardHeader className="border-b border-slate-100 bg-slate-50/70">
+    <Card className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <CardHeader className="border-b border-slate-200 bg-white">
         <CardTitle className="font-plus-jakarta text-lg font-bold text-slate-900">
           Internship Information
         </CardTitle>

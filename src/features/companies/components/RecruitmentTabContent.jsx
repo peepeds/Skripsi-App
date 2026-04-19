@@ -138,15 +138,12 @@ export const RecruitmentTabContent = ({ companySlug, companyName }) => {
   );
 
   return (
-    <TwoColumnLayout
-      leftClassName="space-y-4"
-      rightClassName="space-y-4"
-      left={
-        <>
-          <div className="space-y-1">
-            <h2 className="font-plus-jakarta text-2xl font-bold tracking-[-0.02em] text-slate-900">Alumni Recruitment Experience</h2>
-          </div>
-
+    <div className="space-y-4">
+      <h2 className="font-plus-jakarta text-2xl font-bold tracking-[-0.02em] text-slate-900">Alumni Recruitment Experience</h2>
+      <TwoColumnLayout
+        leftClassName="space-y-4"
+        rightClassName="space-y-4"
+        left={(
           <div className="relative min-h-[260px]">
             <div
               ref={lockedContainerRef}
@@ -182,20 +179,20 @@ export const RecruitmentTabContent = ({ companySlug, companyName }) => {
               </div>
             )}
           </div>
-        </>
-      }
-      right={
-        <>
-          {summaryLoading && !summary && <SidebarSkeleton />}
-          {summary && (
-            <>
-              <AverageDifficultyCard difficulty={summary.difficulty} />
-              <RecruitmentStatisticsCard statistics={summary.statistics} />
-            </>
-          )}
-          <CompanyInternedCTACard companySlug={companySlug} companyName={companyName} />
-        </>
-      }
-    />
+        )}
+        right={
+          <>
+            {summaryLoading && !summary && <SidebarSkeleton />}
+            {summary && (
+              <>
+                <AverageDifficultyCard difficulty={summary.difficulty} />
+                <RecruitmentStatisticsCard statistics={summary.statistics} />
+              </>
+            )}
+            <CompanyInternedCTACard companySlug={companySlug} companyName={companyName} />
+          </>
+        }
+      />
+    </div>
   );
 };

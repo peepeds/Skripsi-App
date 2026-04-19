@@ -30,15 +30,6 @@ export function Navbar() {
     return null;
   }
 
-  const getDisplayName = () => {
-    const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim();
-    if (fullName) return fullName;
-    if (user?.name) return user.name;
-    if (user?.username) return user.username;
-    if (user?.email) return user.email;
-    return "User";
-  };
-
   const getInitials = () => {
     const firstName = user?.firstName?.trim();
 
@@ -93,6 +84,9 @@ export function Navbar() {
               <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex">
                 <a href="/companies">Companies</a>
               </Button>
+              <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex">
+                <a href="/compare">Compare</a>
+              </Button>
               <InboxDropdown
                 isOpen={isInboxOpen}
                 onOpenChange={handleOpenChange}
@@ -134,6 +128,9 @@ export function Navbar() {
               </a>
               <a href="/companies" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors hidden md:block">
                 Companies
+              </a>
+              <a href="/compare" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors hidden md:block">
+                Compare
               </a>
               <Button asChild size="sm" className="bg-[#F97316] hover:bg-[#EA580C] text-white rounded-lg px-5">
                 <a href="/login">Get Started</a>

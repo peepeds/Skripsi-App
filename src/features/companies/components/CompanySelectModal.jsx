@@ -119,13 +119,17 @@ export function CompanySelectModal({ open, currentCompanySlug, onClose, onCompar
   }, [query, open]);
 
   const handleCompare = () => {
-    if (!selectedCompanySlug || !currentCompanySlug) return;
+    if (!selectedCompanySlug) return;
+
+    const selectedCompany = filteredCompanies.find((item) => item.companySlug === selectedCompanySlug);
 
     if (onCompare) {
-      onCompare(selectedCompanySlug);
+      onCompare(selectedCompanySlug, selectedCompany || null);
       onClose();
       return;
     }
+
+    if (!currentCompanySlug) return;
 
     onClose();
     navigate(`/compare/${currentCompanySlug}/${selectedCompanySlug}`);
