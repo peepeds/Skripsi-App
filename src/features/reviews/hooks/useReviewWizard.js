@@ -45,6 +45,7 @@ const STEP_KEYS = [
 
 export const useReviewWizard = (onFinalSubmit) => {
   const [step, setStep] = useState(0);
+  const [highestReachedStep, setHighestReachedStep] = useState(1);
 
   const form = useForm({
     resolver: zodResolver(reviewSchema),
@@ -81,12 +82,20 @@ export const useReviewWizard = (onFinalSubmit) => {
   const onNext = async () => {
     const keys = STEP_KEYS[step];
     if (!keys) {
-      setStep((s) => s + 1);
+      setStep((s) => {
+        const nextStep = s + 1;
+        setHighestReachedStep((currentHighest) => Math.max(currentHighest, nextStep + 1));
+        return nextStep;
+      });
       return;
     }
     const isValid = await form.trigger(keys);
     if (isValid) {
-      setStep((s) => Math.min(s + 1, 3));
+      setStep((s) => {
+        const nextStep = Math.min(s + 1, 3);
+        setHighestReachedStep((currentHighest) => Math.max(currentHighest, nextStep + 1));
+        return nextStep;
+      });
       return;
     }
 
@@ -94,6 +103,11 @@ export const useReviewWizard = (onFinalSubmit) => {
   };
 
   const onBack = () => setStep((s) => Math.max(s - 1, 0));
+
+  const goToStep = (nextStep) => {
+    if (nextStep < 1 || nextStep > highestReachedStep) return;
+    setStep(nextStep - 1);
+  };
 
   const onSubmit = async () => {
     const isValid = await form.trigger();
@@ -111,5 +125,14 @@ export const useReviewWizard = (onFinalSubmit) => {
     await onFinalSubmit(payload);
   };
 
-  return { step, form, onNext, onBack, onSubmit, isLastStep: step === 3 };
+  return {
+    step,
+    form,
+    onNext,
+    onBack,
+    onSubmit,
+    goToStep,
+    highestReachedStep,
+    isLastStep: step === 3,
+  };
 };
