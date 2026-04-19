@@ -46,6 +46,7 @@ export const ReviewStepTabs = ({
               <React.Fragment key={step.number}>
                 {/* Step Circle */}
                 <button
+                  type="button"
                   onClick={() => handleStepClick(step.number)}
                   disabled={!canClick}
                   className={`flex flex-col items-center flex-1 transition-all ${

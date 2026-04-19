@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { UnauthenticatedModal } from "@/components/common/UnauthenticatedModal";
 import { useAuth } from "@/hooks/useAuth";
-import { likeReview, unlikeReview } from "@/api/reviewApi";
+import { getCompanyRecruitmentProcess, likeReview, unlikeReview } from "@/api/reviewApi";
 import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
 import {
   CircleCheckBig,
@@ -41,6 +41,26 @@ const DIFFICULTY_MAP = {
   3: { label: "Moderate", Icon: Meh, className: "bg-yellow-50 text-yellow-700 border-yellow-200" },
   4: { label: "Hard", Icon: Frown, className: "bg-orange-50 text-orange-700 border-orange-200" },
   5: { label: "Very Hard", Icon: OctagonAlert, className: "bg-red-50 text-red-700 border-red-200" },
+};
+
+const resolveLikeCount = (item) => {
+  const raw =
+    item?.totalLikes ??
+    item?.totalLike ??
+    item?.totalLikeCount ??
+    item?.likesCount ??
+    item?.likeCount ??
+    item?.helpfulCount ??
+    item?.helpful;
+
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const resolveLikedState = (item) => {
+  if (typeof item?.isLiked === "boolean") return item.isLiked;
+  if (typeof item?.liked === "boolean") return item.liked;
+  return null;
 };
 
 export const RecruitmentProcessCard = ({ data, companySlug }) => {
@@ -164,14 +184,74 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
         return;
       }
 
-      const serverCount =
-        result?.totalLikes ?? result?.likeCount ?? result?.helpfulCount ?? result?.helpful ?? null;
-      if (typeof serverCount === "number") {
+      const serverCount = resolveLikeCount(result);
+      if (serverCount !== null) {
         setLikeCount(serverCount);
       }
 
-      if (typeof result?.isLiked === "boolean") {
-        setLiked(result.isLiked);
+      const serverLiked = resolveLikedState(result);
+      if (serverLiked !== null) {
+        setLiked(serverLiked);
+      }
+
+      // Sync from latest server list so counter/value remain stable after refresh.
+      if (companySlug) {
+        const latestResponse = await getCompanyRecruitmentProcess(companySlug, { limit: 50 });
+        const { success: latestSuccess, data: latestData } = handleApiResponse(latestResponse);
+
+        if (latestSuccess) {
+          const latestItems = Array.isArray(latestData?.items)
+            ? latestData.items
+            : Array.isArray(latestData)
+            ? latestData
+            : [];
+
+          const latestItem = latestItems.find((item) => {
+            const itemHeaderId =
+              item?.internshipHeaderId ??
+              item?.headerId ??
+              item?.internshipReviewId ??
+              item?.reviewID ??
+              item?.review_id ??
+              item?.internshipHeader?.internshipHeaderId ??
+              item?.internshipHeader?.id ??
+              item?.internshipDetail?.internshipHeaderId ??
+              item?.internshipDetail?.internshipHeader?.internshipHeaderId;
+
+            const itemDetailId =
+              item?.internshipDetailId ??
+              item?.reviewId ??
+              item?.reviewID ??
+              item?.review_id ??
+              item?.id ??
+              item?.detailId ??
+              item?.internshipDetail?.internshipDetailId ??
+              item?.internshipDetail?.id;
+
+            if (itemHeaderId && internshipHeaderId) {
+              return String(itemHeaderId) === String(internshipHeaderId);
+            }
+
+            if (itemDetailId && processDetailId) {
+              return String(itemDetailId) === String(processDetailId);
+            }
+
+            return false;
+          });
+
+          if (latestItem) {
+            const latestCount = resolveLikeCount(latestItem);
+            const latestLiked = resolveLikedState(latestItem);
+
+            if (latestCount !== null) {
+              setLikeCount(latestCount);
+            }
+
+            if (latestLiked !== null) {
+              setLiked(latestLiked);
+            }
+          }
+        }
       }
     } catch (error) {
       setLiked(previousLiked);

@@ -13,7 +13,7 @@ import { useReviewWizard } from "../hooks/useReviewWizard";
 export const ReviewFormTabsPanel = ({ company, onSubmit: onFinalSubmit, loading, onCancel }) => {
   const [categories, setCategories] = useState([]);
   const { data: lookupData } = useLookup("INTERNSHIP_REVIEW");
-  const { step, form, onNext, onBack, onSubmit, isLastStep } = useReviewWizard(onFinalSubmit);
+  const { step, form, onNext, onBack, onSubmit, goToStep, highestReachedStep, isLastStep } = useReviewWizard(onFinalSubmit);
 
   useEffect(() => {
     let cancelled = false;
@@ -67,7 +67,7 @@ export const ReviewFormTabsPanel = ({ company, onSubmit: onFinalSubmit, loading,
 
   return (
     <>
-      <ReviewStepTabs currentStep={step + 1} onStepChange={() => {}} highestReachedStep={step + 1} />
+      <ReviewStepTabs currentStep={step + 1} onStepChange={goToStep} highestReachedStep={highestReachedStep} />
 
       <div className="bg-white py-8">
         <Container>

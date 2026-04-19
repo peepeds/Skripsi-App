@@ -26,8 +26,8 @@ const SectionCard = ({ title, children }) => (
 );
 
 const RATING_ITEMS = [
-  { key: "workCulture", label: "Work Culture" },
-  { key: "learningOpp", label: "Learning Opportunities" },
+  { key: "workCulture", label: "Budaya Kerja" },
+  { key: "learningOpp", label: "Kesempatan Belajar" },
   { key: "mentorship", label: "Mentorship" },
   { key: "benefit", label: "Benefit" },
   { key: "workLifeBalance", label: "Work-Life Balance" },

@@ -102,14 +102,11 @@ export const ReviewsTabContent = ({ companySlug, companyName, summaryData }) => 
   );
 
   return (
-    <TwoColumnLayout
-      leftClassName="space-y-4"
-      left={
-        <>
-          <div className="space-y-1">
-            <h2 className="font-plus-jakarta text-2xl font-bold tracking-[-0.02em] text-slate-900">All Reviews</h2>
-          </div>
-
+    <div className="space-y-4">
+      <h2 className="font-plus-jakarta text-2xl font-bold tracking-[-0.02em] text-slate-900">All Reviews</h2>
+      <TwoColumnLayout
+        leftClassName="space-y-4"
+        left={(
           <div className="relative min-h-[260px]">
             <div
               ref={lockedContainerRef}
@@ -145,14 +142,14 @@ export const ReviewsTabContent = ({ companySlug, companyName, summaryData }) => 
               </div>
             )}
           </div>
-        </>
-      }
-      right={
-        <>
-          {summaryData?.ratings && <ReviewRatingsCard data={summaryData.ratings} />}
-          <CompanyInternedCTACard companySlug={companySlug} companyName={companyName} />
-        </>
-      }
-    />
+        )}
+        right={
+          <>
+            {summaryData?.ratings && <ReviewRatingsCard data={summaryData.ratings} />}
+            <CompanyInternedCTACard companySlug={companySlug} companyName={companyName} />
+          </>
+        }
+      />
+    </div>
   );
 };

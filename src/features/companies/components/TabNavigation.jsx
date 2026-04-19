@@ -13,6 +13,7 @@ export const TabNavigation = ({ tabs, activeTab, onTabChange }) => {
         {tabs.map((tab) => (
           <button
             key={tab.id}
+            type="button"
             onClick={() => onTabChange(tab.id)}
             className={`py-4 text-sm md:text-base font-semibold transition-all relative ${
               activeTab === tab.id

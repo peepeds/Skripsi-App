@@ -5,7 +5,7 @@ import { StarRating } from "@/components/ui/StarRating";
 import { UnauthenticatedModal } from "@/components/common/UnauthenticatedModal";
 import { getInitials, getAvatarColor } from "@/utils/avatar";
 import { useAuth } from "@/hooks/useAuth";
-import { likeReview, unlikeReview } from "@/api/reviewApi";
+import { getCompanyReviews, likeReview, unlikeReview } from "@/api/reviewApi";
 import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
 import { Share2, ThumbsUp } from "lucide-react";
 
@@ -114,6 +114,26 @@ const resolveInternshipHeaderId = (review) =>
   review?.internshipDetail?.internshipHeaderId ??
   review?.internshipDetail?.headerId ??
   review?.internshipDetail?.id;
+
+const resolveLikeCount = (item) => {
+  const raw =
+    item?.totalLikes ??
+    item?.totalLike ??
+    item?.totalLikeCount ??
+    item?.likesCount ??
+    item?.likeCount ??
+    item?.helpfulCount ??
+    item?.helpful;
+
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const resolveLikedState = (item) => {
+  if (typeof item?.isLiked === "boolean") return item.isLiked;
+  if (typeof item?.liked === "boolean") return item.liked;
+  return null;
+};
 
 export const ReviewItemCard = ({
   review,
@@ -260,14 +280,56 @@ export const ReviewItemCard = ({
         return;
       }
 
-      const serverCount =
-        data?.totalLikes ?? data?.likeCount ?? data?.helpfulCount ?? data?.helpful ?? null;
-      if (typeof serverCount === "number") {
+      const serverCount = resolveLikeCount(data);
+      if (serverCount !== null) {
         setLikeCount(serverCount);
       }
 
-      if (typeof data?.isLiked === "boolean") {
-        setLiked(data.isLiked);
+      const serverLiked = resolveLikedState(data);
+      if (serverLiked !== null) {
+        setLiked(serverLiked);
+      }
+
+      // Always sync from fresh list data to keep counter stable across refresh.
+      if (resolvedCompanySlug) {
+        const latestResponse = await getCompanyReviews(resolvedCompanySlug, { limit: 200 });
+        const { success: latestSuccess, data: latestData } = handleApiResponse(latestResponse);
+
+        if (latestSuccess) {
+          const latestItems = Array.isArray(latestData?.items)
+            ? latestData.items
+            : Array.isArray(latestData)
+            ? latestData
+            : [];
+
+          const latestReview = latestItems.find((item) => {
+            const itemHeaderId = resolveInternshipHeaderId(item);
+            const itemDetailId = resolveReviewDetailId(item);
+
+            if (itemHeaderId && internshipHeaderId) {
+              return String(itemHeaderId) === String(internshipHeaderId);
+            }
+
+            if (itemDetailId && reviewDetailId) {
+              return String(itemDetailId) === String(reviewDetailId);
+            }
+
+            return false;
+          });
+
+          if (latestReview) {
+            const latestCount = resolveLikeCount(latestReview);
+            const latestLiked = resolveLikedState(latestReview);
+
+            if (latestCount !== null) {
+              setLikeCount(latestCount);
+            }
+
+            if (latestLiked !== null) {
+              setLiked(latestLiked);
+            }
+          }
+        }
       }
     } catch (error) {
       setLiked(previousLiked);

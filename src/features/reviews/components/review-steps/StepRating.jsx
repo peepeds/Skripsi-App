@@ -1,5 +1,6 @@
 import React from "react";
 import { Users, BookOpen, GraduationCap, Heart, Scale } from "lucide-react";
+import { StarRating } from "@/components/ui/StarRating";
 
 const ratingCategories = [
   { key: "workCulture", label: "Budaya Kerja", Icon: Users },
@@ -29,9 +30,15 @@ export const Step2Rating = ({ form, lookupData, categories }) => {
   const year = watch("year");
   const SubCategoryIds = watch("SubCategoryIds") || [];
 
-  const avg = (
-    (ratings.workCulture + ratings.learningOpp + ratings.mentorship + ratings.benefit + ratings.workLifeBalance) / 5 || 0
-  );
+  const ratingValues = [
+    ratings.workCulture,
+    ratings.learningOpp,
+    ratings.mentorship,
+    ratings.benefit,
+    ratings.workLifeBalance,
+  ].map((value) => Number(value) || 0);
+  const avg = ratingValues.reduce((sum, value) => sum + value, 0) / ratingValues.length;
+  const avgLabel = avg > 0 ? avg.toFixed(1) : "0.0";
 
   const handleRatingChange = (categoryKey, rating) => {
     setValue(`ratings.${categoryKey}`, rating);
@@ -62,17 +69,17 @@ export const Step2Rating = ({ form, lookupData, categories }) => {
       </div>
 
       {/* Rating Keseluruhan */}
-      <div className="text-center py-4">
-        <p className="text-base font-bold text-gray-900 mb-3">Rating Keseluruhan</p>
-        <div className="flex justify-center gap-1 mb-2">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <span
-              key={star}
-              className={`text-5xl leading-none pointer-events-none ${star <= Math.round(avg) ? "text-[#F97316]" : "text-gray-200"}`}
-            >★</span>
-          ))}
+      <div className="text-center -mt-1 py-1">
+        <p className="text-base font-bold text-gray-900 mb-2">Rating Keseluruhan</p>
+        <div className="flex justify-center mb-1.5">
+          <StarRating
+            rating={avg}
+            size="lg"
+            className="gap-1.5 [&>svg]:h-10 [&>svg]:w-10"
+          />
         </div>
-        {avg > 0 && <p className="text-sm font-semibold text-orange-500">{ratingLabel(avg)}</p>}
+        <p className="text-sm font-semibold text-slate-700">{avgLabel} / 5</p>
+        {avg > 0 && <p className="mt-1 text-sm font-semibold text-orange-500">{ratingLabel(avg)}</p>}
       </div>
 
       {/* Beri penilaian spesifik */}

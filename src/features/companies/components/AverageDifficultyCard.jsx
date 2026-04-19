@@ -25,19 +25,19 @@ export const AverageDifficultyCard = ({ difficulty }) => {
   const DifficultyIcon = level.Icon;
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h3 className="text-xl font-bold text-gray-900 mb-4">Average Difficulty</h3>
-      <div className="flex items-center gap-4 rounded-xl bg-slate-50 p-4">
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h3 className="mb-3 font-plus-jakarta text-lg font-bold text-slate-900">Average Difficulty</h3>
+      <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-4">
         <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-yellow-100 bg-yellow-50 text-slate-500">
           <DifficultyIcon className="h-8 w-8" />
         </div>
         <div>
           <div className="flex items-baseline gap-1">
-            <span className="text-4xl font-bold text-gray-900">{rating.toFixed(1)}</span>
-            <span className="text-base text-gray-400 font-normal">/ 5.0</span>
+            <span className="font-plus-jakarta text-3xl font-bold text-slate-900">{rating.toFixed(1)}</span>
+            <span className="text-base font-normal text-slate-400">/ 5.0</span>
           </div>
           <p className={`text-sm font-semibold ${level.color}`}>{level.label}</p>
-          <p className="mt-0.5 text-xs text-gray-400">Based on {count} reviews</p>
+          <p className="mt-0.5 text-xs text-slate-400">Based on {count} reviews</p>
         </div>
       </div>
     </div>

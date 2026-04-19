@@ -8,6 +8,8 @@ import { getReviewSummary } from "@/api/reviewApi";
 
 export const CompanyTabsPanel = ({ companyId, companySlug, companyName, bio }) => {
   const [activeTab, setActiveTab] = useState("informasi");
+  const [visibleTab, setVisibleTab] = useState("informasi");
+  const [tabTransition, setTabTransition] = useState(null);
   const [summaryData, setSummaryData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -35,8 +37,33 @@ export const CompanyTabsPanel = ({ companyId, companySlug, companyName, bio }) =
     fetchSummary();
   }, [companySlug]);
 
-  const renderTabContent = () => {
-    switch (activeTab) {
+  useEffect(() => {
+    if (activeTab === visibleTab) return;
+
+    const fromTab = visibleTab;
+    const toTab = activeTab;
+    setTabTransition({ from: fromTab, to: toTab, phase: "entering" });
+
+    const animationFrame = window.requestAnimationFrame(() => {
+      setTabTransition((current) => {
+        if (!current || current.to !== toTab) return current;
+        return { ...current, phase: "crossfading" };
+      });
+    });
+
+    const timeoutId = window.setTimeout(() => {
+      setVisibleTab(toTab);
+      setTabTransition(null);
+    }, 220);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      window.clearTimeout(timeoutId);
+    };
+  }, [activeTab, visibleTab]);
+
+  const renderTabContent = (tabId = activeTab) => {
+    switch (tabId) {
       case "informasi":
         return (
           <InformationTabContent
@@ -74,7 +101,29 @@ export const CompanyTabsPanel = ({ companyId, companySlug, companyName, bio }) =
         onTabChange={setActiveTab}
       />
 
-      <div className="mt-8">{renderTabContent()}</div>
+      <div className="relative mt-8 min-h-[320px] overflow-hidden">
+        {tabTransition ? (
+          <>
+            <div
+              className={`absolute inset-0 transition-opacity duration-200 ease-out pointer-events-none ${
+                tabTransition.phase === "crossfading" ? "opacity-0" : "opacity-100"
+              }`}
+              aria-hidden={tabTransition.phase === "crossfading"}
+            >
+              {renderTabContent(tabTransition.from)}
+            </div>
+            <div
+              className={`absolute inset-0 transition-opacity duration-200 ease-out ${
+                tabTransition.phase === "crossfading" ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              {renderTabContent(tabTransition.to)}
+            </div>
+          </>
+        ) : (
+          <div>{renderTabContent(visibleTab)}</div>
+        )}
+      </div>
     </div>
   );
 };
