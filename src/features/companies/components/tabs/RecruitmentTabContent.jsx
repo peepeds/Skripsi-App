@@ -4,13 +4,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useAuth } from "@/hooks/useAuth";
 import { TwoColumnLayout } from "@/components/layout";
-import { RecruitmentProcessCard } from "./RecruitmentProcessCard";
-import { AverageDifficultyCard } from "./AverageDifficultyCard";
-import { RecruitmentStatisticsCard } from "./RecruitmentStatisticsCard";
-import { CompanyInternedCTACard } from "./CompanyInternedCTACard";
-import { EmptyStateCard } from "./EmptyStateCard";
-import { useCompanyRecruitmentProcess } from "../hooks/useCompanyRecruitmentProcess";
-import { useRecruitmentProcessSummary } from "../hooks/useRecruitmentProcessSummary";
+import { RecruitmentProcessCard } from "../cards/RecruitmentProcessCard";
+import { AverageDifficultyCard } from "../cards/AverageDifficultyCard";
+import { RecruitmentStatisticsCard } from "../cards/RecruitmentStatisticsCard";
+import { CompanyInternedCTACard } from "../cards/CompanyInternedCTACard";
+import { EmptyStateCard } from "../cards/EmptyStateCard";
+import { useCompanyRecruitmentProcess } from "../../hooks/useCompanyRecruitmentProcess";
+import { useRecruitmentProcessSummary } from "../../hooks/useRecruitmentProcessSummary";
 
 const CardSkeleton = () => (
   <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">

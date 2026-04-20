@@ -7,7 +7,7 @@ import { BackButton } from "@/components/common/BackButton";
 import { getCompanyReviews, getRecentReviews } from "@/api/reviewApi";
 import { getCompanies } from "@/api/companyApi";
 import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
-import { ReviewItemCard } from "@/features/companies/components/ReviewItemCard";
+import { ReviewItemCard } from "@/features/companies/components/cards/ReviewItemCard";
 
 const pickString = (...values) =>
   values.find((value) => typeof value === "string" && value.trim().length > 0)?.trim();

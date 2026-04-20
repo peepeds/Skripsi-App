@@ -5,8 +5,8 @@ import { CompanyLogo } from "@/components/common/CompanyLogo";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCompareCompanies } from "../hooks/useCompareCompanies";
-import { ComparisonDataGrid } from "../components/ComparisonDataGrid";
-import { CompanySelectModal } from "../components/CompanySelectModal";
+import { ComparisonDataGrid } from "../components/comparison/ComparisonDataGrid";
+import { CompanySelectModal } from "../components/comparison/CompanySelectModal";
 import { ArrowLeft, ArrowLeftRight, Star } from "lucide-react";
 
 const formatObjectEntries = (value) => {

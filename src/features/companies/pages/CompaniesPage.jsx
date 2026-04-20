@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SearchBar } from "@/components/common/SearchBar";
-import { CompanyListContainer } from "../components/CompanyListContainer";
-import { CompanyFilterDropdown } from "../components/CompanyFilterDropdown";
+import { CompanyListContainer } from "../components/list/CompanyListContainer";
+import { CompanyFilterDropdown } from "../components/list/CompanyFilterDropdown";
 import { useCompanies } from "../hooks/useCompanies";
 import { useIntersectionObserver } from "../hooks/useIntersectionObserver";
 import { COMPANY_COMPARE_TABS } from "../constants/tabs";

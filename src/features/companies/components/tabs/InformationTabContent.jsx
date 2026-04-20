@@ -2,10 +2,10 @@ import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { TwoColumnLayout } from "@/components/layout";
-import { CompanyBioSection } from "./CompanyBioSection";
-import { InformationDetailsCard } from "./InformationDetailsCard";
-import { ReviewRatingsCard } from "./ReviewRatingsCard";
-import { CompanyInternedCTACard } from "./CompanyInternedCTACard";
+import { CompanyBioSection } from "../detail/CompanyBioSection";
+import { InformationDetailsCard } from "../cards/InformationDetailsCard";
+import { ReviewRatingsCard } from "../cards/ReviewRatingsCard";
+import { CompanyInternedCTACard } from "../cards/CompanyInternedCTACard";
 
 export const InformationTabContent = ({
   bio,

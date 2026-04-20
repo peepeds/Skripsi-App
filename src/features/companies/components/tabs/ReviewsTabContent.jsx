@@ -4,11 +4,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useAuth } from "@/hooks/useAuth";
 import { TwoColumnLayout } from "@/components/layout";
-import { ReviewItemCard } from "./ReviewItemCard";
-import { ReviewRatingsCard } from "./ReviewRatingsCard";
-import { CompanyInternedCTACard } from "./CompanyInternedCTACard";
-import { EmptyStateCard } from "./EmptyStateCard";
-import { useCompanyReviews } from "../hooks/useCompanyReviews";
+import { ReviewItemCard } from "../cards/ReviewItemCard";
+import { ReviewRatingsCard } from "../cards/ReviewRatingsCard";
+import { CompanyInternedCTACard } from "../cards/CompanyInternedCTACard";
+import { EmptyStateCard } from "../cards/EmptyStateCard";
+import { useCompanyReviews } from "../../hooks/useCompanyReviews";
 
 const ReviewListSkeleton = () => (
   <div className="space-y-4">

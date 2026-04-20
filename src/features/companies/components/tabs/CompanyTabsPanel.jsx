@@ -3,7 +3,7 @@ import { InformationTabContent } from "./InformationTabContent";
 import { ReviewsTabContent } from "./ReviewsTabContent";
 import { RecruitmentTabContent } from "./RecruitmentTabContent";
 import { TabNavigation } from "./TabNavigation";
-import { COMPANY_DETAIL_TABS } from "../constants/tabs";
+import { COMPANY_DETAIL_TABS } from "../../constants/tabs";
 import { getReviewSummary } from "@/api/reviewApi";
 
 export const CompanyTabsPanel = ({ companyId, companySlug, companyName, bio }) => {

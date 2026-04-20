@@ -78,13 +78,13 @@ export function Navbar() {
             </div>
           ) : isAuthenticated ? (
             <>
-              <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex">
+              <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex min-h-[40px]">
                 <a href="/categories">Categories</a>
               </Button>
-              <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex">
+              <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex min-h-[40px]">
                 <a href="/companies">Companies</a>
               </Button>
-              <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex">
+              <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex min-h-[40px]">
                 <a href="/compare">Compare</a>
               </Button>
               <InboxDropdown
@@ -123,13 +123,13 @@ export function Navbar() {
           ) : (
             <>
               {/* Guest Links */}
-              <a href="/categories" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors hidden md:block">
+              <a href="/categories" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors hidden md:block px-2 py-2 min-h-[40px] inline-flex items-center">
                 Categories
               </a>
-              <a href="/companies" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors hidden md:block">
+              <a href="/companies" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors hidden md:block px-2 py-2 min-h-[40px] inline-flex items-center">
                 Companies
               </a>
-              <a href="/compare" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors hidden md:block">
+              <a href="/compare" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors hidden md:block px-2 py-2 min-h-[40px] inline-flex items-center">
                 Compare
               </a>
               <Button asChild size="sm" className="bg-[#F97316] hover:bg-[#EA580C] text-white rounded-lg px-5">

@@ -7,8 +7,8 @@ import { CompanyLogo } from "@/components/common/CompanyLogo";
 import { BackButton } from "@/components/common/BackButton";
 import { UnauthenticatedModal } from "@/components/common/UnauthenticatedModal";
 import { useAuth } from "@/hooks/useAuth";
-import { useSaveCompany } from "../hooks/useSaveCompany";
-import { CompanySelectModal } from "./CompanySelectModal";
+import { useSaveCompany } from "../../hooks/useSaveCompany";
+import { CompanySelectModal } from "../comparison/CompanySelectModal";
 import { ArrowLeftRight, Bookmark, BriefcaseBusiness, Share2 } from "lucide-react";
 
 export const CompanyGeneralInfoSection = ({

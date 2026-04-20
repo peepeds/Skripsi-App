@@ -2,20 +2,17 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/context/userContext";
 import { useNavigate } from "react-router-dom";
 import { SkeletonCircle, SkeletonLine } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
-import { getMyReviews, getSavedCompanies, submitCertificate } from "@/api/userApi";
+import { getMyReviews, getSavedCompanies, getMyCertificates } from "@/api/userApi";
 import { getRecentReviews } from "@/api/reviewApi";
 import { unsaveCompany } from "@/api/companyApi";
-import { useFileUpload } from "@/hooks/useFileUpload";
 import { toast } from "sonner";
-import { ProfileHeader } from "@/components/profile/ProfileHeader";
-import { PersonalInformationCard } from "@/components/profile/PersonalInformationCard";
-import { AcademicDetailsCard } from "@/components/profile/AcademicDetailsCard";
-import { CampusLocationCard } from "@/components/profile/CampusLocationCard";
-import { CertificateModal } from "@/components/profile/CertificateModal";
-import { CertificateCard } from "@/components/profile/CertificateCard";
-import { RecentReviewsCard } from "@/components/profile/RecentReviewsCard";
-import { SavedCompaniesCard } from "@/components/profile/SavedCompaniesCard";
+import { CertificateSubmit } from "@/features/profile/components/CertificateSubmit";
+import { PersonalInformationCard } from "../components/PersonalInformationCard";
+import { AcademicDetailsCard } from "../components/AcademicDetailsCard";
+import { CampusLocationCard } from "../components/CampusLocationCard";
+import { CertificateCard } from "../components/CertificateCard";
+import { RecentReviewsCard } from "../components/RecentReviewsCard";
+import { SavedCompaniesCard } from "../components/SavedCompaniesCard";
 import { normalizeErrorMessage } from "@/helpers/apiUtils";
 
 const normalizeList = (data) => {
@@ -125,26 +122,31 @@ export function ProfilePage() {
   const { user, loading } = useContext(UserContext);
   const navigate = useNavigate();
   
-  // State for certificate modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [recentReviews, setRecentReviews] = useState([]);
   const [savedCompanies, setSavedCompanies] = useState([]);
+  const [certificates, setCertificates] = useState([]);
+  const [certificatesLoading, setCertificatesLoading] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyError, setHistoryError] = useState(null);
-    const [savedError, setSavedError] = useState(null);
+  const [savedError, setSavedError] = useState(null);
   const [unsaveLoadingSlug, setUnsaveLoadingSlug] = useState(null);
   
-  // File upload hook
-  const {
-    selectedFile,
-    fileName,
-    setFileName,
-    requestingUrl,
-    uploading,
-    compressing,
-    handleFileChange,
-    handleUpload: uploadToMinio,
-  } = useFileUpload();
+  const fetchCertificates = async () => {
+    setCertificatesLoading(true);
+    try {
+      const response = await getMyCertificates();
+      setCertificates(response?.result || []);
+    } catch {
+      setCertificates([]);
+    } finally {
+      setCertificatesLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    fetchCertificates();
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -245,55 +247,6 @@ export function ProfilePage() {
     }
   };
   
-  // Handle certificate submission
-  const handleSubmitCertificate = async (data) => {
-    if (!selectedFile) {
-      toast.error("Please select a file first");
-      return;
-    }
-    
-    console.log("Starting certificate submission...");
-    
-    try {
-      // First upload file to MinIO and get result
-      console.log("Uploading to MinIO...");
-      const uploadResult = await uploadToMinio();
-      console.log("Upload result:", uploadResult);
-      
-      // Check if upload was successful
-      // if (!uploadResult || !uploadResult.publicUrl) {
-      //   console.error("Upload failed:", uploadResult);
-      //   toast.error("Failed to upload file to MinIO");
-      //   return;
-      // }
-
-      console.log("Upload successful, publicUrl:", uploadResult.publicUrl);
-
-      // Submit certificate with MinIO URL
-      const certificateData = {
-        issuer: data.issuer,
-        certificateUrl: uploadResult.presignedResponse.result.fileName,
-        certificateName: data.certificateName,
-        fileSize: selectedFile?.size || 0,
-      };
-
-      console.log("Submitting certificate data:", certificateData);
-
-      const submitResponse = await submitCertificate(certificateData);
-      console.log("Submit response:", submitResponse);
-
-      if (submitResponse.data.success) {
-        toast.success("Certificate submitted successfully");
-        setIsModalOpen(false);
-      } else {
-        toast.error(submitResponse.data.message || "Failed to submit certificate");
-      }
-    } catch (error) {
-      console.error("Error in handleSubmitCertificate:", error);
-      toast.error("An error occurred while submitting certificate");
-    }
-  };
-
   // Protect route: redirect to login if not authenticated
   if (!loading && !user) {
     navigate("/login");
@@ -312,7 +265,6 @@ export function ProfilePage() {
               <SkeletonLine height="h-4" width="w-1/4" />
             </div>
           </div>
-          <Separator />
         </div>
 
         <div className="grid gap-5 lg:grid-cols-3">
@@ -332,7 +284,7 @@ export function ProfilePage() {
   // Main profile page with three sections: header, personal info, academic info, campus location
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-      <ProfileHeader user={user} onSubmitCertificate={() => setIsModalOpen(true)} />
+      <CertificateSubmit user={user} onCertificateSubmitted={fetchCertificates} />
 
       {/* ===== PROFILE INFORMATION CARDS ===== */}
       <div>
@@ -340,7 +292,7 @@ export function ProfilePage() {
           <PersonalInformationCard user={user} />
           <AcademicDetailsCard user={user} />
           <CampusLocationCard user={user} />
-          <CertificateCard user={user} />
+          <CertificateCard certificates={certificates} loading={certificatesLoading} />
         </div>
       </div>
 
@@ -359,18 +311,6 @@ export function ProfilePage() {
         />
       </div>
 
-      <CertificateModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleSubmitCertificate}
-        selectedFile={selectedFile}
-        fileName={fileName}
-        setFileName={setFileName}
-        handleFileChange={handleFileChange}
-        compressing={compressing}
-        requestingUrl={requestingUrl}
-        uploading={uploading}
-      />
     </div>
   );
 }

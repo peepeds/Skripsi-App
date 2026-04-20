@@ -7,7 +7,7 @@ import { getInitials, getAvatarColor } from "@/utils/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { getCompanyReviews, likeReview, unlikeReview } from "@/api/reviewApi";
 import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
-import { Share2, ThumbsUp } from "lucide-react";
+import { Share2, ThumbsUp, BadgeCheck } from "lucide-react";
 
 const RATING_ROWS = [
   [
@@ -190,6 +190,7 @@ export const ReviewItemCard = ({
   const cons = review?.cons;
   const createdAt = review?.createdAt;
   const resolvedReviewerSlug = resolveReviewerSlug(review, displayName);
+  const verifiedReviewer = review?.verifiedReviewer === true;
 
   const overallRating =
     typeof review?.averageRating === "number"
@@ -364,7 +365,12 @@ export const ReviewItemCard = ({
             {getInitials(displayName)}
           </div>
           <div className="space-y-1">
-            <p className="font-plus-jakarta text-[18px] font-semibold tracking-[-0.02em] text-slate-900 md:text-[19px]">{displayName}</p>
+            <div className="flex items-center gap-1.5">
+              <p className="font-plus-jakarta text-[18px] font-semibold tracking-[-0.02em] text-slate-900 md:text-[19px]">{displayName}</p>
+              {verifiedReviewer && (
+                <BadgeCheck className="h-5 w-5 shrink-0 text-blue-500" aria-label="Verified reviewer" />
+              )}
+            </div>
             <p className="font-inter text-sm text-slate-600">{jobTitle ?? "-"}</p>
             <div className="mt-1 flex flex-wrap gap-1.5">
               {durationMonths && (

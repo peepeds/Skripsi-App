@@ -8,8 +8,8 @@ import { handleApiResponse } from "@/helpers/apiUtils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
-import { CompanyGeneralInfoSection } from "../components/CompanyGeneralInfoSection";
-import { CompanyTabsPanel } from "../components/CompanyTabsPanel";
+import { CompanyGeneralInfoSection } from "../components/detail/CompanyGeneralInfoSection";
+import { CompanyTabsPanel } from "../components/tabs/CompanyTabsPanel";
 
 export const CompanyDetailPage = () => {
   const { companySlug } = useParams();

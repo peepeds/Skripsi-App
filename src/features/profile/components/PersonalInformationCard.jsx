@@ -12,7 +12,7 @@ function InfoItem({ label, value }) {
 export function PersonalInformationCard({ user }) {
   return (
     <Card className="rounded-2xl border-slate-200 py-0 shadow-sm lg:col-span-2">
-      <CardHeader className="border-b border-slate-100 px-5 py-4 sm:px-6 sm:py-5">
+      <CardHeader className="px-5 py-4 sm:px-6 sm:py-5">
         <div>
           <h2 className="font-plus-jakarta text-xl font-semibold text-slate-900">Personal Information</h2>
           <p className="font-inter mt-1 text-sm text-slate-500">Your basic contact details</p>
