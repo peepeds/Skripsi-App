@@ -4,7 +4,7 @@ import { Container } from "@/components/layout/Container";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { BackButton } from "@/components/common/BackButton";
-import { RecruitmentProcessCard } from "@/features/companies/components/RecruitmentProcessCard";
+import { RecruitmentProcessCard } from "@/features/companies/components/cards/RecruitmentProcessCard";
 import { getCompanyRecruitmentProcess } from "@/api/reviewApi";
 import { getCompanyBySlug } from "@/api/companyApi";
 import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";

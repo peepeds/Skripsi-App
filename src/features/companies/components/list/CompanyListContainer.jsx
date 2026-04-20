@@ -1,7 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { CompanyCardHorizontal, CompanyCardSkeleton } from "./index";
+import { CompanyCardHorizontal } from "./CompanyCardHorizontal";
+import { CompanyCardSkeleton } from "./CompanyCardSkeleton";
 
 
 export const CompanyListContainer = ({

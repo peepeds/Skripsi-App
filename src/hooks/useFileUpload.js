@@ -178,6 +178,15 @@ export const useFileUpload = () => {
     }
   };
 
+  const reset = () => {
+    setSelectedFile(null);
+    setFileName("");
+    setSignedPayload(null);
+    setResult(null);
+    setOriginalFileName("");
+    setOriginalSize(0);
+  };
+
   return {
     selectedFile,
     fileName,
@@ -189,5 +198,6 @@ export const useFileUpload = () => {
     result,
     handleFileChange,
     handleUpload,
+    reset,
   };
 };

@@ -2,8 +2,8 @@ import React, { useMemo, useState } from "react";
 import { Container } from "@/components/layout/Container";
 import { CompanyLogo } from "@/components/common/CompanyLogo";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CompanySelectModal } from "../components/CompanySelectModal";
-import { ComparisonDataGrid } from "../components/ComparisonDataGrid";
+import { CompanySelectModal } from "../components/comparison/CompanySelectModal";
+import { ComparisonDataGrid } from "../components/comparison/ComparisonDataGrid";
 import { useCompareCompanies } from "../hooks/useCompareCompanies";
 import { ArrowLeftRight, Plus, Star } from "lucide-react";
 

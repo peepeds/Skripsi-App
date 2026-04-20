@@ -20,6 +20,11 @@ export const submitCertificate = async (certificateData) => {
   return response.data;
 };
 
+export const getMyCertificates = async () => {
+  const response = await axiosInstance.get("/user/my-certificates");
+  return response.data;
+};
+
 export const getMyReviews = async (cursor = null, limit = 10) => {
   const params = { limit };
   if (cursor !== null) {

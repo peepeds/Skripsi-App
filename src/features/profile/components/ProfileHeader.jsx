@@ -1,6 +1,5 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 
 export function ProfileHeader({ user, onSubmitCertificate }) {
   // Helper function: create user initials for avatar (e.g. "John Doe" → "JD")
@@ -39,7 +38,6 @@ export function ProfileHeader({ user, onSubmitCertificate }) {
           Submit Certificates
         </Button>
       </div>
-      <Separator />
     </div>
   );
 }
