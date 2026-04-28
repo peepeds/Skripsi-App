@@ -76,3 +76,19 @@ export const createCompanyRequest = async (payload) => {
   const response = await axiosInstance.post('/company/requests', payload);
   return response.data;
 };
+
+export const getCompanyRequests = async ({ search = "", status = "" } = {}) => {
+  const params = {};
+  if (search) params.search = search;
+  if (status) params.status = status;
+  const response = await axiosInstance.get('/company/requests', { params });
+  return response.data;
+};
+
+export const reviewCompanyRequest = async (requestId, { status, reviewNote = "" }) => {
+  const response = await axiosInstance.patch(`/company/requests/${requestId}/review`, {
+    status,
+    reviewNote,
+  });
+  return response.data;
+};

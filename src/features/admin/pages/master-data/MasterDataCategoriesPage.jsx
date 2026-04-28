@@ -1,0 +1,7 @@
+export function MasterDataCategoriesPage() {
+  return (
+    <div>
+      <h1 className="text-2xl font-bold text-gray-900">Master Data — Categories</h1>
+    </div>
+  );
+}
