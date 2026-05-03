@@ -38,6 +38,7 @@ const navItems = [
       { label: "Companies", icon: Briefcase, to: "/admin/master-data/companies" },
       { label: "Majors", icon: GraduationCap, to: "/admin/master-data/majors" },
       { label: "Categories", icon: Tag, to: "/admin/master-data/categories" },
+      { label: "Subcategories", icon: Tag, to: "/admin/master-data/subcategories" },
     ],
   },
   {

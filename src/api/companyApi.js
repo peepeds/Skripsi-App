@@ -20,15 +20,28 @@ export const rejectCompanyRequest = async (requestId, reviewNote = "") => {
   return response.data;
 };
 
-export const getCompanies = async (cursor = null, limit = 15, sort = "all") => {
-  const params = { limit };
-  if (cursor !== null) {
-    params.cursor = cursor;
+export const getCompanies = async (...args) => {
+  if (args.length > 0 && (typeof args[0] === 'number' || args[0] === null)) {
+    const cursor = args[0];
+    const limit = args[1] ?? 15;
+    const sort = args[2] ?? 'all';
+    const params = { limit };
+    if (cursor !== null) params.cursor = cursor;
+    if (sort && sort !== 'all') params.sort = sort;
+    const response = await axiosInstance.get('/company', { params });
+    return response.data;
   }
-  if (sort && sort !== "all") {
-    params.sort = sort;
-  }
-  const response = await axiosInstance.get("/company", { params });
+
+  const opts = args[0] || {};
+  const { cursor, limit = 15, sort, search, mode } = opts;
+  const params = {};
+  if (limit != null) params.limit = limit;
+  if (cursor != null) params.cursor = cursor;
+  if (sort && sort !== 'all') params.sort = sort;
+  if (search) params.search = search;
+  if (mode) params.mode = mode;
+
+  const response = await axiosInstance.get('/company', { params });
   return response.data;
 };
 

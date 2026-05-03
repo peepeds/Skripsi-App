@@ -8,6 +8,7 @@ import { UserManagementPage } from "@/features/admin/pages/UserManagementPage";
 import { MasterDataCompaniesPage } from "@/features/admin/pages/master-data/MasterDataCompaniesPage";
 import { MasterDataMajorsPage } from "@/features/admin/pages/master-data/MasterDataMajorsPage";
 import { MasterDataCategoriesPage } from "@/features/admin/pages/master-data/MasterDataCategoriesPage";
+import { MasterDataSubcategoriesPage } from "@/features/admin/pages/master-data/MasterDataSubcategoriesPage";
 import { HomePage } from "@/features/home/pages/HomePage";
 import { LoginPage } from "@/features/auth/login/pages/LoginPage";
 import { RegisterPage } from "@/features/auth/register/pages/RegisterPage";
@@ -64,6 +65,7 @@ export const appRoutes = [
   { path: "/admin/master-data/companies", element: <RequireAdmin><AdminLayout><MasterDataCompaniesPage /></AdminLayout></RequireAdmin>, showNavbar: false },
   { path: "/admin/master-data/majors", element: <RequireAdmin><AdminLayout><MasterDataMajorsPage /></AdminLayout></RequireAdmin>, showNavbar: false },
   { path: "/admin/master-data/categories", element: <RequireAdmin><AdminLayout><MasterDataCategoriesPage /></AdminLayout></RequireAdmin>, showNavbar: false },
+  { path: "/admin/master-data/subcategories", element: <RequireAdmin><AdminLayout><MasterDataSubcategoriesPage /></AdminLayout></RequireAdmin>, showNavbar: false },
   { path: "/admin/user-management", element: <RequireAdmin><AdminLayout><UserManagementPage /></AdminLayout></RequireAdmin>, showNavbar: false },
   { path: "*", element: <NotFound />, showNavbar: false },
 ];

@@ -1,9 +1,17 @@
 import { axiosInstance } from './axiosInstance';
 
-export const getCategories = async (type = 'jobs') => {
-  const response = await axiosInstance.get('/category', {
-    params: { IncludeSubCategories: 1, type },
-  });
+export const getCategories = async (opts = {}) => {
+  if (typeof opts === 'string') {
+    const type = opts;
+    const response = await axiosInstance.get('/category', {
+      params: { IncludeSubCategories: 1, type },
+    });
+    return response.data;
+  }
+
+  const { type = 'jobs', IncludeSubCategories = 1, ...rest } = opts || {};
+  const params = { IncludeSubCategories, type, ...rest };
+  const response = await axiosInstance.get('/category', { params });
   return response.data;
 };
 
