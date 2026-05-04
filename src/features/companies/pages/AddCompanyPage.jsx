@@ -52,7 +52,7 @@ export const AddCompanyPage = () => {
   useEffect(() => {
     let cancelled = false;
     getCategories("companies").then((res) => {
-      if (!cancelled && res.success) setCategories(res.result);
+      if (!cancelled && res?.success && Array.isArray(res.result)) setCategories(res.result);
     });
     return () => { cancelled = true; };
   }, []);

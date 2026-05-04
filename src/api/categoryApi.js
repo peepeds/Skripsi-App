@@ -24,3 +24,46 @@ export const getSubCategorySummary = async (subCategoryName) => {
   const response = await axiosInstance.get(`/subcategory/${encodeURIComponent(subCategoryName)}/summary`);
   return response.data;
 };
+
+export const createCategory = async (payload) => {
+  const response = await axiosInstance.post('/category', payload);
+  return response.data;
+};
+
+export const updateCategory = async (categoryId, payload) => {
+  const response = await axiosInstance.patch(`/category/${categoryId}`, payload);
+  return response.data;
+};
+
+export const deleteCategory = async (categoryId, payload = {}) => {
+  const response = await axiosInstance.delete(`/category/${categoryId}`, { data: payload });
+  return response.data;
+};
+
+export const createSubCategory = async (payload) => {
+  const response = await axiosInstance.post('/subcategory', payload);
+  return response.data;
+};
+
+export const updateSubCategory = async (subCategoryId, payload) => {
+  const response = await axiosInstance.patch(`/subcategory/${subCategoryId}`, payload);
+  return response.data;
+};
+
+export const deleteSubCategory = async (subCategoryId) => {
+  const response = await axiosInstance.delete(`/subcategory/${subCategoryId}`);
+  return response.data;
+};
+
+export const getSubCategories = async () => {
+  const response = await axiosInstance.get('/subcategory');
+  return response.data;
+};
+
+export const categoryApi = {
+  getCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  getSubCategories,
+};

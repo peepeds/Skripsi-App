@@ -55,7 +55,12 @@ export function CompanySelectModal({ open, currentCompanySlug, onClose, onCompar
           return;
         }
 
-        setCompanies(deduplicateCompanies(data || []).slice(0, MAX_RESULTS));
+        const companies = Array.isArray(data?.result)
+          ? data.result
+          : Array.isArray(data)
+            ? data
+            : [];
+        setCompanies(deduplicateCompanies(companies).slice(0, MAX_RESULTS));
       } catch (err) {
         setError(normalizeErrorMessage(err, "Failed to load companies"));
       } finally {
@@ -106,7 +111,7 @@ export function CompanySelectModal({ open, currentCompanySlug, onClose, onCompar
           return;
         }
 
-        setCompanies(deduplicateCompanies(data || []).slice(0, MAX_RESULTS));
+        setCompanies(deduplicateCompanies(Array.isArray(data) ? data : []).slice(0, MAX_RESULTS));
       } catch (err) {
         setError(normalizeErrorMessage(err, "Failed to search companies"));
         setCompanies([]);

@@ -4,3 +4,7 @@ export const getRegions = async () => {
   const response = await axiosInstance.get("/region/options");
   return response.data;
 };
+
+export const regionApi = {
+  getRegions,
+};

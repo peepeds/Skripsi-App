@@ -105,3 +105,25 @@ export const reviewCompanyRequest = async (requestId, { status, reviewNote = "" 
   });
   return response.data;
 };
+
+export const createCompany = async (payload) => {
+  const response = await axiosInstance.post('/company', payload);
+  return response.data;
+};
+
+export const updateCompany = async (companyId, payload) => {
+  const response = await axiosInstance.patch(`/company/${companyId}`, payload);
+  return response.data;
+};
+
+export const deleteCompany = async (companyId, payload = {}) => {
+  const response = await axiosInstance.delete(`/company/${companyId}`, { data: payload });
+  return response.data;
+};
+
+export const companyApi = {
+  getCompanies,
+  createCompany,
+  updateCompany,
+  deleteCompany,
+};

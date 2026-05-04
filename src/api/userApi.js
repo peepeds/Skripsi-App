@@ -54,3 +54,25 @@ export const resetPassword = async (userId, payload) => {
   const response = await axiosInstance.post(`/users/${userId}/reset-password`, payload);
   return response.data;
 };
+
+export const createUser = async (payload) => {
+  const response = await axiosInstance.post('/auth/register', payload);
+  return response.data?.result || response.data;
+};
+
+export const updateUser = async (userId, payload) => {
+  const response = await axiosInstance.patch(`/user/${userId}`, payload);
+  return response.data?.result || response.data;
+};
+
+export const deleteUser = async (userId, payload = {}) => {
+  const response = await axiosInstance.delete(`/user/${userId}`, { data: payload });
+  return response.data;
+};
+
+export const userApi = {
+  getUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+};

@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SkeletonLine } from "@/components/ui/skeleton";
 import { getRegions } from "@/api/regionApi";
-import { getMajors } from "@/api/majorApi";
+import { getMajorOptions } from "@/api/majorApi";
 import { BookOpen, GraduationCap, MapPin } from "lucide-react";
 
 export function StepAcademic({ form }) {
@@ -33,9 +33,13 @@ export function StepAcademic({ form }) {
           setRegions(regionsRes.result);
         }
         
-        const majorsRes = await getMajors();
-        if (majorsRes.success && majorsRes.result && Array.isArray(majorsRes.result)) {
-          setAllMajors(majorsRes.result);
+        const majorsRes = await getMajorOptions();
+        const majorsData = Array.isArray(majorsRes)
+          ? majorsRes
+          : (majorsRes?.result && Array.isArray(majorsRes.result) ? majorsRes.result : []);
+
+        if (majorsData.length > 0) {
+          setAllMajors(majorsData);
         }
       } catch (error) {
         console.error("Error fetching regions or majors:", error);
@@ -90,6 +94,7 @@ export function StepAcademic({ form }) {
         <div className="relative">
           <MapPin className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
           <Select
+            value={form.watch("regionId") || ""}
             onValueChange={(value) => {
               form.setValue("regionId", value);
               form.trigger("regionId");
@@ -117,6 +122,7 @@ export function StepAcademic({ form }) {
         <div className="relative">
           <BookOpen className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
           <Select
+            value={form.watch("majorId") || ""}
             onValueChange={(value) => {
               form.setValue("majorId", value);
               form.trigger("majorId");

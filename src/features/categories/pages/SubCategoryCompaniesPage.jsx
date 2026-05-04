@@ -149,8 +149,10 @@ export const SubCategoryCompaniesPage = () => {
           if (needsCatalogEnrichment) {
             try {
               const allCompaniesResponse = await getCompanies(null, 300);
-              const allCompanies = allCompaniesResponse?.success && Array.isArray(allCompaniesResponse.result)
-                ? allCompaniesResponse.result.map(normalizeCompanyItem)
+              const allCompanies = allCompaniesResponse?.success && Array.isArray(allCompaniesResponse.result?.result)
+                ? allCompaniesResponse.result.result.map(normalizeCompanyItem)
+                : allCompaniesResponse?.success && Array.isArray(allCompaniesResponse.result)
+                  ? allCompaniesResponse.result.map(normalizeCompanyItem)
                 : [];
               enrichedCompanies = enrichCompaniesWithCatalog(normalizedSubcategoryCompanies, allCompanies);
             } catch {
