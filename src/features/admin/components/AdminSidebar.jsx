@@ -11,8 +11,16 @@ import {
   Briefcase,
   GraduationCap,
   Tag,
+  Home,
+  LogOut,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navItems = [
   {
@@ -82,6 +90,10 @@ export function AdminSidebar() {
   const handleLogout = async () => {
     await logout();
     navigate("/login");
+  };
+
+  const handleGoHome = () => {
+    navigate("/");
   };
 
   const getInitials = () => {
@@ -159,22 +171,34 @@ export function AdminSidebar() {
 
       {/* Footer */}
       <div className="border-t px-4 py-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-500 text-sm font-semibold text-white">
-            {getInitials()}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-gray-900">
-              {user?.firstName || user?.name || "Admin"}
-            </p>
-            <button
-              onClick={handleLogout}
-              className="text-xs text-gray-400 hover:text-orange-500 transition-colors"
-            >
-              Logout
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition hover:bg-gray-50">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-500 text-sm font-semibold text-white">
+                {getInitials()}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-gray-900">
+                  {user?.firstName || user?.name || "Admin"}
+                </p>
+                <p className="truncate text-xs text-gray-500">
+                  Roles (Admin)
+                </p>
+              </div>
+              <ChevronDown size={16} className="text-gray-400" />
             </button>
-          </div>
-        </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-44">
+            <DropdownMenuItem onSelect={handleGoHome}>
+              <Home size={14} className="mr-2" />
+              Home
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={handleLogout}>
+              <LogOut size={14} className="mr-2" />
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </aside>
   );

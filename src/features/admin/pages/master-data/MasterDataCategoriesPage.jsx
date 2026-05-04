@@ -10,6 +10,7 @@ export default function MasterDataCategoriesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [modal, setModal] = useState(null); // 'create', 'edit', or null
+  const [modalError, setModalError] = useState(null);
   const [formData, setFormData] = useState({
     categoryName: '',
   });
@@ -46,11 +47,13 @@ export default function MasterDataCategoriesPage() {
       });
       setModal('create');
     }
+    setModalError(null);
     setTimeout(() => nameRef.current?.focus(), 0);
   }, []);
 
   const closeModal = useCallback(() => {
     setModal(null);
+    setModalError(null);
     setFormData({
       categoryName: '',
     });
@@ -59,30 +62,35 @@ export default function MasterDataCategoriesPage() {
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
     if (!formData.categoryName.trim()) {
-      setError('Category name is required');
+      setModalError('Category name is required');
       return;
     }
 
     try {
       setSubmitting(true);
-      setError(null);
+      setModalError(null);
 
       if (modal === 'create') {
         await categoryApi.createCategory({
           categoryName: formData.categoryName,
-          type: activeType,
+          categoryType: activeType,
         });
       } else {
         await categoryApi.updateCategory(formData.categoryId, {
           categoryName: formData.categoryName,
-          type: activeType,
+          categoryType: activeType,
         });
       }
 
       closeModal();
       await fetchCategories();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save category');
+      const validationErrors = err.response?.data?.result?.errors;
+      if (Array.isArray(validationErrors) && validationErrors.length > 0) {
+        setModalError(validationErrors.map((item) => `${item.field}: ${item.message}`).join('; '));
+      } else {
+        setModalError(err.response?.data?.message || 'Failed to save category');
+      }
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -246,6 +254,11 @@ export default function MasterDataCategoriesPage() {
             <h2 className="text-base font-semibold text-gray-900">
               {modal === 'create' ? 'Add Category' : 'Edit Category'}
             </h2>
+            {modalError && (
+              <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                {modalError}
+              </div>
+            )}
             <div className="mt-4 space-y-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

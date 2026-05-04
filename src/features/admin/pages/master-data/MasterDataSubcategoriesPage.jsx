@@ -11,6 +11,7 @@ export function MasterDataSubcategoriesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [modal, setModal] = useState(null);
+  const [modalError, setModalError] = useState(null);
   const [formData, setFormData] = useState({});
   const nameRef = useRef(null);
 
@@ -49,17 +50,23 @@ export function MasterDataSubcategoriesPage() {
     } else {
       setFormData({ subCategoryName: '', categoryId: '' });
     }
+    setModalError(null);
     setTimeout(() => nameRef.current?.focus(), 50);
   };
 
   const closeModal = () => {
     setModal(null);
+    setModalError(null);
     setFormData({});
   };
 
   const handleSubmit = async () => {
     if (!formData.subCategoryName?.trim()) {
-      setError('Subcategory name is required');
+      setModalError('Subcategory name is required');
+      return;
+    }
+    if (!formData.categoryId) {
+      setModalError('Category is required');
       return;
     }
 
@@ -79,7 +86,12 @@ export function MasterDataSubcategoriesPage() {
       closeModal();
       await fetchSubcategories();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save subcategory');
+      const validationErrors = err.response?.data?.result?.errors;
+      if (Array.isArray(validationErrors) && validationErrors.length > 0) {
+        setModalError(validationErrors.map((item) => `${item.field}: ${item.message}`).join('; '));
+      } else {
+        setModalError(err.response?.data?.message || 'Failed to save subcategory');
+      }
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -249,6 +261,11 @@ export function MasterDataSubcategoriesPage() {
             <h2 className="text-base font-semibold text-gray-900">
               {modal === 'create' ? 'Add Subcategory' : 'Edit Subcategory'}
             </h2>
+            {modalError && (
+              <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                {modalError}
+              </div>
+            )}
             <div className="mt-4 space-y-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

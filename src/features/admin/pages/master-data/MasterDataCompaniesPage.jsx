@@ -6,13 +6,19 @@ import { categoryApi } from '../../../../api/categoryApi';
 export default function MasterDataCompaniesPage() {
   const [companies, setCompanies] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [modalError, setModalError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [modal, setModal] = useState(null);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    companyName: '',
+    companyAbbreviation: '',
+    website: '',
+    categoryId: '',
+    subcategoryId: '',
+  });
   const nameRef = useRef(null);
 
   const fetchCompanies = useCallback(async () => {
@@ -48,19 +54,60 @@ export default function MasterDataCompaniesPage() {
   }, [fetchCompanies, fetchCategories]);
 
   const openModal = (company = null) => {
+    const matchedCategory = company
+      ? categories.find((cat) => cat.categoryName === company.categoryName)
+      : null;
+    const matchedSubcategory = matchedCategory?.subCategories?.find(
+      (sub) => sub.subCategoryName === company?.subcategoryName
+    );
+
     setModal(company ? 'edit' : 'create');
-    setFormData(company ? { ...company } : { companyName: '', companyAbbreviation: '' });
+    setModalError(null);
+    setFormData(company ? {
+      companyId: company.companyId || company.id,
+      companyName: company.companyName || '',
+      companyAbbreviation: company.companyAbbreviation || '',
+      website: company.website || '',
+      categoryId: matchedCategory?.categoryId || '',
+      subcategoryId: matchedSubcategory?.subCategoryId || '',
+    } : {
+      companyName: '',
+      companyAbbreviation: '',
+      website: '',
+      categoryId: '',
+      subcategoryId: '',
+    });
     setTimeout(() => nameRef.current?.focus(), 50);
   };
 
   const closeModal = () => {
     setModal(null);
-    setFormData({});
+    setModalError(null);
+    setFormData({
+      companyId: '',
+      companyName: '',
+      companyAbbreviation: '',
+      website: '',
+      categoryId: '',
+      subcategoryId: '',
+    });
   };
 
   const handleSubmit = async () => {
     if (!formData.companyName?.trim()) {
-      setError('Company name is required');
+      setModalError('Company name is required');
+      return;
+    }
+    if (!formData.companyAbbreviation?.trim()) {
+      setModalError('Company abbreviation is required');
+      return;
+    }
+    if (!formData.website?.trim()) {
+      setModalError('Website is required');
+      return;
+    }
+    if (!formData.subcategoryId) {
+      setModalError('Subcategory is required');
       return;
     }
 
@@ -69,18 +116,27 @@ export default function MasterDataCompaniesPage() {
       if (modal === 'create') {
         await companyApi.createCompany({
           companyName: formData.companyName,
-          companyAbbreviation: formData.companyAbbreviation || '',
+          companyAbbreviation: formData.companyAbbreviation,
+          website: formData.website,
+          subcategoryId: Number(formData.subcategoryId),
         });
       } else if (modal === 'edit') {
         await companyApi.updateCompany(formData.companyId || formData.id, {
           companyName: formData.companyName,
-          companyAbbreviation: formData.companyAbbreviation || '',
+          companyAbbreviation: formData.companyAbbreviation,
+          website: formData.website,
+          subcategoryId: Number(formData.subcategoryId),
         });
       }
       closeModal();
       await fetchCompanies();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save company');
+      const validationErrors = err.response?.data?.result?.errors;
+      if (Array.isArray(validationErrors) && validationErrors.length > 0) {
+        setModalError(validationErrors.map((item) => `${item.field}: ${item.message}`).join('; '));
+      } else {
+        setModalError(err.response?.data?.message || 'Failed to save company');
+      }
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -107,8 +163,14 @@ export default function MasterDataCompaniesPage() {
 
   const filteredCompanies = companies.filter((company) =>
     company.companyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    company.companyAbbreviation?.toLowerCase().includes(searchTerm.toLowerCase())
+    company.companyAbbreviation?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    company.website?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    company.categoryName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    company.subcategoryName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const selectedCategory = categories.find((cat) => String(cat.categoryId || cat.id) === String(formData.categoryId));
+  const availableSubcategories = selectedCategory?.subCategories || [];
 
   return (
     <div>
@@ -170,6 +232,12 @@ export default function MasterDataCompaniesPage() {
                   Website
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                  Category
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                  Subcategory
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                   Reviews
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
@@ -189,6 +257,12 @@ export default function MasterDataCompaniesPage() {
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700">
                       {company.website || '-'}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {company.categoryName || '-'}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {company.subcategoryName || '-'}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700">
                       {company.reviewCount ?? company.totalReviews ?? 0}
@@ -216,7 +290,7 @@ export default function MasterDataCompaniesPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
                     No companies found
                   </td>
                 </tr>
@@ -232,6 +306,11 @@ export default function MasterDataCompaniesPage() {
             <h2 className="text-base font-semibold text-gray-900">
               {modal === 'create' ? 'Add Company' : 'Edit Company'}
             </h2>
+            {modalError && (
+              <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                {modalError}
+              </div>
+            )}
             <div className="mt-4 space-y-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -260,17 +339,50 @@ export default function MasterDataCompaniesPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Categories
+                  Website *
+                </label>
+                <input
+                  type="text"
+                  value={formData.website || ''}
+                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                  placeholder="e.g., https://company.com"
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-400"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Category *
                 </label>
                 <select
-                  value={selectedCategoryId}
-                  onChange={(e) => setSelectedCategoryId(e.target.value)}
+                  value={formData.categoryId || ''}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    categoryId: e.target.value,
+                    subcategoryId: '',
+                  })}
                   className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-400"
                 >
                   <option value="">Select a category</option>
                   {categories.map((cat) => (
                     <option key={cat.categoryId || cat.id} value={cat.categoryId || cat.id}>
                       {cat.categoryName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Subcategory *
+                </label>
+                <select
+                  value={formData.subcategoryId || ''}
+                  onChange={(e) => setFormData({ ...formData, subcategoryId: e.target.value })}
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-400"
+                >
+                  <option value="">Select a subcategory</option>
+                  {availableSubcategories.map((sub) => (
+                    <option key={sub.subCategoryId || sub.id} value={sub.subCategoryId || sub.id}>
+                      {sub.subCategoryName}
                     </option>
                   ))}
                 </select>

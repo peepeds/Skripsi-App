@@ -7,6 +7,13 @@ import { getRegions } from "@/api/regionApi";
 import { getMajorOptions } from "@/api/majorApi";
 import { BookOpen, GraduationCap, MapPin } from "lucide-react";
 
+const normalizeList = (value) => {
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value?.result?.result)) return value.result.result;
+  if (Array.isArray(value?.result)) return value.result;
+  return [];
+};
+
 export function StepAcademic({ form }) {
   const [regions, setRegions] = useState([]);
   const [allMajors, setAllMajors] = useState([]);
@@ -17,7 +24,7 @@ export function StepAcademic({ form }) {
 
   useEffect(() => {
     if (selectedRegion) {
-      const filtered = allMajors.filter(major => major.regionId === parseInt(selectedRegion));
+      const filtered = allMajors.filter((major) => String(major.regionId) === String(selectedRegion));
       setMajors(filtered);
     } else {
       setMajors([]);
@@ -29,15 +36,13 @@ export function StepAcademic({ form }) {
       setLoading(true);
       try {
         const regionsRes = await getRegions();
-        if (regionsRes.success && regionsRes.result && Array.isArray(regionsRes.result)) {
-          setRegions(regionsRes.result);
+        const regionsData = normalizeList(regionsRes);
+        if (regionsData.length > 0) {
+          setRegions(regionsData);
         }
-        
-        const majorsRes = await getMajorOptions();
-        const majorsData = Array.isArray(majorsRes)
-          ? majorsRes
-          : (majorsRes?.result && Array.isArray(majorsRes.result) ? majorsRes.result : []);
 
+        const majorsRes = await getMajorOptions();
+        const majorsData = normalizeList(majorsRes);
         if (majorsData.length > 0) {
           setAllMajors(majorsData);
         }
@@ -127,9 +132,10 @@ export function StepAcademic({ form }) {
               form.setValue("majorId", value);
               form.trigger("majorId");
             }}
+            disabled={!selectedRegion}
           >
             <SelectTrigger className="h-12 w-full rounded-xl border-slate-200 bg-slate-50/70 pl-10 pr-4 text-sm shadow-none transition-colors focus-visible:bg-white">
-              <SelectValue placeholder="Select major" />
+              <SelectValue placeholder={selectedRegion ? "Select major" : "Select region first"} />
             </SelectTrigger>
             <SelectContent>
               {majors.map((major) => (

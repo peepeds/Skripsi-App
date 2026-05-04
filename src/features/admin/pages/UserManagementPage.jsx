@@ -12,6 +12,7 @@ export default function UserManagementPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [modal, setModal] = useState(null); // 'create', 'edit', or null
+  const [modalError, setModalError] = useState(null);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -58,7 +59,7 @@ export default function UserManagementPage() {
         email: user.email || '',
         password: '', // Don't pre-fill password for security
         role: user.role || 'USER',
-        userId: user.userId,
+        userId: user.userId ? Number(user.userId) : null,
       });
       setModal('edit');
     } else {
@@ -71,11 +72,13 @@ export default function UserManagementPage() {
       });
       setModal('create');
     }
+    setModalError(null);
     setTimeout(() => nameRef.current?.focus(), 0);
   }, []);
 
   const closeModal = useCallback(() => {
     setModal(null);
+    setModalError(null);
     setFormData({
       firstName: '',
       lastName: '',
@@ -96,20 +99,24 @@ export default function UserManagementPage() {
       return;
     }
     if (!formData.email.trim()) {
-      setError('Email is required');
+      setModalError('Email is required');
       return;
     }
     if (modal === 'create' && !formData.password.trim()) {
-      setError('Password is required for new users');
+      setModalError('Password is required for new users');
+      return;
+    }
+    if (modal === 'edit' && !formData.userId) {
+      setModalError('User ID is missing');
       return;
     }
 
     try {
       setSubmitting(true);
-      setError(null);
+      setModalError(null);
 
       if (modal === 'create') {
-        await userApi.createUser({
+        await userApi.createUserByAdmin({
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
@@ -132,7 +139,12 @@ export default function UserManagementPage() {
       closeModal();
       await fetchUsers();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save user');
+      const validationErrors = err.response?.data?.result?.errors;
+      if (Array.isArray(validationErrors) && validationErrors.length > 0) {
+        setModalError(validationErrors.map((item) => `${item.field}: ${item.message}`).join('; '));
+      } else {
+        setModalError(err.response?.data?.message || 'Failed to save user');
+      }
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -140,6 +152,9 @@ export default function UserManagementPage() {
   };
 
   const handleDelete = async (userId) => {
+    if (!userId) {
+      return;
+    }
     if (!window.confirm('Are you sure you want to delete this user?')) {
       return;
     }
@@ -294,6 +309,11 @@ export default function UserManagementPage() {
             <h2 className="text-base font-semibold text-gray-900">
               {modal === 'create' ? 'Add User' : 'Edit User'}
             </h2>
+              {modalError && (
+                <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                  {modalError}
+                </div>
+              )}
             <div className="mt-4 space-y-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

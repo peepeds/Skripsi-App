@@ -60,12 +60,20 @@ export const createUser = async (payload) => {
   return response.data?.result || response.data;
 };
 
+export const createUserByAdmin = async (payload) => {
+  const response = await axiosInstance.post('/user', payload);
+  return response.data?.result || response.data;
+};
+
 export const updateUser = async (userId, payload) => {
   const response = await axiosInstance.patch(`/user/${userId}`, payload);
   return response.data?.result || response.data;
 };
 
 export const deleteUser = async (userId, payload = {}) => {
+  if (!userId) {
+    return { success: false, message: 'User ID is required' };
+  }
   const response = await axiosInstance.delete(`/user/${userId}`, { data: payload });
   return response.data;
 };
@@ -73,6 +81,7 @@ export const deleteUser = async (userId, payload = {}) => {
 export const userApi = {
   getUsers,
   createUser,
+  createUserByAdmin,
   updateUser,
   deleteUser,
 };

@@ -47,6 +47,13 @@ function SkeletonRow() {
   );
 }
 
+const normalizeRequestList = (data) => {
+  if (Array.isArray(data?.result?.result)) return data.result.result;
+  if (Array.isArray(data?.result)) return data.result;
+  if (Array.isArray(data)) return data;
+  return [];
+};
+
 export function CertificateVerificationPage() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,7 +67,7 @@ export function CertificateVerificationPage() {
   const fetchRequests = useCallback(() => {
     setLoading(true);
     getCertificateVerificationList({ search, status: statusFilter })
-      .then((data) => setRequests(data.result ?? []))
+      .then((data) => setRequests(normalizeRequestList(data)))
       .catch(() => setRequests([]))
       .finally(() => setLoading(false));
   }, [search, statusFilter]);
