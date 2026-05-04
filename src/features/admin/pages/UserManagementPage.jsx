@@ -3,6 +3,14 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
 import { userApi } from '../../../api/userApi';
 import { useAuth } from '@/hooks/useAuth';
+import { isEmail, isPassword } from '@/helpers/validations';
+
+const emailSchema = isEmail().refine(
+  (value) => value.toLowerCase().endsWith('.com'),
+  'Email must use a .com domain'
+);
+
+const passwordSchema = isPassword();
 
 export default function UserManagementPage() {
   const { isAdmin, loading: authLoading } = useAuth();
@@ -14,6 +22,7 @@ export default function UserManagementPage() {
   const [modal, setModal] = useState(null); // 'create', 'edit', or null
   const [modalError, setModalError] = useState(null);
   const [formData, setFormData] = useState({
+    userId: null,
     firstName: '',
     lastName: '',
     email: '',
@@ -21,6 +30,7 @@ export default function UserManagementPage() {
     role: 'USER',
   });
   const nameRef = useRef(null);
+  const originalEmailRef = useRef('');
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -51,19 +61,22 @@ export default function UserManagementPage() {
     return <Navigate to="/" replace />;
   }
 
-  const openModal = useCallback((user = null) => {
+  const openModal = (user = null) => {
     if (user) {
+      originalEmailRef.current = user.email || '';
       setFormData({
+        userId: user.userId ? Number(user.userId) : null,
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         email: user.email || '',
         password: '', // Don't pre-fill password for security
         role: user.role || 'USER',
-        userId: user.userId ? Number(user.userId) : null,
       });
       setModal('edit');
     } else {
+      originalEmailRef.current = '';
       setFormData({
+        userId: null,
         firstName: '',
         lastName: '',
         email: '',
@@ -74,37 +87,57 @@ export default function UserManagementPage() {
     }
     setModalError(null);
     setTimeout(() => nameRef.current?.focus(), 0);
-  }, []);
+  };
 
-  const closeModal = useCallback(() => {
+  const closeModal = () => {
     setModal(null);
     setModalError(null);
+    originalEmailRef.current = '';
     setFormData({
+      userId: null,
       firstName: '',
       lastName: '',
       email: '',
       password: '',
       role: 'USER',
     });
-  }, []);
+  };
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
-    if (!formData.firstName.trim()) {
-      setError('First name is required');
+    const firstName = formData.firstName.trim();
+    const lastName = formData.lastName.trim();
+    const email = formData.email.trim().toLowerCase();
+    const password = formData.password.trim();
+    const normalizedOriginalEmail = originalEmailRef.current.trim().toLowerCase();
+
+    if (!firstName) {
+      setModalError('First name is required');
       return;
     }
-    if (!formData.lastName.trim()) {
-      setError('Last name is required');
+    if (!lastName) {
+      setModalError('Last name is required');
       return;
     }
-    if (!formData.email.trim()) {
+    if (!email) {
       setModalError('Email is required');
       return;
     }
-    if (modal === 'create' && !formData.password.trim()) {
+    const emailResult = emailSchema.safeParse(email);
+    if (!emailResult.success) {
+      setModalError(emailResult.error.issues[0]?.message || 'Invalid email address');
+      return;
+    }
+    if (modal === 'create' && !password) {
       setModalError('Password is required for new users');
       return;
+    }
+    if (password) {
+      const passwordResult = passwordSchema.safeParse(password);
+      if (!passwordResult.success) {
+        setModalError(passwordResult.error.issues[0]?.message || 'Invalid password');
+        return;
+      }
     }
     if (modal === 'edit' && !formData.userId) {
       setModalError('User ID is missing');
@@ -115,23 +148,40 @@ export default function UserManagementPage() {
       setSubmitting(true);
       setModalError(null);
 
+      const shouldCheckEmail = modal === 'create' || email !== normalizedOriginalEmail;
+      if (shouldCheckEmail) {
+        try {
+          const emailCheck = await userApi.checkEmail(email);
+          if (!emailCheck?.success) {
+            setModalError(emailCheck?.message || 'Email already used!');
+            return;
+          }
+        } catch (err) {
+          if (err.response?.status === 409) {
+            setModalError(err.response?.data?.message || 'Email already used!');
+            return;
+          }
+          throw err;
+        }
+      }
+
       if (modal === 'create') {
         await userApi.createUserByAdmin({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          password: formData.password,
+          firstName,
+          lastName,
+          email,
+          password,
           role: formData.role,
         });
       } else {
         const updatePayload = {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
+          firstName,
+          lastName,
+          email,
           role: formData.role,
         };
-        if (formData.password.trim()) {
-          updatePayload.password = formData.password;
+        if (password) {
+          updatePayload.password = password;
         }
         await userApi.updateUser(formData.userId, updatePayload);
       }

@@ -80,6 +80,7 @@ export const deleteUser = async (userId, payload = {}) => {
 
 export const userApi = {
   getUsers,
+  checkEmail,
   createUser,
   createUserByAdmin,
   updateUser,
