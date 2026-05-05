@@ -10,6 +10,8 @@ export function useAuth() {
     loadUser,
     logout,
     loading,
+    // authReady indicates that initial auth loading has completed (success or failure)
+    authReady: !loading,
     isAuthenticated: user !== null,
   };
 }

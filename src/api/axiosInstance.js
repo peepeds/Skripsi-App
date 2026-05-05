@@ -75,9 +75,9 @@ axiosInstance.interceptors.response.use(
       return axiosInstance(originalRequest);
     } catch (err) {
       console.error("Refresh token failed:", err.message);
-      // Clear all auth data and redirect to login
+      // Clear auth data but DO NOT force navigation here.
+      // Let route-level guards (RequireAdmin) handle redirect after auth state resolves.
       clearAuthSession();
-      window.location.href = "/login";
       return Promise.reject(err);
     }
   }
