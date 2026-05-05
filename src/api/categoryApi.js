@@ -46,12 +46,14 @@ export const createSubCategory = async (payload) => {
 };
 
 export const updateSubCategory = async (subCategoryId, payload) => {
-  const response = await axiosInstance.patch(`/subcategory/${subCategoryId}`, payload);
+  const response = await axiosInstance.put(`/subcategory/${subCategoryId}`, payload);
   return response.data;
 };
 
 export const deleteSubCategory = async (subCategoryId) => {
-  const response = await axiosInstance.delete(`/subcategory/${subCategoryId}`);
+  // Some servers expect a request body for DELETE even if unused (Spring optional @RequestBody).
+  // Provide an empty body to avoid binding issues.
+  const response = await axiosInstance.delete(`/subcategory/${subCategoryId}`, { data: {} });
   return response.data;
 };
 
@@ -66,4 +68,7 @@ export const categoryApi = {
   updateCategory,
   deleteCategory,
   getSubCategories,
+  createSubCategory,
+  updateSubCategory,
+  deleteSubCategory,
 };

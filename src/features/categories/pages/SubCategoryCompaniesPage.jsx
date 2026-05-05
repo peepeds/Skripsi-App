@@ -136,9 +136,17 @@ export const SubCategoryCompaniesPage = () => {
 
         const data = companiesData.value;
         if (data.success) {
-          const normalizedSubcategoryCompanies = Array.isArray(data.result)
-            ? data.result.map(normalizeCompanyItem)
-            : [];
+          // API may return either an array directly in `result` or a cursor-page object
+          // with `result` (array) or `items` (compatibility). Normalize both shapes.
+          const rawList = Array.isArray(data.result)
+            ? data.result
+            : Array.isArray(data.result?.result)
+              ? data.result.result
+              : Array.isArray(data.items)
+                ? data.items
+                : [];
+
+          const normalizedSubcategoryCompanies = rawList.map(normalizeCompanyItem);
 
           // Fetch full catalog only when subcategory payload is incomplete.
           const needsCatalogEnrichment = normalizedSubcategoryCompanies.some(
@@ -162,7 +170,8 @@ export const SubCategoryCompaniesPage = () => {
           }
 
           setCompanies(enrichedCompanies);
-          setMeta(data.meta);
+          // meta can be at top-level data.meta or nested data.result.meta
+          setMeta(data.meta || data.result?.meta || null);
         } else {
           setError(data.message || 'Failed to load companies');
         }
