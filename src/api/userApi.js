@@ -44,3 +44,27 @@ export const getSavedCompanies = async (cursor = null, limit = 20) => {
   const response = await axiosInstance.get("/user/my-bookmarks", { params });
   return response.data;
 };
+
+export const getUsers = async (params = {}) => {
+  const response = await axiosInstance.get('/user', { params });
+  return response.data;
+};
+
+export const resetPassword = async (userId, payload) => {
+  const response = await axiosInstance.post(`/users/${userId}/reset-password`, payload);
+  return response.data;
+};
+
+export const deleteUser = async (userId, payload = {}) => {
+  if (!userId) {
+    return { success: false, message: 'User ID is required' };
+  }
+  const response = await axiosInstance.delete(`/user/${userId}`, { data: payload });
+  return response.data;
+};
+
+export const userApi = {
+  getUsers,
+  checkEmail,
+  deleteUser,
+};

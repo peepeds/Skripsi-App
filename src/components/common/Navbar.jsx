@@ -16,7 +16,7 @@ import { useInboxNotifications } from "@/features/inbox/hooks/useInboxNotificati
 export function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout, isAuthenticated, loading } = useAuth();
+  const { user, logout, isAuthenticated, isAdmin, loading } = useAuth();
   const {
     inboxData,
     inboxLoading,
@@ -65,10 +65,20 @@ export function Navbar() {
     <header className="border-b px-4 md:px-6">
       <div className="flex h-16 items-center justify-between gap-4">
         {/* Logo */}
-        <div className="flex-1">
+        <div className="flex-1 flex items-center gap-3">
           <a href="/" className="group inline-flex items-center gap-2">
             <Logo />
           </a>
+          {isAdmin && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-xs font-semibold border-orange-400 text-orange-500 hover:bg-orange-50"
+              onClick={() => navigate("/admin")}
+            >
+              Admin
+            </Button>
+          )}
         </div>
         {/* Right side */}
         <div className="flex items-center justify-end gap-2 md:gap-6">

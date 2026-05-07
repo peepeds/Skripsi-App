@@ -175,7 +175,11 @@ export const ReviewerReviewsDetailPage = () => {
           ? parsedReviews.data
           : [];
 
-        const companies = Array.isArray(companiesResponse?.result) ? companiesResponse.result : [];
+        const companies = Array.isArray(companiesResponse?.result?.result)
+          ? companiesResponse.result.result
+          : Array.isArray(companiesResponse?.result)
+            ? companiesResponse.result
+            : [];
         const companyByName = new Map();
         const companyByHost = new Map();
 
