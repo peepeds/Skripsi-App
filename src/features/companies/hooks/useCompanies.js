@@ -44,11 +44,7 @@ export const useCompanies = (searchQuery, sort = "all") => {
         return;
       }
 
-      const newCompanies = Array.isArray(data?.result)
-        ? data.result
-        : Array.isArray(data)
-          ? data
-          : [];
+      const newCompanies = data || [];
 
       if (isValidSearchQuery(searchQuery)) {
         // Search: replace all companies
@@ -65,8 +61,8 @@ export const useCompanies = (searchQuery, sort = "all") => {
           return [...prev, ...uniqueNew];
         });
         // Update nextCursor for next fetch and hasMore status
-        nextCursorRef.current = data?.meta?.nextCursor ?? null;
-        setHasMore(data?.meta?.hasMore ?? false);
+        nextCursorRef.current = response.meta?.nextCursor ?? null;
+        setHasMore(response.meta?.hasMore ?? false);
       }
 
       lastFetchedCursorRef.current = currentCursor;

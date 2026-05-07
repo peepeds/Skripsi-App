@@ -4,15 +4,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SkeletonLine } from "@/components/ui/skeleton";
 import { getRegions } from "@/api/regionApi";
-import { getMajorOptions } from "@/api/majorApi";
+import { getMajors } from "@/api/majorApi";
 import { BookOpen, GraduationCap, MapPin } from "lucide-react";
-
-const normalizeList = (value) => {
-  if (Array.isArray(value)) return value;
-  if (Array.isArray(value?.result?.result)) return value.result.result;
-  if (Array.isArray(value?.result)) return value.result;
-  return [];
-};
 
 export function StepAcademic({ form }) {
   const [regions, setRegions] = useState([]);
@@ -24,7 +17,7 @@ export function StepAcademic({ form }) {
 
   useEffect(() => {
     if (selectedRegion) {
-      const filtered = allMajors.filter((major) => String(major.regionId) === String(selectedRegion));
+      const filtered = allMajors.filter(major => major.regionId === parseInt(selectedRegion));
       setMajors(filtered);
     } else {
       setMajors([]);
@@ -36,15 +29,13 @@ export function StepAcademic({ form }) {
       setLoading(true);
       try {
         const regionsRes = await getRegions();
-        const regionsData = normalizeList(regionsRes);
-        if (regionsData.length > 0) {
-          setRegions(regionsData);
+        if (regionsRes.success && regionsRes.result && Array.isArray(regionsRes.result)) {
+          setRegions(regionsRes.result);
         }
-
-        const majorsRes = await getMajorOptions();
-        const majorsData = normalizeList(majorsRes);
-        if (majorsData.length > 0) {
-          setAllMajors(majorsData);
+        
+        const majorsRes = await getMajors();
+        if (majorsRes.success && majorsRes.result && Array.isArray(majorsRes.result)) {
+          setAllMajors(majorsRes.result);
         }
       } catch (error) {
         console.error("Error fetching regions or majors:", error);
@@ -99,7 +90,6 @@ export function StepAcademic({ form }) {
         <div className="relative">
           <MapPin className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
           <Select
-            value={form.watch("regionId") || ""}
             onValueChange={(value) => {
               form.setValue("regionId", value);
               form.trigger("regionId");
@@ -127,15 +117,13 @@ export function StepAcademic({ form }) {
         <div className="relative">
           <BookOpen className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
           <Select
-            value={form.watch("majorId") || ""}
             onValueChange={(value) => {
               form.setValue("majorId", value);
               form.trigger("majorId");
             }}
-            disabled={!selectedRegion}
           >
             <SelectTrigger className="h-12 w-full rounded-xl border-slate-200 bg-slate-50/70 pl-10 pr-4 text-sm shadow-none transition-colors focus-visible:bg-white">
-              <SelectValue placeholder={selectedRegion ? "Select major" : "Select region first"} />
+              <SelectValue placeholder="Select major" />
             </SelectTrigger>
             <SelectContent>
               {majors.map((major) => (
