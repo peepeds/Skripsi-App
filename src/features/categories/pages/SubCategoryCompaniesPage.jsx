@@ -136,17 +136,9 @@ export const SubCategoryCompaniesPage = () => {
 
         const data = companiesData.value;
         if (data.success) {
-          // API may return either an array directly in `result` or a cursor-page object
-          // with `result` (array) or `items` (compatibility). Normalize both shapes.
-          const rawList = Array.isArray(data.result)
-            ? data.result
-            : Array.isArray(data.result?.result)
-              ? data.result.result
-              : Array.isArray(data.items)
-                ? data.items
-                : [];
-
-          const normalizedSubcategoryCompanies = rawList.map(normalizeCompanyItem);
+          const normalizedSubcategoryCompanies = Array.isArray(data.result)
+            ? data.result.map(normalizeCompanyItem)
+            : [];
 
           // Fetch full catalog only when subcategory payload is incomplete.
           const needsCatalogEnrichment = normalizedSubcategoryCompanies.some(
@@ -157,10 +149,8 @@ export const SubCategoryCompaniesPage = () => {
           if (needsCatalogEnrichment) {
             try {
               const allCompaniesResponse = await getCompanies(null, 300);
-              const allCompanies = allCompaniesResponse?.success && Array.isArray(allCompaniesResponse.result?.result)
-                ? allCompaniesResponse.result.result.map(normalizeCompanyItem)
-                : allCompaniesResponse?.success && Array.isArray(allCompaniesResponse.result)
-                  ? allCompaniesResponse.result.map(normalizeCompanyItem)
+              const allCompanies = allCompaniesResponse?.success && Array.isArray(allCompaniesResponse.result)
+                ? allCompaniesResponse.result.map(normalizeCompanyItem)
                 : [];
               enrichedCompanies = enrichCompaniesWithCatalog(normalizedSubcategoryCompanies, allCompanies);
             } catch {
@@ -170,8 +160,7 @@ export const SubCategoryCompaniesPage = () => {
           }
 
           setCompanies(enrichedCompanies);
-          // meta can be at top-level data.meta or nested data.result.meta
-          setMeta(data.meta || data.result?.meta || null);
+          setMeta(data.meta);
         } else {
           setError(data.message || 'Failed to load companies');
         }

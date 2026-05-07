@@ -138,11 +138,7 @@ export const ReviewsPage = () => {
 
       try {
         const companiesResponse = await getCompanies(null, 300);
-        const companies = Array.isArray(companiesResponse?.result?.result)
-          ? companiesResponse.result.result
-          : Array.isArray(companiesResponse?.result)
-            ? companiesResponse.result
-            : [];
+        const companies = Array.isArray(companiesResponse?.result) ? companiesResponse.result : [];
 
         const byName = new Map();
         const byHost = new Map();
