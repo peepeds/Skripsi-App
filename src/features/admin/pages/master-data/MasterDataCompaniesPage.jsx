@@ -3,6 +3,56 @@ import { Edit2, Trash2 } from 'lucide-react';
 import { companyApi } from '../../../../api/companyApi';
 import { categoryApi } from '../../../../api/categoryApi';
 
+const MASTER_DATA_COMPANY_FETCH_LIMIT = 200;
+
+const getCompanyListFromResponse = (response) => {
+  if (Array.isArray(response?.result?.result)) {
+    return {
+      companies: response.result.result,
+      meta: response.result.meta ?? null,
+    };
+  }
+
+  if (Array.isArray(response?.result)) {
+    return {
+      companies: response.result,
+      meta: response.meta ?? null,
+    };
+  }
+
+  return {
+    companies: [],
+    meta: response?.meta ?? null,
+  };
+};
+
+const fetchAllCompanies = async () => {
+  const collectedCompanies = [];
+  const visitedCursors = new Set();
+  let cursor = null;
+
+  while (true) {
+    const response = await companyApi.getCompanies({
+      cursor,
+      limit: MASTER_DATA_COMPANY_FETCH_LIMIT,
+    });
+    const { companies, meta } = getCompanyListFromResponse(response);
+    collectedCompanies.push(...companies);
+
+    const nextCursor = meta?.nextCursor ?? null;
+    const hasMore = meta?.hasMore ?? Boolean(nextCursor);
+
+    if (!hasMore || nextCursor === null || visitedCursors.has(nextCursor)) {
+      break;
+    }
+
+    visitedCursors.add(nextCursor);
+    cursor = nextCursor;
+  }
+
+  return collectedCompanies;
+};
+
 export default function MasterDataCompaniesPage() {
   const [companies, setCompanies] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -24,12 +74,8 @@ export default function MasterDataCompaniesPage() {
   const fetchCompanies = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await companyApi.getCompanies({ limit: 200 });
-      setCompanies(Array.isArray(data?.result?.result)
-        ? data.result.result
-        : Array.isArray(data?.result)
-          ? data.result
-          : []);
+      const allCompanies = await fetchAllCompanies();
+      setCompanies(allCompanies);
       setError(null);
     } catch (err) {
       setError('Failed to load companies');

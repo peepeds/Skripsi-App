@@ -55,21 +55,6 @@ export const resetPassword = async (userId, payload) => {
   return response.data;
 };
 
-export const createUser = async (payload) => {
-  const response = await axiosInstance.post('/auth/register', payload);
-  return response.data?.result || response.data;
-};
-
-export const createUserByAdmin = async (payload) => {
-  const response = await axiosInstance.post('/user', payload);
-  return response.data?.result || response.data;
-};
-
-export const updateUser = async (userId, payload) => {
-  const response = await axiosInstance.patch(`/user/${userId}`, payload);
-  return response.data?.result || response.data;
-};
-
 export const deleteUser = async (userId, payload = {}) => {
   if (!userId) {
     return { success: false, message: 'User ID is required' };
@@ -81,8 +66,5 @@ export const deleteUser = async (userId, payload = {}) => {
 export const userApi = {
   getUsers,
   checkEmail,
-  createUser,
-  createUserByAdmin,
-  updateUser,
   deleteUser,
 };

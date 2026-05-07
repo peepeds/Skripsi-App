@@ -1,16 +1,8 @@
 import { Navigate } from 'react-router-dom';
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { Edit2, Trash2 } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Trash2 } from 'lucide-react';
 import { userApi } from '../../../api/userApi';
 import { useAuth } from '@/hooks/useAuth';
-import { isEmail, isPassword } from '@/helpers/validations';
-
-const emailSchema = isEmail().refine(
-  (value) => value.toLowerCase().endsWith('.com'),
-  'Email must use a .com domain'
-);
-
-const passwordSchema = isPassword();
 
 export default function UserManagementPage() {
   const { isAdmin, loading: authLoading } = useAuth();
@@ -19,18 +11,6 @@ export default function UserManagementPage() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [modal, setModal] = useState(null); // 'create', 'edit', or null
-  const [modalError, setModalError] = useState(null);
-  const [formData, setFormData] = useState({
-    userId: null,
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    role: 'USER',
-  });
-  const nameRef = useRef(null);
-  const originalEmailRef = useRef('');
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -60,146 +40,6 @@ export default function UserManagementPage() {
   if (!isAdmin) {
     return <Navigate to="/" replace />;
   }
-
-  const openModal = (user = null) => {
-    if (user) {
-      originalEmailRef.current = user.email || '';
-      setFormData({
-        userId: user.userId ? Number(user.userId) : null,
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        email: user.email || '',
-        password: '', // Don't pre-fill password for security
-        role: user.role || 'USER',
-      });
-      setModal('edit');
-    } else {
-      originalEmailRef.current = '';
-      setFormData({
-        userId: null,
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: '',
-        role: 'USER',
-      });
-      setModal('create');
-    }
-    setModalError(null);
-    setTimeout(() => nameRef.current?.focus(), 0);
-  };
-
-  const closeModal = () => {
-    setModal(null);
-    setModalError(null);
-    originalEmailRef.current = '';
-    setFormData({
-      userId: null,
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      role: 'USER',
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    if (e) e.preventDefault();
-    const firstName = formData.firstName.trim();
-    const lastName = formData.lastName.trim();
-    const email = formData.email.trim().toLowerCase();
-    const password = formData.password.trim();
-    const normalizedOriginalEmail = originalEmailRef.current.trim().toLowerCase();
-
-    if (!firstName) {
-      setModalError('First name is required');
-      return;
-    }
-    if (!lastName) {
-      setModalError('Last name is required');
-      return;
-    }
-    if (!email) {
-      setModalError('Email is required');
-      return;
-    }
-    const emailResult = emailSchema.safeParse(email);
-    if (!emailResult.success) {
-      setModalError(emailResult.error.issues[0]?.message || 'Invalid email address');
-      return;
-    }
-    if (modal === 'create' && !password) {
-      setModalError('Password is required for new users');
-      return;
-    }
-    if (password) {
-      const passwordResult = passwordSchema.safeParse(password);
-      if (!passwordResult.success) {
-        setModalError(passwordResult.error.issues[0]?.message || 'Invalid password');
-        return;
-      }
-    }
-    if (modal === 'edit' && !formData.userId) {
-      setModalError('User ID is missing');
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-      setModalError(null);
-
-      const shouldCheckEmail = modal === 'create' || email !== normalizedOriginalEmail;
-      if (shouldCheckEmail) {
-        try {
-          const emailCheck = await userApi.checkEmail(email);
-          if (!emailCheck?.success) {
-            setModalError(emailCheck?.message || 'Email already used!');
-            return;
-          }
-        } catch (err) {
-          if (err.response?.status === 409) {
-            setModalError(err.response?.data?.message || 'Email already used!');
-            return;
-          }
-          throw err;
-        }
-      }
-
-      if (modal === 'create') {
-        await userApi.createUserByAdmin({
-          firstName,
-          lastName,
-          email,
-          password,
-          role: formData.role,
-        });
-      } else {
-        const updatePayload = {
-          firstName,
-          lastName,
-          email,
-          role: formData.role,
-        };
-        if (password) {
-          updatePayload.password = password;
-        }
-        await userApi.updateUser(formData.userId, updatePayload);
-      }
-
-      closeModal();
-      await fetchUsers();
-    } catch (err) {
-      const validationErrors = err.response?.data?.result?.errors;
-      if (Array.isArray(validationErrors) && validationErrors.length > 0) {
-        setModalError(validationErrors.map((item) => `${item.field}: ${item.message}`).join('; '));
-      } else {
-        setModalError(err.response?.data?.message || 'Failed to save user');
-      }
-      console.error(err);
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   const handleDelete = async (userId) => {
     if (!userId) {
@@ -231,17 +71,11 @@ export default function UserManagementPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">User Management</h1>
-          <p className="text-gray-600">Manage user accounts and permissions</p>
+          <p className="text-gray-600">View and manage user accounts</p>
         </div>
-        <button
-          onClick={() => openModal()}
-          className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-        >
-          + Add User
-        </button>
       </div>
 
       {error && (
@@ -323,13 +157,6 @@ export default function UserManagementPage() {
                     <td className="px-6 py-4 text-sm">
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => openModal(user)}
-                          className="rounded p-1 text-blue-500 hover:bg-blue-50 transition"
-                          title="Edit"
-                        >
-                          <Edit2 size={16} />
-                        </button>
-                        <button
                           onClick={() => handleDelete(user.userId)}
                           disabled={submitting}
                           className="rounded p-1 text-red-500 hover:bg-red-50 transition disabled:opacity-50"
@@ -350,101 +177,6 @@ export default function UserManagementPage() {
               )}
             </tbody>
           </table>
-        </div>
-      )}
-
-      {modal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-            <h2 className="text-base font-semibold text-gray-900">
-              {modal === 'create' ? 'Add User' : 'Edit User'}
-            </h2>
-              {modalError && (
-                <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-                  {modalError}
-                </div>
-              )}
-            <div className="mt-4 space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  First Name *
-                </label>
-                <input
-                  ref={nameRef}
-                  type="text"
-                  value={formData.firstName || ''}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                  placeholder="Enter first name"
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-400"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Last Name *
-                </label>
-                <input
-                  type="text"
-                  value={formData.lastName || ''}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                  placeholder="Enter last name"
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-400"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email *
-                </label>
-                <input
-                  type="email"
-                  value={formData.email || ''}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="Enter email address"
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-400"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Password {modal === 'create' ? '*' : '(Leave empty to keep current)'}
-                </label>
-                <input
-                  type="password"
-                  value={formData.password || ''}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder={modal === 'create' ? 'Enter password' : 'Leave empty to keep current'}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-400"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Role
-                </label>
-                <select
-                  value={formData.role || 'USER'}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-gray-400"
-                >
-                  <option value="USER">User</option>
-                  <option value="ADMIN">Admin</option>
-                </select>
-              </div>
-            </div>
-            <div className="mt-4 flex justify-end gap-2">
-              <button
-                onClick={closeModal}
-                disabled={submitting}
-                className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="rounded-lg bg-orange-500 hover:bg-orange-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-              >
-                {submitting ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
-          </div>
         </div>
       )}
     </div>
