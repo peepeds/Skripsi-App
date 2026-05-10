@@ -36,7 +36,7 @@ const navItems = [
     icon: Database,
     children: [
       { label: "Companies", icon: Briefcase, to: "/admin/master-data/companies" },
-      { label: "Majors", icon: GraduationCap, to: "/admin/master-data/majors" },
+      // { label: "Majors", icon: GraduationCap, to: "/admin/master-data/majors" },
       { label: "Categories", icon: Tag, to: "/admin/master-data/categories" },
     ],
   },

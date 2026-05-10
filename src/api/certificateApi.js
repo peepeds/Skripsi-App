@@ -5,10 +5,11 @@ export const getCertificateRequest = async (id) => {
   return response.data;
 };
 
-export const getCertificateVerificationList = async ({ search = "", status = "" } = {}) => {
+export const getCertificateVerificationList = async ({ search = "", status = "", cursor = null } = {}) => {
   const params = {};
   if (search) params.search = search;
   if (status) params.status = status;
+  if (cursor !== null) params.cursor = cursor;
   const response = await axiosInstance.get("/user/certificate/requests", { params });
   return response.data;
 };

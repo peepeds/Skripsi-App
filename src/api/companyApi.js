@@ -77,10 +77,11 @@ export const createCompanyRequest = async (payload) => {
   return response.data;
 };
 
-export const getCompanyRequests = async ({ search = "", status = "" } = {}) => {
+export const getCompanyRequests = async ({ search = "", status = "", cursor = null } = {}) => {
   const params = {};
   if (search) params.search = search;
   if (status) params.status = status;
+  if (cursor !== null) params.cursor = cursor;
   const response = await axiosInstance.get('/company/requests', { params });
   return response.data;
 };
@@ -90,5 +91,44 @@ export const reviewCompanyRequest = async (requestId, { status, reviewNote = "" 
     status,
     reviewNote,
   });
+  return response.data;
+};
+
+export const adminGetCompanies = async ({ search = "", cursor = null, limit = 20 } = {}) => {
+  const params = { limit };
+  if (search) params.search = search;
+  if (cursor !== null) params.cursor = cursor;
+  const response = await axiosInstance.get("/admin/company", { params });
+  return response.data;
+};
+
+export const getCompanyMasterData = async ({ search = "", cursor = null, limit = 15 } = {}) => {
+  const params = { limit };
+  if (search) params.search = search;
+  if (cursor !== null) params.cursor = cursor;
+  const response = await axiosInstance.get("/company/master-data", { params });
+  return response.data;
+};
+
+export const adminCreateCompany = async (payload) => {
+  const response = await axiosInstance.post("/company/create", payload);
+  return response.data;
+};
+
+export const adminUpdateCompany = async (companyId, payload) => {
+  const { companyName, companyAbbreviation, bio, website, subcategoryId, isPartner } = payload;
+  const response = await axiosInstance.patch(`/company/${companyId}`, {
+    companyName,
+    companyAbbreviation,
+    bio,
+    website,
+    subcategoryId,
+    isPartner,
+  });
+  return response.data;
+};
+
+export const adminDeleteCompany = async (companyId) => {
+  const response = await axiosInstance.delete(`/admin/company/${companyId}`);
   return response.data;
 };
