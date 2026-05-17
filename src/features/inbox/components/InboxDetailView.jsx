@@ -24,7 +24,7 @@
       if (key.toLowerCase().includes("url") && value) {
         return (
           <a href={value} target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:underline">
-            {value}
+            here
           </a>
         );
       }

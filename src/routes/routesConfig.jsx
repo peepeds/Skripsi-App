@@ -1,4 +1,11 @@
 import React from "react";
+import { RequireAdmin } from "@/components/common/RequireAdmin";
+import { AdminLayout } from "@/features/admin/layout/AdminLayout";
+import { DashboardPage } from "@/features/admin/dashboard/pages/DashboardPage";
+import { CompanyVerificationPage } from "@/features/admin/company-verification/pages/CompanyVerificationPage";
+import { CertificateVerificationPage } from "@/features/admin/certificate-verification/pages/CertificateVerificationPage";
+import { UserManagementPage } from "@/features/admin/user-management/pages/UserManagementPage";
+import { MasterDataCompaniesPage, MasterDataCategoriesPage, MasterDataMajorsPage } from "@/features/admin/master-data";
 import { HomePage } from "@/features/home/pages/HomePage";
 import { LoginPage } from "@/features/auth/login/pages/LoginPage";
 import { RegisterPage } from "@/features/auth/register/pages/RegisterPage";
@@ -48,5 +55,13 @@ export const appRoutes = [
   },
   { path: "/test-minio", element: <MinioUploadTestPage />, showNavbar: true },
   { path: "/storage/*", element: <StorageFilePage />, showNavbar: false },
+  // Admin routes
+  { path: "/admin", element: <RequireAdmin><AdminLayout><DashboardPage /></AdminLayout></RequireAdmin>, showNavbar: false },
+  { path: "/admin/company-verification", element: <RequireAdmin><AdminLayout><CompanyVerificationPage /></AdminLayout></RequireAdmin>, showNavbar: false },
+  { path: "/admin/certificate-verification", element: <RequireAdmin><AdminLayout><CertificateVerificationPage /></AdminLayout></RequireAdmin>, showNavbar: false },
+  { path: "/admin/master-data/companies", element: <RequireAdmin><AdminLayout><MasterDataCompaniesPage /></AdminLayout></RequireAdmin>, showNavbar: false },
+  // { path: "/admin/master-data/majors", element: <RequireAdmin><AdminLayout><MasterDataMajorsPage /></AdminLayout></RequireAdmin>, showNavbar: false },
+  { path: "/admin/master-data/categories", element: <RequireAdmin><AdminLayout><MasterDataCategoriesPage /></AdminLayout></RequireAdmin>, showNavbar: false },
+  { path: "/admin/user-management", element: <RequireAdmin><AdminLayout><UserManagementPage /></AdminLayout></RequireAdmin>, showNavbar: false },
   { path: "*", element: <NotFound />, showNavbar: false },
 ];

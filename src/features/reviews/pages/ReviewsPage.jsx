@@ -8,29 +8,7 @@ import { getRecentReviews } from "@/api/reviewApi";
 import { getCompanies } from "@/api/companyApi";
 import { RecentReviewCard } from "../components/RecentReviewCard";
 import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
-
-const normalizeText = (value) =>
-  String(value || "")
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, " ");
-
-const slugify = (value) =>
-  String(value || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-
-const getHost = (url) => {
-  try {
-    const parsed = new URL(url);
-    return parsed.hostname.replace(/^www\./, "");
-  } catch {
-    return null;
-  }
-};
+import { getHost, normalizeText, slugify } from "../utils/reviewTextUtils";
 
 const getReviewId = (review) =>
   review?.reviewId ??
@@ -54,6 +32,8 @@ const getReviewCompanyName = (review) =>
 
 const getReviewWebsite = (review) =>
   review?.companyWebsite ?? review?.company?.website ?? review?.website;
+
+const toItems = (data) => (Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : []);
 
 const enrichReviews = (list, companyByName, companyByHost) =>
   list.map((review) => {
@@ -106,8 +86,7 @@ export const ReviewsPage = () => {
       throw new Error(message || "Failed to load the latest reviews.");
     }
 
-    const items = Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : [];
-    const enriched = enrichReviews(items, slugMaps.byName, slugMaps.byHost);
+    const enriched = enrichReviews(toItems(data), slugMaps.byName, slugMaps.byHost);
 
     setReviews((prev) => {
       if (!append) return enriched;
@@ -164,8 +143,7 @@ export const ReviewsPage = () => {
           return;
         }
 
-        const items = Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : [];
-        setReviews(enrichReviews(items, byName, byHost));
+        setReviews(enrichReviews(toItems(data), byName, byHost));
 
         const resolvedNextCursor = response?.meta?.nextCursor ?? data?.nextCursor ?? null;
         const resolvedHasMore =

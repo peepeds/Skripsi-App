@@ -8,69 +8,51 @@ import { getCompanyReviews, getRecentReviews } from "@/api/reviewApi";
 import { getCompanies } from "@/api/companyApi";
 import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
 import { ReviewItemCard } from "@/features/companies/components/cards/ReviewItemCard";
+import { getHost, normalizeText, slugify } from "../utils/reviewTextUtils";
 
 const pickString = (...values) =>
   values.find((value) => typeof value === "string" && value.trim().length > 0)?.trim();
 
-const slugify = (value) =>
-  String(value || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
+const REVIEW_ID_PATHS = [
+  "internshipDetailId",
+  "internshipHeaderId",
+  "reviewId",
+  "id",
+  "detailId",
+  "headerId",
+  "reviewID",
+  "review_id",
+  "internshipDetail.internshipDetailId",
+  "internshipDetail.id",
+  "internshipHeader.internshipHeaderId",
+  "internshipHeader.id",
+];
 
-const normalizeText = (value) =>
-  String(value || "")
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, " ");
+const hasValue = (value) =>
+  value !== null && value !== undefined && String(value).trim().length > 0;
 
-const getHost = (url) => {
-  try {
-    const parsed = new URL(url);
-    return parsed.hostname.replace(/^www\./, "");
-  } catch {
-    return null;
-  }
-};
+const getByPath = (obj, path) =>
+  path.split(".").reduce((current, key) => (current == null ? undefined : current[key]), obj);
 
-const getReviewId = (review) =>
-  review?.reviewId ??
-  review?.internshipDetailId ??
-  review?.internshipHeaderId ??
-  review?.id ??
-  review?.detailId ??
-  review?.headerId ??
-  review?.reviewID ??
-  review?.review_id ??
-  review?.internshipDetail?.internshipDetailId ??
-  review?.internshipDetail?.id ??
-  review?.internshipHeader?.internshipHeaderId ??
-  review?.internshipHeader?.id ??
-  review?.internshipHeader?.headerId ??
-  review?.internshipDetail?.internshipHeader?.internshipHeaderId ??
-  review?.internshipDetail?.internshipHeader?.id;
+const toItems = (data) => (Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : []);
 
-const collectReviewIds = (review) => {
-  const ids = [
-    review?.reviewId,
-    review?.internshipDetailId,
-    review?.internshipHeaderId,
-    review?.id,
-    review?.detailId,
-    review?.headerId,
-    review?.reviewID,
-    review?.review_id,
-    review?.internshipHeader?.internshipHeaderId,
-    review?.internshipHeader?.id,
-    review?.internshipDetail?.internshipDetailId,
-    review?.internshipDetail?.id,
-  ]
-    .filter((value) => value !== null && value !== undefined && String(value).trim().length > 0)
-    .map((value) => String(value));
+const getTimestamp = (item) => new Date(item?.createdAt ?? item?.created_at ?? 0).getTime();
 
-  return Array.from(new Set(ids));
+const sortByNewest = (a, b) => getTimestamp(b) - getTimestamp(a);
+
+const collectReviewIds = (review) =>
+  Array.from(
+    new Set(
+      REVIEW_ID_PATHS
+        .map((path) => getByPath(review, path))
+        .filter(hasValue)
+        .map((value) => String(value))
+    )
+  );
+
+const getReviewId = (review) => {
+  const [firstId] = collectReviewIds(review);
+  return firstId ?? null;
 };
 
 const getReviewerName = (review) =>
@@ -169,11 +151,7 @@ export const ReviewerReviewsDetailPage = () => {
           return;
         }
 
-        const rawItems = Array.isArray(parsedReviews.data?.items)
-          ? parsedReviews.data.items
-          : Array.isArray(parsedReviews.data)
-          ? parsedReviews.data
-          : [];
+        const rawItems = toItems(parsedReviews.data);
 
         const companies = Array.isArray(companiesResponse?.result) ? companiesResponse.result : [];
         const companyByName = new Map();
@@ -190,11 +168,7 @@ export const ReviewerReviewsDetailPage = () => {
           if (host) companyByHost.set(host, slug);
         });
 
-        const enriched = enrichReviews(rawItems, companyByName, companyByHost).sort((a, b) => {
-          const aTime = new Date(a?.createdAt ?? a?.created_at ?? 0).getTime();
-          const bTime = new Date(b?.createdAt ?? b?.created_at ?? 0).getTime();
-          return bTime - aTime;
-        });
+        const enriched = enrichReviews(rawItems, companyByName, companyByHost).sort(sortByNewest);
         const companySlugs = Array.from(
           new Set(enriched.map((item) => item?.resolvedCompanySlug).filter(Boolean))
         );
@@ -209,11 +183,7 @@ export const ReviewerReviewsDetailPage = () => {
 
               if (!parsedCompanyReviews.success) return;
 
-              const items = Array.isArray(parsedCompanyReviews.data?.items)
-                ? parsedCompanyReviews.data.items
-                : Array.isArray(parsedCompanyReviews.data)
-                ? parsedCompanyReviews.data
-                : [];
+              const items = toItems(parsedCompanyReviews.data);
 
               items.forEach((reviewItem) => {
                 const ids = collectReviewIds(reviewItem);
@@ -262,19 +232,11 @@ export const ReviewerReviewsDetailPage = () => {
   }, [reviewId]);
 
   const selectedReview = useMemo(() => {
-    const sortedReviews = [...reviews].sort((a, b) => {
-      const aTime = new Date(a?.createdAt ?? a?.created_at ?? 0).getTime();
-      const bTime = new Date(b?.createdAt ?? b?.created_at ?? 0).getTime();
-      return bTime - aTime;
-    });
+    const sortedReviews = [...reviews].sort(sortByNewest);
 
     const sameReviewer = sortedReviews
       .filter((item) => item?.resolvedReviewerSlug === reviewerSlug)
-      .sort((a, b) => {
-        const aTime = new Date(a?.createdAt ?? a?.created_at ?? 0).getTime();
-        const bTime = new Date(b?.createdAt ?? b?.created_at ?? 0).getTime();
-        return bTime - aTime;
-      });
+      .sort(sortByNewest);
 
     if (String(reviewId) === "latest") {
       return sameReviewer[0] ?? sortedReviews[0] ?? null;
@@ -292,11 +254,7 @@ export const ReviewerReviewsDetailPage = () => {
 
     if (matchedByIdOnly) return matchedByIdOnly;
 
-    return (
-      sameReviewer[0] ??
-      sortedReviews[0] ??
-      null
-    );
+    return sameReviewer[0] ?? sortedReviews[0] ?? null;
   }, [reviews, reviewId, reviewerSlug]);
 
   const activeReviewerSlug = useMemo(() => {
@@ -327,11 +285,7 @@ export const ReviewerReviewsDetailPage = () => {
         return String(item?.resolvedReviewerName || "").toLowerCase().trim() === selectedName;
       })
       .filter((item) => String(item?.resolvedReviewId) !== String(selectedReview?.resolvedReviewId))
-      .sort((a, b) => {
-        const aTime = new Date(a?.createdAt ?? a?.created_at ?? 0).getTime();
-        const bTime = new Date(b?.createdAt ?? b?.created_at ?? 0).getTime();
-        return bTime - aTime;
-      })
+      .sort(sortByNewest)
       .slice(0, 2);
   }, [reviews, selectedReview]);
 

@@ -4,6 +4,7 @@ import { logout as apiLogout } from "@/api/authApi";
 
 export const UserContext = createContext({
   user: null,
+  isAdmin: false,
   loadUser: async () => {},
   logout: async () => {},
   loading: false
@@ -88,7 +89,7 @@ export function UserProvider({ children }) {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, loadUser, logout, loading }}>
+    <UserContext.Provider value={{ user, isAdmin: admin, loadUser, logout, loading }}>
       {children}
     </UserContext.Provider>
   );

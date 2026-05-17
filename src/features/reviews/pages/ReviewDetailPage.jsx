@@ -9,71 +9,13 @@ import { getCompanyReviews } from "@/api/reviewApi";
 import { getCompanyBySlug } from "@/api/companyApi";
 import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
 import { getAvatarColor, getInitials } from "@/utils/avatar";
-
-const pickString = (...values) =>
-  values.find((value) => typeof value === "string" && value.trim().length > 0)?.trim();
-
-const getReviewIdentifier = (item) =>
-  item?.internshipDetailId ??
-  item?.reviewId ??
-  item?.internshipReviewId ??
-  item?.id ??
-  item?.detailId ??
-  item?.internshipHeaderId ??
-  item?.headerId ??
-  item?.reviewID ??
-  item?.review_id ??
-  item?.internshipDetail?.internshipDetailId ??
-  item?.internshipDetail?.id ??
-  item?.internshipDetail?.reviewId ??
-  item?.internshipHeader?.internshipHeaderId ??
-  item?.internshipHeader?.id ??
-  item?.internshipHeader?.reviewId;
-
-const collectReviewIdentifiers = (item) => {
-  const values = [
-    item?.internshipDetailId,
-    item?.detailId,
-    item?.reviewId,
-    item?.internshipReviewId,
-    item?.reviewID,
-    item?.review_id,
-    item?.id,
-    item?.internshipHeaderId,
-    item?.headerId,
-    item?.internshipDetail?.internshipDetailId,
-    item?.internshipDetail?.id,
-    item?.internshipDetail?.reviewId,
-    item?.internshipHeader?.internshipDetailId,
-    item?.internshipHeader?.internshipHeaderId,
-    item?.internshipHeader?.id,
-    item?.internshipHeader?.reviewId,
-  ];
-
-  return Array.from(
-    new Set(
-      values
-        .filter((value) => value !== null && value !== undefined && String(value).trim().length > 0)
-        .map((value) => String(value))
-    )
-  );
-};
-
-const getCompanyName = (item) =>
-  pickString(
-    item?.companyName,
-    item?.company?.companyName,
-    item?.company?.name,
-    item?.internshipHeader?.company?.companyName,
-    item?.internshipHeader?.companyName,
-    item?.internshipDetail?.company?.companyName
-  ) || "Perusahaan";
-
-const humanizeSlug = (slug) =>
-  String(slug || "")
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase())
-    .trim();
+import {
+  getAuthorDisplayName,
+  getCompanyDisplayName,
+  getJobTitleDisplay,
+  humanizeSlug,
+} from "../utils/reviewDisplayUtils";
+import { collectReviewIdentifiers, getReviewIdentifier } from "../utils/reviewIdUtils";
 
 const computeOverallRating = (review) => {
   if (typeof review?.averageRating === "number") return review.averageRating;
@@ -85,17 +27,15 @@ const computeOverallRating = (review) => {
   return values.reduce((sum, value) => sum + value, 0) / values.length;
 };
 
-const getAuthorName = (item) =>
-  pickString(item?.createdByName, item?.createdBy, item?.authorName, item?.name) || "Anonim";
+const getTestimony = (item) =>
+  item?.testimony?.trim?.() || item?.review?.trim?.() || item?.content?.trim?.();
 
-const getJobTitle = (item) => pickString(item?.jobTitle, item?.role, item?.position) || "Intern";
-
-const getTestimony = (item) => pickString(item?.testimony, item?.review, item?.content);
+const toItems = (data) => (Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : []);
 
 const MoreReviewCard = ({ review, companySlug }) => {
   const reviewId = getReviewIdentifier(review);
-  const authorName = getAuthorName(review);
-  const jobTitle = getJobTitle(review);
+  const authorName = getAuthorDisplayName(review);
+  const jobTitle = getJobTitleDisplay(review);
   const overallRating = computeOverallRating(review);
   const testimony = getTestimony(review);
 
@@ -189,7 +129,7 @@ export const ReviewDetailPage = () => {
           return;
         }
 
-        const list = Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : [];
+        const list = toItems(data);
         const foundReview = list.find((item) =>
           collectReviewIdentifiers(item).includes(String(reviewId))
         );
@@ -207,7 +147,7 @@ export const ReviewDetailPage = () => {
   }, [companySlug, reviewId]);
 
   const companyName = useMemo(() => {
-    const fromReview = getCompanyName(review);
+    const fromReview = getCompanyDisplayName(review);
     if (fromReview && fromReview !== "Perusahaan") return fromReview;
     if (companyNameFromSlug) return companyNameFromSlug;
     return humanizeSlug(companySlug) || "Perusahaan";
@@ -223,7 +163,7 @@ export const ReviewDetailPage = () => {
       .slice(0, 2);
   }, [companyReviews, review]);
 
-  const activeAuthor = useMemo(() => getAuthorName(review), [review]);
+  const activeAuthor = useMemo(() => getAuthorDisplayName(review), [review]);
 
   const moreReviewsByAuthor = useMemo(() => {
     if (!review) return [];
@@ -233,7 +173,7 @@ export const ReviewDetailPage = () => {
 
     return companyReviews
       .filter((item) => String(getReviewIdentifier(item)) !== activeId)
-      .filter((item) => getAuthorName(item).toLowerCase().trim() === normalizedAuthor)
+      .filter((item) => getAuthorDisplayName(item).toLowerCase().trim() === normalizedAuthor)
       .slice(0, 2);
   }, [companyReviews, review, activeAuthor]);
 
