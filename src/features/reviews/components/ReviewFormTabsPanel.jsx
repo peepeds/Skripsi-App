@@ -10,6 +10,29 @@ import { Step3Experience } from "./review-steps/StepExperience";
 import { Step4Submit } from "./review-steps/StepSubmit";
 import { useReviewWizard } from "../hooks/useReviewWizard";
 
+const STEP_CONFIGS = [
+  {
+    title: "Informasi Magang",
+    description: "Isi informasi dasar tentang pengalaman magang Anda",
+    Component: Step1InternshipInfo,
+  },
+  {
+    title: "Penilaian & Ulasan",
+    description: "Bagikan penilaian objektifmu tentang pengalaman magang di sana.",
+    Component: Step2Rating,
+  },
+  {
+    title: "Proses Rekrutmen dan Cara Apply",
+    description: "Bantu kandidat lain mendaftar di perusahaan yang mereka inginkan.",
+    Component: Step3Experience,
+  },
+  {
+    title: "Pemeriksaan Ulang (Konfirmasi)",
+    description: "Pastikan semua data yang kamu isi sudah benar sebelum diunggah.",
+    Component: Step4Submit,
+  },
+];
+
 export const ReviewFormTabsPanel = ({ company, onSubmit: onFinalSubmit, loading, onCancel }) => {
   const [categories, setCategories] = useState([]);
   const { data: lookupData } = useLookup("INTERNSHIP_REVIEW");
@@ -25,45 +48,8 @@ export const ReviewFormTabsPanel = ({ company, onSubmit: onFinalSubmit, loading,
 
   const stepProps = { form, lookupData, categories, company };
   const isFirstStep = step === 0;
-
-  const renderStepContent = () => {
-    switch (step) {
-      case 0:
-        return (
-          <>
-            <h2 className="mb-2 text-lg font-semibold text-gray-900">Informasi Magang</h2>
-            <p className="mb-6 text-sm text-gray-600">Isi informasi dasar tentang pengalaman magang Anda</p>
-            <Step1InternshipInfo {...stepProps} />
-          </>
-        );
-      case 1:
-        return (
-          <>
-            <h2 className="mb-2 text-lg font-semibold text-gray-900">Penilaian & Ulasan</h2>
-            <p className="mb-6 text-sm text-gray-600">Bagikan penilaian objektifmu tentang pengalaman magang di sana.</p>
-            <Step2Rating {...stepProps} />
-          </>
-        );
-      case 2:
-        return (
-          <>
-            <h2 className="mb-2 text-lg font-semibold text-gray-900">Proses Rekrutmen dan Cara Apply</h2>
-            <p className="mb-6 text-sm text-gray-600">Bantu kandidat lain mendaftar di perusahaan yang mereka inginkan.</p>
-            <Step3Experience {...stepProps} />
-          </>
-        );
-      case 3:
-        return (
-          <>
-            <h2 className="mb-2 text-lg font-semibold text-gray-900">Pemeriksaan Ulang (Konfirmasi)</h2>
-            <p className="mb-6 text-sm text-gray-600">Pastikan semua data yang kamu isi sudah benar sebelum diunggah.</p>
-            <Step4Submit {...stepProps} />
-          </>
-        );
-      default:
-        return null;
-    }
-  };
+  const activeStepConfig = STEP_CONFIGS[step];
+  const ActiveStepComponent = activeStepConfig?.Component;
 
   return (
     <>
@@ -72,7 +58,13 @@ export const ReviewFormTabsPanel = ({ company, onSubmit: onFinalSubmit, loading,
       <div className="bg-white py-8">
         <Container>
           <div className="space-y-6">
-            {renderStepContent()}
+            {activeStepConfig && ActiveStepComponent ? (
+              <>
+                <h2 className="mb-2 text-lg font-semibold text-gray-900">{activeStepConfig.title}</h2>
+                <p className="mb-6 text-sm text-gray-600">{activeStepConfig.description}</p>
+                <ActiveStepComponent {...stepProps} />
+              </>
+            ) : null}
 
             <div className="flex items-center justify-between border-t border-gray-200 pt-6">
               <button

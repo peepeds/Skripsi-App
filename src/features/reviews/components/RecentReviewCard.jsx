@@ -3,17 +3,10 @@ import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { User, Star } from "lucide-react";
 import { useLogoValidation } from "@/features/companies/hooks/useLogoValidation";
+import { slugify } from "../utils/reviewTextUtils";
 
 const pickLabel = (...values) =>
   values.find((value) => typeof value === "string" && value.trim().length > 0)?.trim();
-
-const slugify = (value) =>
-  String(value || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
 
 const resolveCompanySlug = (company, companySlug, slug) =>
   pickLabel(

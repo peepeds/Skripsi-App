@@ -6,17 +6,11 @@ import { UnauthenticatedModal } from "@/components/common/UnauthenticatedModal";
 import { useCompanyDetail } from "@/features/companies/hooks/useCompanyDetail";
 import { LoadingWrapper } from "@/components/ui/LoadingWrapper";
 import { Container } from "@/components/layout/Container";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ReviewWriteForm } from "../components/ReviewWriteForm";
 import { ReviewHeroSection } from "../components/ReviewHeroSection";
 import { submitReview } from "@/api/reviewApi";
 import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
 
-/**
- * ReviewWritePage
- * Halaman untuk menulis review dengan route berbasis slug perusahaan
- * Route: /review/:companySlug
- */
 export const ReviewWritePage = () => {
   const { companySlug } = useParams();
   const navigate = useNavigate();
@@ -25,7 +19,6 @@ export const ReviewWritePage = () => {
   const { company, loading: companyLoading, error: companyError } = useCompanyDetail(companySlug);
   const [loading, setLoading] = useState(false);
 
-  // Check authentication
   if (!isAuthenticated) {
     return <UnauthenticatedModal redirectPath={location.pathname} />;
   }
@@ -56,32 +49,27 @@ export const ReviewWritePage = () => {
     navigate(`/company/${companySlug}`);
   };
 
-  // Loading state
   if (companyLoading) {
     return <LoadingWrapper />;
   }
 
-  // Error state
   if (companyError) {
     return (
       <Container className="py-8">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
+          <h1 className="mb-4 text-2xl font-bold text-red-600">Error</h1>
           <p className="text-gray-600">{companyError}</p>
         </div>
       </Container>
     );
   }
 
-  // Company not found state
   if (!company) {
     return (
       <Container className="py-8">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-600 mb-4">Company Not Found</h1>
-          <p className="text-gray-600">
-            The company you're looking for does not exist.
-          </p>
+          <h1 className="mb-4 text-2xl font-bold text-gray-600">Company Not Found</h1>
+          <p className="text-gray-600">The company you're looking for does not exist.</p>
         </div>
       </Container>
     );
@@ -89,10 +77,7 @@ export const ReviewWritePage = () => {
 
   return (
     <>
-      {/* Hero Section */}
       <ReviewHeroSection company={company} />
-
-      {/* Review Form with Step Tabs (full-width) */}
       <ReviewWriteForm
         company={company}
         onSubmit={handleFormSubmit}

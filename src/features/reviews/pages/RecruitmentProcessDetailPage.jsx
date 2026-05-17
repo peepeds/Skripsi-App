@@ -9,65 +9,44 @@ import { getCompanyRecruitmentProcess } from "@/api/reviewApi";
 import { getCompanyBySlug } from "@/api/companyApi";
 import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
 import { getAvatarColor, getInitials } from "@/utils/avatar";
-
-const pickString = (...values) =>
-  values.find((value) => typeof value === "string" && value.trim().length > 0)?.trim();
-
-const getCompanyName = (item) =>
-  pickString(
-    item?.companyName,
-    item?.company?.companyName,
-    item?.company?.name,
-    item?.internshipHeader?.company?.companyName,
-    item?.internshipHeader?.companyName,
-    item?.internshipDetail?.company?.companyName
-  ) || "Perusahaan";
-
-const humanizeSlug = (slug) =>
-  String(slug || "")
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase())
-    .trim();
-
-const getProcessIdentifier = (item) =>
-  item?.internshipDetailId ??
-  item?.id ??
-  item?.detailId ??
-  item?.internshipHeaderId ??
-  item?.headerId ??
-  item?.reviewId ??
-  item?.reviewID ??
-  item?.review_id ??
-  item?.internshipDetail?.internshipDetailId ??
-  item?.internshipDetail?.id ??
-  item?.internshipDetail?.internshipHeaderId ??
-  item?.internshipHeader?.internshipHeaderId ??
-  item?.internshipHeader?.id;
-
-const getAuthorName = (item) =>
-  pickString(item?.createdByName, item?.createdBy, item?.authorName, item?.name) || "Anonim";
-
-const getJobTitle = (item) => pickString(item?.jobTitle, item?.role, item?.position) || "Intern";
+import {
+  getAuthorDisplayName,
+  getCompanyDisplayName,
+  getJobTitleDisplay,
+  humanizeSlug,
+} from "../utils/reviewDisplayUtils";
+import { getProcessIdentifier } from "../utils/reviewIdUtils";
 
 const getDifficultyLabel = (item) => {
   const raw = item?.interviewDifficulty;
   if (typeof raw === "number") {
     if (raw <= 2) return "Mudah";
     if (raw === 3) return "Sedang";
-    return "Sulit";
+    return "Sulit";   
   }
-  return pickString(item?.difficultyLabel, item?.difficulty, item?.interviewDifficultyLabel) || "-";
+  return (
+    item?.difficultyLabel?.trim?.() ||
+    item?.difficulty?.trim?.() ||
+    item?.interviewDifficultyLabel?.trim?.() ||
+    "-"
+  );
 };
 
 const getSnippet = (item) =>
-  pickString(item?.selectionProcess, item?.tipsTricks, item?.exampleQuestions, item?.testimony) || "-";
+  item?.selectionProcess?.trim?.() ||
+  item?.tipsTricks?.trim?.() ||
+  item?.exampleQuestions?.trim?.() ||
+  item?.testimony?.trim?.() ||
+  "-";
+
+const toItems = (data) => (Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : []);
 
 const MoreProcessCard = ({ item, companySlug }) => {
   const processId = getProcessIdentifier(item);
   if (!processId) return null;
 
-  const authorName = getAuthorName(item);
-  const jobTitle = getJobTitle(item);
+  const authorName = getAuthorDisplayName(item);
+  const jobTitle = getJobTitleDisplay(item);
 
   return (
     <Link
@@ -90,7 +69,7 @@ const MoreProcessCard = ({ item, companySlug }) => {
         </div>
 
         <span className="rounded-full bg-orange-50 px-2 py-1 font-inter text-xs font-semibold text-orange-600">
-          {getDifficultyLabel(item)}
+         {getDifficultyLabel(item)}
         </span>
       </div>
 
@@ -149,7 +128,7 @@ export const RecruitmentProcessDetailPage = () => {
           return;
         }
 
-        const list = Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : [];
+        const list = toItems(data);
         const foundProcess = list.find(
           (item) => String(getProcessIdentifier(item)) === String(internshipDetailId)
         );
@@ -167,7 +146,7 @@ export const RecruitmentProcessDetailPage = () => {
   }, [companySlug, internshipDetailId]);
 
   const companyName = useMemo(() => {
-    const fromProcess = getCompanyName(processItem);
+    const fromProcess = getCompanyDisplayName(processItem);
     if (fromProcess && fromProcess !== "Perusahaan") return fromProcess;
     if (companyNameFromSlug) return companyNameFromSlug;
     return humanizeSlug(companySlug) || "Perusahaan";
