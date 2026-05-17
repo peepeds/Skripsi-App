@@ -44,3 +44,30 @@ export const getSavedCompanies = async (cursor = null, limit = 20) => {
   const response = await axiosInstance.get("/user/my-bookmarks", { params });
   return response.data;
 };
+
+export const getAllUsers = async ({ cursor = null, limit = 15, search = "" } = {}) => {
+  const params = { limit };
+  if (cursor !== null) {
+    params.cursor = cursor;
+  }
+  if (search) {
+    params.search = search;
+  }
+
+  const response = await axiosInstance.get("/user/all-user", { params });
+  return response.data;
+};
+
+export const setUserAsAdmin = async (userId) => {
+  try {
+    const response = await axiosInstance.patch(`/user/set-admin/${userId}`);
+    return response.data;
+  } catch (error) {
+    // Fallback in case backend exposes this endpoint with POST instead of PATCH.
+    if (error?.response?.status === 404 || error?.response?.status === 405) {
+      const response = await axiosInstance.post(`/user/set-admin/${userId}`);
+      return response.data;
+    }
+    throw error;
+  }
+};

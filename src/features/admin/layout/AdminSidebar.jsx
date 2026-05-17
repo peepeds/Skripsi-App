@@ -75,12 +75,11 @@ function SidebarNavLink({ to, end, icon: Icon, label }) {
 
 export function AdminSidebar() {
   const [masterDataOpen, setMasterDataOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/login");
+  const handleLogout = () => {
+    navigate("/");
   };
 
   const getInitials = () => {
@@ -170,7 +169,7 @@ export function AdminSidebar() {
               onClick={handleLogout}
               className="text-xs text-gray-400 hover:text-orange-500 transition-colors"
             >
-              Logout
+              Kembali ke Beranda
             </button>
           </div>
         </div>

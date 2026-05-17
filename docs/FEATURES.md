@@ -198,6 +198,41 @@ inbox/
 
 ---
 
+## Feature: Admin User Management (`/src/features/admin/user-management/`)
+
+**Purpose:** Manage admin-side user records and role assignments
+
+**Structure:**
+```
+user-management/
+├── components/
+│   ├── UserManagementTable.jsx
+│   ├── UserManagementToolbar.jsx
+│   ├── UserRoleBadge.jsx
+│   └── index.js
+├── hooks/
+│   └── useUserManagement.js
+└── pages/
+    └── UserManagementPage.jsx
+```
+
+**Capabilities:**
+- Fetch and render paginated user list from admin endpoint
+- Search user by name/email via backend query parameter
+- Infinite scroll loading with cursor pagination (`cursor`, `limit`)
+- Promote user role with `Set as Admin` action
+
+**Data Contract (Frontend):**
+- `UserManagementUser`: `id`, `userId`, `name`, `email`, `role`, `region`, `department`, `major`, `registeredAt`
+- `UserRole`: `"User"` | `"Admin"`
+
+**API Integration:**
+- Uses `/api/userApi.js` (`getAllUsers`) with endpoint `/user/all-user`
+- Uses `/api/userApi.js` (`setUserAsAdmin`) with endpoint `/user/set-admin/{userId}`
+- Supports query params: `search`, `cursor`, `limit`
+
+---
+
 ## Feature: Not Found (`/src/features/not-found/`)
 
 **Purpose:** 404 error page
