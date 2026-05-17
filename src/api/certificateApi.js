@@ -14,12 +14,11 @@ export const getCertificateVerificationList = async ({ search = "", status = "",
   return response.data;
 };
 
-export const approveCertificateRequest = async (id, reviewNote = "") => {
-  const response = await axiosInstance.patch(`/user/certificate/requests/${id}/approve`, { reviewNote });
+export const reviewCertificateRequest = async (id, { status, reviewNote = "" }) => {
+  const response = await axiosInstance.patch(`/user/certificate/requests/${id}/review`, { 
+    status,
+    reviewNote 
+  });
   return response.data;
 };
 
-export const rejectCertificateRequest = async (id, reviewNote = "") => {
-  const response = await axiosInstance.patch(`/user/certificate/requests/${id}/reject`, { reviewNote });
-  return response.data;
-};

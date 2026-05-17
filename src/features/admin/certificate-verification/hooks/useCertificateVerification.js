@@ -3,6 +3,7 @@ import {
   getCertificateVerificationList,
   approveCertificateRequest,
   rejectCertificateRequest,
+  reviewCertificateRequest,
 } from "@/api/certificateApi";
 import { useVerificationList } from "../../shared/hooks/useVerificationList";
 import { useIntersectionObserver } from "@/features/companies/hooks/useIntersectionObserver";
@@ -35,11 +36,10 @@ export function useCertificateVerification({ search, statusFilter }) {
     if (!modal) return;
     setSubmitting(true);
     try {
-      if (modal.action === "approve") {
-        await approveCertificateRequest(modal.requestId, reviewNote);
-      } else {
-        await rejectCertificateRequest(modal.requestId, reviewNote);
-      }
+      await reviewCertificateRequest(modal.requestId, {
+              status: modal.action === "approve" ? "APPROVED" : "REJECTED",
+              reviewNote,
+            });
       closeModal();
       refreshFromStart();
     } finally {
