@@ -1,8 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import {
   getCertificateVerificationList,
-  approveCertificateRequest,
-  rejectCertificateRequest,
   reviewCertificateRequest,
 } from "@/api/certificateApi";
 import { useVerificationList } from "../../shared/hooks/useVerificationList";

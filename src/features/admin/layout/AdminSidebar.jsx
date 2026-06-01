@@ -9,7 +9,6 @@ import {
   ChevronDown,
   ChevronRight,
   Briefcase,
-  GraduationCap,
   Tag,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -169,7 +168,7 @@ export function AdminSidebar() {
               onClick={handleLogout}
               className="text-xs text-gray-400 hover:text-orange-500 transition-colors"
             >
-              Kembali ke Beranda
+              Back to Main Site
             </button>
           </div>
         </div>

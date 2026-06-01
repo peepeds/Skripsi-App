@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { BackButton } from "@/components/common/BackButton";
 import { ReviewItemCard } from "@/features/companies/components/cards/ReviewItemCard";
-import { getCompanyReviews } from "@/api/reviewApi";
+import { getCompanyReviewDetail, getCompanyReviews } from "@/api/reviewApi";
 import { getCompanyBySlug } from "@/api/companyApi";
 import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
 import { getAvatarColor, getInitials } from "@/utils/avatar";
@@ -31,6 +31,8 @@ const getTestimony = (item) =>
   item?.testimony?.trim?.() || item?.review?.trim?.() || item?.content?.trim?.();
 
 const toItems = (data) => (Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : []);
+const toReview = (data) =>
+  data?.review ?? data?.item ?? data?.detail ?? data?.internshipDetail ?? data ?? null;
 
 const MoreReviewCard = ({ review, companySlug }) => {
   const reviewId = getReviewIdentifier(review);
@@ -121,20 +123,27 @@ export const ReviewDetailPage = () => {
       setError(null);
 
       try {
-        const response = await getCompanyReviews(companySlug, { limit: 200 });
-        const { success, message, data } = handleApiResponse(response);
+        const [reviewResponse, listResponse] = await Promise.all([
+          getCompanyReviewDetail(companySlug, reviewId),
+          getCompanyReviews(companySlug, { limit: 15 }),
+        ]);
 
-        if (!success) {
-          setError(message || "Gagal memuat detail review");
+        const { success: detailSuccess, message: detailMessage, data: detailData } =
+          handleApiResponse(reviewResponse);
+        const { success: listSuccess, data: listData } = handleApiResponse(listResponse);
+
+        if (!detailSuccess) {
+          setError(detailMessage || "Gagal memuat detail review");
           return;
         }
 
-        const list = toItems(data);
-        const foundReview = list.find((item) =>
+        const detailReview = toReview(detailData);
+        const list = listSuccess ? toItems(listData) : [];
+        const fallbackReview = list.find((item) =>
           collectReviewIdentifiers(item).includes(String(reviewId))
         );
 
-        setReview(foundReview ?? null);
+        setReview(detailReview ?? fallbackReview ?? null);
         setCompanyReviews(list);
       } catch (err) {
         setError(normalizeErrorMessage(err, "Gagal memuat detail review"));

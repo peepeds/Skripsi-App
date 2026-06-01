@@ -178,7 +178,7 @@ export const ReviewerReviewsDetailPage = () => {
         await Promise.all(
           companySlugs.map(async (slug) => {
             try {
-              const companyReviewsResponse = await getCompanyReviews(slug, { limit: 300 });
+              const companyReviewsResponse = await getCompanyReviews(slug, { limit: 15 });
               const parsedCompanyReviews = handleApiResponse(companyReviewsResponse);
 
               if (!parsedCompanyReviews.success) return;
