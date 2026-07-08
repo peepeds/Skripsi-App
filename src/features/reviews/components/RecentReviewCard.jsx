@@ -8,17 +8,6 @@ import { slugify } from "../utils/reviewTextUtils";
 const pickLabel = (...values) =>
   values.find((value) => typeof value === "string" && value.trim().length > 0)?.trim();
 
-const resolveCompanySlug = (company, companySlug, slug) =>
-  pickLabel(
-    companySlug,
-    company?.companySlug,
-    company?.slug,
-    company?.company?.companySlug,
-    company?.company?.slug,
-    company?.internshipHeader?.company?.companySlug,
-    company?.internshipHeader?.company?.slug,
-    slug
-  );
 
 const resolveReviewId = (reviewId, internshipDetailId, internshipHeaderId, id, detailId) =>
   [
@@ -118,12 +107,12 @@ export const RecentReviewCard = ({
   ...rest
 }) => {
   const resolvedCompanyName =
-    pickLabel(companyName, company?.companyName, company?.name, company?.companyAbbreviation) || "Company";
-  const resolvedCompanyWebsite = pickLabel(companyWebsite, company?.website, company?.companyWebsite) || "";
+    pickLabel(companyName) || "Company";
+  const resolvedCompanyWebsite = pickLabel(companyWebsite) || "";
   const { logoUrl, logoValid } = useLogoValidation(resolvedCompanyWebsite);
   const companyInitial = resolvedCompanyName?.charAt(0)?.toUpperCase() || "?";
   const resolvedSlug =
-    pickLabel(resolvedCompanySlug, resolveCompanySlug(company, companySlug, company?.companySlug)) ||
+    pickLabel(resolvedCompanySlug) ||
     slugify(resolvedCompanyName);
   const resolvedId =
     resolvedReviewId ??
@@ -186,22 +175,7 @@ export const RecentReviewCard = ({
 
   const companySubCategoryLabel =
     pickLabel(
-      companySubCategory,
-      companySubcategory,
-      subCategory,
-      subcategory,
-      subcategoryName,
-      subCategoryName,
-      company?.subcategoryName,
-      company?.subCategoryName,
-      company?.subcategory?.subCategoryName,
-      company?.subCategory?.subCategoryName,
-      company?.subcategory?.name,
-      company?.subCategory?.name,
-      subCategoryObj?.subCategoryName,
-      subCategoryObj?.name,
-      subcategoryObj?.subCategoryName,
-      subcategoryObj?.name
+      companySubCategory
     ) || "-";
 
   const resolvedTestimony = testimony || company?.testimony || company?.review || "-";

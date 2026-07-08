@@ -65,66 +65,21 @@ const slugify = (value) =>
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-");
 
-const resolveCompanyName = (review) =>
-  review?.companyName ??
-  review?.company?.companyName ??
-  review?.company?.name ??
-  review?.internshipHeader?.company?.companyName ??
-  review?.internshipHeader?.companyName ??
-  review?.internshipDetail?.company?.companyName ??
-  review?.internshipDetail?.companyName ??
-  "Company";
+const resolveCompanyName = (review) =>review?.companyName ?? "Company";
 
 const resolveReviewerSlug = (review, displayName) =>
   review?.resolvedReviewerSlug ?? review?.reviewerSlug ?? slugify(displayName);
 
-const resolveCompanySlug = (review, companySlug) =>
-  companySlug ??
-  review?.companySlug ??
-  review?.company?.companySlug ??
-  review?.company?.slug ??
-  review?.internshipHeader?.company?.companySlug ??
-  review?.internshipHeader?.company?.slug ??
-  review?.internshipDetail?.company?.companySlug ??
-  review?.internshipDetail?.company?.slug ??
+const resolveCompanySlug = (companySlug) =>
+  companySlug 
   slugify(resolveCompanyName(review));
 
-const resolveReviewDetailId = (review) =>
-  review?.internshipDetailId ??
-  review?.reviewId ??
-  review?.id ??
-  review?.detailId ??
-  review?.internshipDetail?.internshipDetailId ??
-  review?.internshipDetail?.id ??
-  review?.internshipHeader?.internshipDetailId ??
-  review?.internshipHeader?.id;
+const resolveReviewDetailId = (review) => review?.internshipDetailId;
 
-const resolveInternshipHeaderId = (review) =>
-  review?.internshipHeaderId ??
-  review?.headerId ??
-  review?.internshipReviewId ??
-  review?.reviewID ??
-  review?.review_id ??
-  review?.reviewId ??
-  review?.resolvedReviewId ??
-  review?.id ??
-  review?.detailId ??
-  review?.internshipHeader?.internshipHeaderId ??
-  review?.internshipHeader?.id ??
-  review?.internshipDetail?.internshipHeaderId ??
-  review?.internshipDetail?.headerId ??
-  review?.internshipDetail?.id;
+const resolveInternshipHeaderId = (review) => review?.internshipHeaderId;
 
 const resolveLikeCount = (item) => {
-  const raw =
-    item?.totalLikes ??
-    item?.totalLike ??
-    item?.totalLikeCount ??
-    item?.likesCount ??
-    item?.likeCount ??
-    item?.helpfulCount ??
-    item?.helpful;
-
+  const raw = item?.totalLikes;
   const parsed = Number(raw);
   return Number.isFinite(parsed) ? parsed : null;
 };
@@ -154,11 +109,11 @@ export const ReviewItemCard = ({
   );
 
   const ratings = review?.ratings ?? {
-    workCulture: review?.workCulture ?? review?.ratingWorkCulture ?? 0,
-    learningOpp: review?.learningOpp ?? review?.ratingLearningOpp ?? 0,
-    mentorship: review?.mentorship ?? review?.ratingMentorship ?? 0,
-    benefit: review?.benefit ?? review?.ratingBenefit ?? 0,
-    workLifeBalance: review?.workLifeBalance ?? review?.ratingWorkLifeBalance ?? 0,
+    workCulture: review?.workCulture ??  0,
+    learningOpp: review?.learningOpp ??  0,
+    mentorship: review?.mentorship ?? 0,
+    benefit: review?.benefit ?? 0,
+    workLifeBalance: review?.workLifeBalance ?? 0,
   };
 
   const normalizeRating = (value) => {
@@ -172,13 +127,10 @@ export const ReviewItemCard = ({
 
   const displayName =
     review?.createdByName ??
-    review?.createdBy ??
-    review?.authorName ??
-    review?.user?.name ??
     "Anonymous";
 
   const jobTitle = review?.jobTitle ?? review?.role ?? review?.position ?? "-";
-  const resolvedCompanySlug = resolveCompanySlug(review, companySlug);
+  const resolvedCompanySlug = resolveCompanySlug(companySlug);
   const durationMonths = review?.durationMonths;
   const year = review?.year;
   const type = review?.type;
@@ -202,7 +154,7 @@ export const ReviewItemCard = ({
   useEffect(() => {
     setLiked(Boolean(review?.isLiked));
     setLikeCount(
-      review?.totalLikes ?? review?.likeCount ?? review?.helpfulCount ?? review?.helpful ?? 0
+      review?.totalLikes ?? 0
     );
   }, [review]);
 
