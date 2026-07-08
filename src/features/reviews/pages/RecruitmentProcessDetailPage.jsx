@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { BackButton } from "@/components/common/BackButton";
 import { RecruitmentProcessCard } from "@/features/companies/components/cards/RecruitmentProcessCard";
-import { getCompanyRecruitmentProcess } from "@/api/reviewApi";
+import { getCompanyRecruitmentDetail, getCompanyRecruitmentProcess } from "@/api/reviewApi";
 import { getCompanyBySlug } from "@/api/companyApi";
 import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
 import { getAvatarColor, getInitials } from "@/utils/avatar";
@@ -40,6 +40,8 @@ const getSnippet = (item) =>
   "-";
 
 const toItems = (data) => (Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : []);
+const toProcessItem = (data) =>
+  data?.process ?? data?.item ?? data?.detail ?? data?.internshipDetail ?? data ?? null;
 
 const MoreProcessCard = ({ item, companySlug }) => {
   const processId = getProcessIdentifier(item);
@@ -120,20 +122,27 @@ export const RecruitmentProcessDetailPage = () => {
       setError(null);
 
       try {
-        const response = await getCompanyRecruitmentProcess(companySlug, { limit: 200 });
-        const { success, message, data } = handleApiResponse(response);
+        const [detailResponse, listResponse] = await Promise.all([
+          getCompanyRecruitmentDetail(companySlug, internshipDetailId),
+          getCompanyRecruitmentProcess(companySlug, { limit: 15 }),
+        ]);
 
-        if (!success) {
-          setError(message || "Gagal memuat detail recruitment process");
+        const { success: detailSuccess, message: detailMessage, data: detailData } =
+          handleApiResponse(detailResponse);
+        const { success: listSuccess, data: listData } = handleApiResponse(listResponse);
+
+        if (!detailSuccess) {
+          setError(detailMessage || "Gagal memuat detail recruitment process");
           return;
         }
 
-        const list = toItems(data);
-        const foundProcess = list.find(
+        const detailItem = toProcessItem(detailData);
+        const list = listSuccess ? toItems(listData) : [];
+        const fallbackItem = list.find(
           (item) => String(getProcessIdentifier(item)) === String(internshipDetailId)
         );
 
-        setProcessItem(foundProcess ?? null);
+        setProcessItem(detailItem ?? fallbackItem ?? null);
         setCompanyProcesses(list);
       } catch (err) {
         setError(normalizeErrorMessage(err, "Gagal memuat detail recruitment process"));

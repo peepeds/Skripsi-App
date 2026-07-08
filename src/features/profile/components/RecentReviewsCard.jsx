@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SkeletonLine } from "@/components/ui/skeleton";
 
@@ -37,6 +38,17 @@ const getCompanyName = (review) =>
   ) || "Perusahaan";
 
 const getJobTitle = (review) => pickFirstString(review?.jobTitle, review?.role) || "-";
+
+const normalizeRoutePath = (value) => {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+};
+
+const getReviewPageUrl = (review) => normalizeRoutePath(review?.reviewUrl);
+
+const getRecruitmentPageUrl = (review) => normalizeRoutePath(review?.recruitmentUrl);
 
 export const RecentReviewsCard = ({
   reviews,
@@ -79,6 +91,8 @@ export const RecentReviewsCard = ({
           <div className="space-y-3">
             {reviews.map((review, index) => {
               const reviewId = getReviewId(review);
+              const reviewPageUrl = getReviewPageUrl(review);
+              const recruitmentPageUrl = getRecruitmentPageUrl(review);
               return (
                 <div key={reviewId ?? index} className="rounded-xl border border-slate-200 p-3.5">
                   <div className="flex items-start justify-between gap-3">
@@ -93,6 +107,26 @@ export const RecentReviewsCard = ({
                   <p className="font-inter mt-1.5 line-clamp-2 text-sm text-slate-700">
                     "{getReviewText(review)}"
                   </p>
+
+                  <div className="mt-2 flex items-center gap-4">
+                    {reviewPageUrl ? (
+                      <Link
+                        to={reviewPageUrl}
+                        className="font-inter inline-block text-xs font-semibold text-orange-600 hover:text-orange-700"
+                      >
+                        Open review page
+                      </Link>
+                    ) : null}
+
+                    {recruitmentPageUrl ? (
+                      <Link
+                        to={recruitmentPageUrl}
+                        className="font-inter inline-block text-xs font-semibold text-orange-600 hover:text-orange-700"
+                      >
+                        Open recruitment page
+                      </Link>
+                    ) : null}
+                  </div>
                 </div>
               );
             })}

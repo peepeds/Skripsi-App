@@ -26,8 +26,20 @@ export const getCompanyReviews = async (companySlug, params = {}) => {
   return response.data;
 };
 
+export const getCompanyReviewDetail = async (companySlug, reviewId) => {
+  const response = await axiosInstance.get(`/company/${companySlug}/review/${reviewId}`);
+  return response.data;
+};
+
 export const getCompanyRecruitmentProcess = async (companySlug, params = {}) => {
   const response = await axiosInstance.get(`/review/${companySlug}/process`, { params });
+  return response.data;
+};
+
+export const getCompanyRecruitmentDetail = async (companySlug, internshipDetailId) => {
+  const response = await axiosInstance.get(
+    `/company/${companySlug}/recruitment/${internshipDetailId}`
+  );
   return response.data;
 };
 

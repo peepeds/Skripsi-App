@@ -293,7 +293,7 @@ export const ReviewItemCard = ({
 
       // Always sync from fresh list data to keep counter stable across refresh.
       if (resolvedCompanySlug) {
-        const latestResponse = await getCompanyReviews(resolvedCompanySlug, { limit: 200 });
+        const latestResponse = await getCompanyReviews(resolvedCompanySlug, { limit: 15 });
         const { success: latestSuccess, data: latestData } = handleApiResponse(latestResponse);
 
         if (latestSuccess) {

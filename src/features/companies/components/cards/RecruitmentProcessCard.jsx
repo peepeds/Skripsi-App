@@ -196,7 +196,7 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
 
       // Sync from latest server list so counter/value remain stable after refresh.
       if (companySlug) {
-        const latestResponse = await getCompanyRecruitmentProcess(companySlug, { limit: 50 });
+        const latestResponse = await getCompanyRecruitmentProcess(companySlug, { limit: 15 });
         const { success: latestSuccess, data: latestData } = handleApiResponse(latestResponse);
 
         if (latestSuccess) {
