@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { BadgeCheck, Share2, ThumbsUp } from "lucide-react";
 import { toast } from "sonner";
-import { StarRating } from "@/components/ui/StarRating";
-import { UnauthenticatedModal } from "@/components/common/UnauthenticatedModal";
-import { getInitials, getAvatarColor } from "@/utils/avatar";
-import { useAuth } from "@/hooks/useAuth";
+
 import { getCompanyReviews, likeReview, unlikeReview } from "@/api/reviewApi";
+import { UnauthenticatedModal } from "@/components/common/UnauthenticatedModal";
+import { StarRating } from "@/components/ui/StarRating";
 import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
-import { Share2, ThumbsUp, BadgeCheck } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { getInitials, getAvatarColor } from "@/utils/avatar";
 
 const RATING_ROWS = [
   [
@@ -70,9 +71,8 @@ const resolveCompanyName = (review) =>review?.companyName ?? "Company";
 const resolveReviewerSlug = (review, displayName) =>
   review?.resolvedReviewerSlug ?? review?.reviewerSlug ?? slugify(displayName);
 
-const resolveCompanySlug = (companySlug) =>
-  companySlug 
-  slugify(resolveCompanyName(review));
+const resolveCompanySlug = (companySlug, review) =>
+  companySlug ?? slugify(resolveCompanyName(review));
 
 const resolveReviewDetailId = (review) => review?.internshipDetailId;
 
@@ -109,7 +109,7 @@ export const ReviewItemCard = ({
   );
 
   const ratings = review?.ratings ?? {
-    workCulture: review?.workCulture ??  0,
+    workCulture: review?.workCulture ?? 0,
     learningOpp: review?.learningOpp ??  0,
     mentorship: review?.mentorship ?? 0,
     benefit: review?.benefit ?? 0,
@@ -125,12 +125,10 @@ export const ReviewItemCard = ({
     return 0;
   };
 
-  const displayName =
-    review?.createdByName ??
-    "Anonymous";
+  const displayName = review?.createdByName ?? "Anonymous";
 
   const jobTitle = review?.jobTitle ?? review?.role ?? review?.position ?? "-";
-  const resolvedCompanySlug = resolveCompanySlug(companySlug);
+  const resolvedCompanySlug = resolveCompanySlug(companySlug, review);
   const durationMonths = review?.durationMonths;
   const year = review?.year;
   const type = review?.type;
@@ -153,17 +151,15 @@ export const ReviewItemCard = ({
 
   useEffect(() => {
     setLiked(Boolean(review?.isLiked));
-    setLikeCount(
-      review?.totalLikes ?? 0
-    );
+    setLikeCount(review?.totalLikes ?? 0);
   }, [review]);
 
   const handleShare = async () => {
     const reviewPath = reviewDetailId && resolvedCompanySlug
       ? `/company/${resolvedCompanySlug}/review/${reviewDetailId}`
       : resolvedReviewerSlug
-      ? `/reviews/user/${resolvedReviewerSlug}/${reviewDetailId ?? "latest"}`
-      : null;
+        ? `/reviews/user/${resolvedReviewerSlug}/${reviewDetailId ?? "latest"}`
+        : null;
 
     if (!reviewPath) {
       toast.error("The review link cannot be generated because the data is incomplete.");
@@ -243,7 +239,6 @@ export const ReviewItemCard = ({
         setLiked(serverLiked);
       }
 
-      // Always sync from fresh list data to keep counter stable across refresh.
       if (resolvedCompanySlug) {
         const latestResponse = await getCompanyReviews(resolvedCompanySlug, { limit: 15 });
         const { success: latestSuccess, data: latestData } = handleApiResponse(latestResponse);
@@ -396,11 +391,7 @@ export const ReviewItemCard = ({
         </div>
       )}
 
-      <div
-        className={`flex items-center border-t border-slate-200 pt-3 ${
-          hideHelpful ? "justify-end" : "justify-between"
-        }`}
-      >
+      <div className={`flex items-center border-t border-slate-200 pt-3 ${hideHelpful ? "justify-end" : "justify-between"}`}>
         {!hideHelpful && (
           <button
             onClick={(event) => {

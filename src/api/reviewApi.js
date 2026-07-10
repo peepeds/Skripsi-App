@@ -16,8 +16,8 @@ export const getReviewSummary = async (companySlug) => {
   return response.data;
 };
 
-export const getRecentReviews = async (params = {}) => {
-  const response = await axiosInstance.get('/review/recent', { params });
+export const getRecentReviews = async () => {
+  const response = await axiosInstance.get('/review/recent');
   return response.data;
 };
 

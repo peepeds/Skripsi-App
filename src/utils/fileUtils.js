@@ -1,4 +1,4 @@
-validateFile = (file, allowedTypes = ["application/pdf"], maxSize = 10 * 1024 * 1024) => {
+export const validateFile = (file, allowedTypes = ["application/pdf"], maxSize = 10 * 1024 * 1024) => {
   // Validate file type
   if (!allowedTypes.includes(file.type)) {
     const typeNames = allowedTypes.map(type => type.split('/')[1].toUpperCase()).join(', ');

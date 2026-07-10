@@ -120,9 +120,6 @@ const MinioUploadTestPage = lazy(() =>
   }))
 );
 
-// ==========================
-// Admin
-// ==========================
 
 const DashboardPage = lazy(() =>
   import("@/features/admin/dashboard/pages/DashboardPage").then((m) => ({
@@ -160,9 +157,6 @@ const MasterDataCategoriesPage = lazy(() =>
   }))
 );
 
-// ==========================
-// Routes
-// ==========================
 
 export const appRoutes = [
   { path: "/", element: <HomePage />, showNavbar: true },
@@ -182,7 +176,6 @@ export const appRoutes = [
   { path: "/companies", element: <CompaniesPage />, showNavbar: true },
   { path: "/compare", element: <CompareLandingPage />, showNavbar: true },
 
-  { path: "/reviews", element: <ReviewsPage />, showNavbar: true },
 
   { path: "/faq", element: <FaqPage />, showNavbar: true },
   { path: "/contact", element: <ContactUsPage />, showNavbar: true },

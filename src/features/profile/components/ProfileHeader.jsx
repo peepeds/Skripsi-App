@@ -1,24 +1,16 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { getInitials } from "@/utils/avatar";
 import { Button } from "@/components/ui/button";
 
 export function ProfileHeader({ user, onSubmitCertificate }) {
-  // Helper function: create user initials for avatar (e.g. "John Doe" → "JD")
-  const getInitials = () => {
-    const first = user?.firstName?.charAt(0)?.toUpperCase() || "";
-    const last = user?.lastName?.charAt(0)?.toUpperCase() || "";
-    return first + last || "U";
-  };
 
   return (
     <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
       <div className="mb-5 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-4 sm:gap-5">
           {/* Avatar: colorful circle with user initials */}
-          <Avatar className="size-14 shrink-0 bg-linear-to-br from-blue-500 to-purple-600 text-xl font-semibold text-white sm:size-16 sm:text-2xl">
-            <AvatarFallback className="bg-transparent">
-              {getInitials()}
-            </AvatarFallback>
-          </Avatar>
+          <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-purple-600 text-xl font-semibold text-white sm:size-16 sm:text-2xl">
+            {getInitials(user.firstName)}
+          </div>
 
           {/* User name and email display */}
           <div className="min-w-0 flex-1">

@@ -21,7 +21,7 @@ export function HighlightReview() {
   useEffect(() => {
     const fetchRecent = async () => {
       try {
-        const recentResponse = await getRecentReviews({ limit: 16 });
+        const recentResponse = await getRecentReviews();
 
         if (!recentResponse?.success) {
           setReviews([]);
@@ -83,10 +83,7 @@ export function HighlightReview() {
               : reviews.map((review, i) => (
                   <RecentReviewCard
                     key={
-                      review.resolvedReviewId ??
-                      review.reviewId ??
-                      review.internshipDetailId ??
-                      i
+                      review.reviewId ?? i
                     }
                     {...review}
                     reviewerSlug={review.resolvedReviewerSlug}
