@@ -129,8 +129,6 @@ export function CertificateModal({
   onClose,
   onSubmit,
   selectedFile,
-  fileName,
-  setFileName,
   handleFileChange,
   compressing,
   requestingUrl,

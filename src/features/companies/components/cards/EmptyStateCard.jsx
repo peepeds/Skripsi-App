@@ -1,8 +1,5 @@
 import React from "react";
 
-/**
- * Component untuk menampilkan empty state
- */
 export const EmptyStateCard = ({ title, message }) => {
   return (
     <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">

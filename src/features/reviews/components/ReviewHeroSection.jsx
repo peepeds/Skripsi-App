@@ -1,11 +1,5 @@
 import { Container } from "@/components/layout/Container";
 
-/**
- * ReviewHeroSection Component
- * ============================
- * Hero section untuk halaman review write
- * Styling sama dengan HeroSection di home page
- */
 export function ReviewHeroSection() {
   return (
     <section className="bg-gray-50 py-16">

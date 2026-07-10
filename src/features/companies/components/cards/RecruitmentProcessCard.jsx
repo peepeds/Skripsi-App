@@ -45,13 +45,7 @@ const DIFFICULTY_MAP = {
 
 const resolveLikeCount = (item) => {
   const raw =
-    item?.totalLikes ??
-    item?.totalLike ??
-    item?.totalLikeCount ??
-    item?.likesCount ??
-    item?.likeCount ??
-    item?.helpfulCount ??
-    item?.helpful;
+    item?.totalLikes 
 
   const parsed = Number(raw);
   return Number.isFinite(parsed) ? parsed : null;
@@ -72,7 +66,7 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
   const [likeLoading, setLikeLoading] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [likeCount, setLikeCount] = useState(
-    data?.totalLikes ?? data?.likeCount ?? data?.helpfulCount ?? data?.helpful ?? 0
+    data?.totalLikes ?? 0
   );
 
   const {
@@ -90,31 +84,12 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
 
   const displayName = createdByName ?? "Anonymous";
   const difficulty = DIFFICULTY_MAP[interviewDifficulty];
-  const processDetailId =
-    data?.internshipDetailId ??
-    data?.reviewId ??
-    data?.reviewID ??
-    data?.review_id ??
-    data?.id ??
-    data?.detailId ??
-    data?.internshipDetail?.internshipDetailId ??
-    data?.internshipDetail?.id;
-  const internshipHeaderId =
-    data?.internshipHeaderId ??
-    data?.headerId ??
-    data?.internshipReviewId ??
-    data?.reviewID ??
-    data?.review_id ??
-    data?.internshipHeader?.internshipHeaderId ??
-    data?.internshipHeader?.id ??
-    data?.internshipDetail?.internshipHeaderId ??
-    data?.internshipDetail?.internshipHeader?.internshipHeaderId;
+  const processDetailId = data?.internshipDetailId;
+  const internshipHeaderId = data?.internshipHeaderId;
 
   useEffect(() => {
     setLiked(Boolean(data?.isLiked));
-    setLikeCount(
-      data?.totalLikes ?? data?.likeCount ?? data?.helpfulCount ?? data?.helpful ?? 0
-    );
+    setLikeCount(data?.totalLikes ?? 0);
   }, [data]);
 
   const handleShare = async () => {
@@ -207,26 +182,8 @@ export const RecruitmentProcessCard = ({ data, companySlug }) => {
             : [];
 
           const latestItem = latestItems.find((item) => {
-            const itemHeaderId =
-              item?.internshipHeaderId ??
-              item?.headerId ??
-              item?.internshipReviewId ??
-              item?.reviewID ??
-              item?.review_id ??
-              item?.internshipHeader?.internshipHeaderId ??
-              item?.internshipHeader?.id ??
-              item?.internshipDetail?.internshipHeaderId ??
-              item?.internshipDetail?.internshipHeader?.internshipHeaderId;
-
-            const itemDetailId =
-              item?.internshipDetailId ??
-              item?.reviewId ??
-              item?.reviewID ??
-              item?.review_id ??
-              item?.id ??
-              item?.detailId ??
-              item?.internshipDetail?.internshipDetailId ??
-              item?.internshipDetail?.id;
+            const itemHeaderId = item?.internshipHeaderId;
+            const itemDetailId = item?.internshipDetailId;
 
             if (itemHeaderId && internshipHeaderId) {
               return String(itemHeaderId) === String(internshipHeaderId);

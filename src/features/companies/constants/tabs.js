@@ -1,7 +1,3 @@
-/**
- * Tab configurations untuk Companies feature
- */
-
 export const COMPANY_COMPARE_TABS = [
   { id: "all", label: "All" },
   { id: "top", label: "Top" },

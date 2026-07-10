@@ -3,41 +3,11 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SkeletonLine } from "@/components/ui/skeleton";
 
-const pickFirstString = (...values) =>
-  values.find((value) => typeof value === "string" && value.trim().length > 0)?.trim();
+const getReviewText = (review) => review?.testimony
 
+const getCompanyName = (review) => review.companyName
 
-
-const getReviewId = (review) =>
-  review?.internshipDetailId ??
-  review?.reviewId ??
-  review?.internshipHeaderId ??
-  review?.id ??
-  review?.detailId ??
-  review?.headerId ??
-  review?.reviewID ??
-  review?.review_id ??
-  review?.internshipReviewId ??
-  review?.internshipDetail?.internshipDetailId ??
-  review?.internshipDetail?.id ??
-  review?.internshipHeader?.id ??
-  review?.internshipHeader?.internshipHeaderId;
-
-const getReviewText = (review) =>
-  pickFirstString(review?.testimony, review?.review, review?.content) || "-";
-
-const getCompanyName = (review) =>
-  pickFirstString(
-    review?.companyName,
-    review?.company?.companyName,
-    review?.company?.name,
-    review?.internshipHeader?.company?.companyName,
-    review?.internshipHeader?.companyName,
-    review?.internshipDetail?.company?.companyName,
-    review?.internshipDetail?.companyName
-  ) || "Perusahaan";
-
-const getJobTitle = (review) => pickFirstString(review?.jobTitle, review?.role) || "-";
+const getJobTitle = (review) => review?.jobTitle
 
 const normalizeRoutePath = (value) => {
   if (typeof value !== "string") return null;
@@ -90,11 +60,10 @@ export const RecentReviewsCard = ({
         {!loading && !error && !unavailable && reviews.length > 0 && (
           <div className="space-y-3">
             {reviews.map((review, index) => {
-              const reviewId = getReviewId(review);
               const reviewPageUrl = getReviewPageUrl(review);
               const recruitmentPageUrl = getRecruitmentPageUrl(review);
               return (
-                <div key={reviewId ?? index} className="rounded-xl border border-slate-200 p-3.5">
+                <div key={index} className="rounded-xl border border-slate-200 p-3.5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-plus-jakarta text-base font-semibold text-slate-900">

@@ -10,82 +10,29 @@ import { handleApiResponse, normalizeErrorMessage } from "@/helpers/apiUtils";
 import { ReviewItemCard } from "@/features/companies/components/cards/ReviewItemCard";
 import { getHost, normalizeText, slugify } from "../utils/reviewTextUtils";
 
-const pickString = (...values) =>
-  values.find((value) => typeof value === "string" && value.trim().length > 0)?.trim();
-
-const REVIEW_ID_PATHS = [
-  "internshipDetailId",
-  "internshipHeaderId",
-  "reviewId",
-  "id",
-  "detailId",
-  "headerId",
-  "reviewID",
-  "review_id",
-  "internshipDetail.internshipDetailId",
-  "internshipDetail.id",
-  "internshipHeader.internshipHeaderId",
-  "internshipHeader.id",
-];
-
-const hasValue = (value) =>
-  value !== null && value !== undefined && String(value).trim().length > 0;
-
-const getByPath = (obj, path) =>
-  path.split(".").reduce((current, key) => (current == null ? undefined : current[key]), obj);
-
 const toItems = (data) => (Array.isArray(data?.items) ? data.items : Array.isArray(data) ? data : []);
 
-const getTimestamp = (item) => new Date(item?.createdAt ?? item?.created_at ?? 0).getTime();
-
+const getTimestamp = (item) => new Date(item?.createdAt).getTime();
 const sortByNewest = (a, b) => getTimestamp(b) - getTimestamp(a);
-
-const collectReviewIds = (review) =>
-  Array.from(
-    new Set(
-      REVIEW_ID_PATHS
-        .map((path) => getByPath(review, path))
-        .filter(hasValue)
-        .map((value) => String(value))
-    )
-  );
-
-const getReviewId = (review) => {
-  const [firstId] = collectReviewIds(review);
-  return firstId ?? null;
-};
-
-const getReviewerName = (review) =>
-  pickString(review?.createdBy, review?.createdByName, review?.authorName, review?.name) || "Anonymous";
-
-const getCompanyName = (review) =>
-  pickString(review?.companyName, review?.company?.companyName, review?.company?.name) || "Company";
-
-const getReviewWebsite = (review) =>
-  pickString(review?.companyWebsite, review?.company?.website, review?.website);
 
 const enrichReviews = (list, companyByName, companyByHost) =>
   list.map((review) => {
-    const directSlug =
-      review?.companySlug ??
-      review?.company?.companySlug ??
-      review?.company?.slug ??
-      review?.internshipHeader?.company?.companySlug;
+    const directSlug = review?.companySlug;
 
-    const host = getHost(getReviewWebsite(review));
-    const byName = normalizeText(getCompanyName(review));
+    const host = getHost(review?.companyWebsite);
+    const byName = normalizeText(review?.companyName);
 
     const resolvedCompanySlug =
       directSlug ||
       (host ? companyByHost.get(host) : null) ||
       (byName ? companyByName.get(byName) : null) ||
-      slugify(getCompanyName(review));
+      slugify(review.companyName);
 
-    const reviewerName = getReviewerName(review);
+    const reviewerName = review.createdByName;
 
     return {
       ...review,
-      resolvedReviewId: getReviewId(review),
+      resolvedReviewId: review?.internshipHeaderId,
       resolvedCompanySlug,
       resolvedReviewerName: reviewerName,
       resolvedReviewerSlug: slugify(reviewerName),
@@ -103,24 +50,7 @@ const toReviewItemPayload = (item) => ({
   ...item,
   createdByName: item?.createdByName ?? item?.createdBy ?? item?.resolvedReviewerName,
   internshipDetailId: item?.internshipDetailId ?? item?.reviewId ?? item?.resolvedReviewId,
-  internshipHeaderId:
-    item?.internshipHeaderId ??
-    item?.headerId ??
-    item?.internshipReviewId ??
-    item?.reviewID ??
-    item?.review_id ??
-    item?.reviewId ??
-    item?.resolvedReviewId ??
-    item?.id ??
-    item?.detailId ??
-    item?.internshipHeader?.internshipHeaderId ??
-    item?.internshipHeader?.id ??
-    item?.internshipHeader?.headerId ??
-    item?.internshipDetail?.internshipHeaderId ??
-    item?.internshipDetail?.internshipHeader?.internshipHeaderId ??
-    item?.internshipDetail?.internshipHeader?.id ??
-    item?.internshipDetail?.headerId ??
-    item?.internshipDetail?.id,
+  internshipHeaderId: item?.internshipHeaderId,
   reviewId: item?.reviewId ?? item?.resolvedReviewId,
   id: item?.id ?? item?.resolvedReviewId,
   detailId: item?.detailId ?? item?.resolvedReviewId,
@@ -141,8 +71,8 @@ export const ReviewerReviewsDetailPage = () => {
 
       try {
         const [reviewsResponse, companiesResponse] = await Promise.all([
-          getRecentReviews({ limit: 200 }),
-          getCompanies(null, 300),
+          getRecentReviews(),
+          getCompanies(),
         ]);
 
         const parsedReviews = handleApiResponse(reviewsResponse);
@@ -186,7 +116,7 @@ export const ReviewerReviewsDetailPage = () => {
               const items = toItems(parsedCompanyReviews.data);
 
               items.forEach((reviewItem) => {
-                const ids = collectReviewIds(reviewItem);
+                const ids = reviewItem?.internshipHeaderId;
                 if (!ids.length) return;
                 ids.forEach((id) => {
                   detailMap.set(`${slug}::${id}`, reviewItem);
@@ -199,7 +129,7 @@ export const ReviewerReviewsDetailPage = () => {
         );
 
         const hydrated = enriched.map((item) => {
-          const ids = collectReviewIds(item);
+          const ids = item?.internshipHeaderId;
           if (item?.resolvedReviewId) {
             ids.push(String(item.resolvedReviewId));
           }
@@ -243,13 +173,13 @@ export const ReviewerReviewsDetailPage = () => {
     }
 
     const matchedBySlugAndId = sameReviewer.find((item) =>
-      collectReviewIds(item).includes(String(reviewId))
+      String(item?.resolvedReviewId) === String(reviewId)
     );
 
     if (matchedBySlugAndId) return matchedBySlugAndId;
 
     const matchedByIdOnly = sortedReviews.find((item) =>
-      collectReviewIds(item).includes(String(reviewId))
+      String(item?.resolvedReviewId) === String(reviewId)
     );
 
     if (matchedByIdOnly) return matchedByIdOnly;

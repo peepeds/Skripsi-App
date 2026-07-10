@@ -4,21 +4,12 @@ import { BookmarkMinus } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SkeletonLine } from "@/components/ui/skeleton";
 
-const pickFirstString = (...values) =>
-  values.find((value) => typeof value === "string" && value.trim().length > 0)?.trim();
 
-const getCompanySlug = (company) =>
-  pickFirstString(company?.companySlug, company?.slug, company?.company?.companySlug);
+const getCompanySlug = (company) => company?.companySlug
 
-const getCompanyName = (company) =>
-  pickFirstString(company?.companyName, company?.name, company?.company?.companyName) || "Company";
+const getCompanyName = (company) => company?.companyName
 
-const getCompanyMeta = (company) =>
-  pickFirstString(
-    company?.subcategoryName,
-    company?.companyAbbreviation,
-    company?.company?.subcategoryName
-  ) || "-";
+const getCompanyMeta = (company) => company?.subcategoryName;
 
 export const SavedCompaniesCard = ({
   companies,

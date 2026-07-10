@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/common";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getInitials, getAvatarColor } from "@/utils/avatar.js";
 import { SkeletonCircle } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
@@ -29,23 +29,6 @@ export function Navbar() {
   if (location.pathname === "/register" || location.pathname === "/login") {
     return null;
   }
-
-  const getInitials = () => {
-    const firstName = user?.firstName?.trim();
-
-    if (firstName) {
-      return (firstName[0]).toUpperCase();
-    }
-
-    const source = firstName || user?.name || user?.username || user?.email || "U";
-    const parts = source.trim().split(/\s+/).filter(Boolean);
-
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    }
-
-    return parts[0].slice(0, 2).toUpperCase();
-  };
 
   const handleLogout = async () => {
     try {
@@ -88,13 +71,13 @@ export function Navbar() {
             </div>
           ) : isAuthenticated ? (
             <>
-              <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex min-h-[40px]">
+              <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex min-h-10">
                 <a href="/categories">Categories</a>
               </Button>
-              <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex min-h-[40px]">
+              <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex min-h-10">
                 <a href="/companies">Companies</a>
               </Button>
-              <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex min-h-[40px]">
+              <Button asChild variant="ghost" size="sm" className="hidden text-sm md:inline-flex min-h-10">
                 <a href="/compare">Compare</a>
               </Button>
               <InboxDropdown
@@ -109,13 +92,11 @@ export function Navbar() {
               {/* Authenticated User Avatar with Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="rounded-full hover:opacity-80 transition-opacity">
-                    <Avatar>
-                      <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
-                        {getInitials()}
-                      </AvatarFallback>
-                    </Avatar>
-                  </button>
+                  <button
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:opacity-80 transition-opacity"
+                >
+                  {getInitials(user.firstName || user.username || user.email || "User")}
+                </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem asChild>
