@@ -178,7 +178,7 @@ export function CompanySelectModal({ open, currentCompanySlug, onClose, onCompar
             />
           </div>
 
-          <div className="max-h-[360px] space-y-2 overflow-y-auto pr-1">
+          <div className="max-h-90 space-y-2 overflow-y-auto pr-1">
             {loading && (
               <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
                 Loading companies...

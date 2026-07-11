@@ -184,7 +184,7 @@ useEffect(() => {
         leftClassName="space-y-4"
         rightClassName="space-y-4"
         left={(
-          <div className="relative min-h-[260px]">
+          <div className="relative min-h-65">
             <div
               ref={lockedContainerRef}
               className={!isAuthenticated ? "pointer-events-none select-none blur-[2px]" : ""}
@@ -196,7 +196,7 @@ useEffect(() => {
 
             {!isAuthenticated && (
               <div className="absolute inset-0 z-10 rounded-2xl bg-slate-100/35 backdrop-blur-[1px]">
-                <div className="sticky top-8 mx-auto w-full max-w-[360px] px-4">
+                <div className="sticky top-8 mx-auto w-full max-w-90 px-4">
                   <div className="rounded-2xl border border-orange-100 bg-white p-6 text-center shadow-xl">
                     <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-orange-100/60">
                       <svg className="h-6 w-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

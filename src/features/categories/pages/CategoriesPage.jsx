@@ -130,7 +130,7 @@ export const CategoriesPage = () => {
             <h1 className="font-plus-jakarta text-[30px] font-bold leading-[1.2] tracking-[-0.02em] text-slate-900 md:text-[36px] lg:text-[38px]">
               {type === 'jobs' ? 'Explore Jobs by Category' : 'Explore Companies by Category'}
             </h1>
-            <p className="max-w-[560px] font-inter text-[14px] leading-6 text-slate-600 md:text-[15px]">
+            <p className="max-w-140 font-inter text-[14px] leading-6 text-slate-600 md:text-[15px]">
               Temukan kategori yang sesuai minatmu dan mulai pencarian magangmu.
             </p>
           </div>

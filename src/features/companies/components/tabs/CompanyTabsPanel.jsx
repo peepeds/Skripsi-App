@@ -101,7 +101,7 @@ export const CompanyTabsPanel = ({ companyId, companySlug, companyName, bio }) =
         onTabChange={setActiveTab}
       />
 
-      <div className="relative mt-8 min-h-[320px] overflow-hidden">
+      <div className="relative mt-8 min-h-80 overflow-hidden">
         {tabTransition ? (
           <>
             <div
