@@ -117,7 +117,7 @@ export const AddCompanyPage = () => {
 
             {/* Company Name + Abbreviation */}
             <div className="grid gap-4 md:grid-cols-[minmax(0,3fr)_minmax(0,1fr)]">
-              <div className="flex-[3]">
+              <div className="flex-3">
                 <label htmlFor="companyName" className="mb-2 block text-sm font-semibold text-slate-900">
                   Nama Perusahaan <span className="text-red-500">*</span>
                 </label>
