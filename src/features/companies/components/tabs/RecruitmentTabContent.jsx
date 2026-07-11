@@ -54,6 +54,8 @@ export const RecruitmentTabContent = ({ companySlug, companyName }) => {
   const { items, loading: listLoading, error: listError, hasMore, loadMore } = useCompanyRecruitmentProcess(companySlug);
   const { summary, loading: summaryLoading } = useRecruitmentProcessSummary(companySlug);
   const lockedContainerRef = useRef(null);
+  const loadMoreRef = useRef(null);
+  const isFetchingRef = useRef(false);
 
   useEffect(() => {
     const container = lockedContainerRef.current;
@@ -95,6 +97,45 @@ export const RecruitmentTabContent = ({ companySlug, companyName }) => {
     });
   }, [isAuthenticated, items, listLoading, listError, hasMore]);
 
+  useEffect(() => {
+  if (!hasMore) return;
+
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      if (
+        entry.isIntersecting &&
+        !listLoading &&
+        !isFetchingRef.current
+      ) {
+        isFetchingRef.current = true;
+        loadMore();
+      }
+    },
+    {
+      root: null,
+      rootMargin: "200px",
+      threshold: 0,
+    }
+  );
+
+  const current = loadMoreRef.current;
+
+  if (current) {
+    observer.observe(current);
+  }
+
+  return () => {
+    if (current) observer.unobserve(current);
+    observer.disconnect();
+  };
+}, [hasMore, listLoading, loadMore]);
+
+useEffect(() => {
+  if (!listLoading) {
+    isFetchingRef.current = false;
+  }
+}, [listLoading]);
+
   const handleLogin = () => {
     navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
   };
@@ -124,14 +165,13 @@ export const RecruitmentTabContent = ({ companySlug, companyName }) => {
         </div>
       )}
       {hasMore && (
-        <div className="flex justify-center pt-2">
-          <button
-            onClick={loadMore}
-            disabled={listLoading}
-            className="rounded-full border border-slate-200 px-6 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {listLoading ? "Loading..." : "Load More"}
-          </button>
+        <div
+          ref={loadMoreRef}
+          className="flex justify-center py-6"
+        >
+          {listLoading && (
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+          )}
         </div>
       )}
     </>
