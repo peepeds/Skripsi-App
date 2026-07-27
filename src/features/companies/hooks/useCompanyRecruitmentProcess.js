@@ -5,39 +5,83 @@ export const useCompanyRecruitmentProcess = (companySlug) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [cursor, setCursor] = useState(null);
   const [hasMore, setHasMore] = useState(true);
-  const initializedRef = useRef(false);
 
-  const fetchMore = useCallback(async (currentCursor) => {
-    if (!companySlug || loading) return;
+  const cursorRef = useRef(null);
+  const initializedRef = useRef(false);
+  const isFetchingRef = useRef(false);
+
+  const fetchMore = useCallback(async (currentCursor = null) => {
+    if (!companySlug || isFetchingRef.current) return;
+
+    isFetchingRef.current = true;
     setLoading(true);
     setError(null);
+
     try {
-      const params = { limit: 10, ...(currentCursor ? { cursor: currentCursor } : {}) };
+
+      const params = {
+        limit: 15,
+        ...(currentCursor ? { cursor: currentCursor } : {}),
+      };
+
       const res = await getCompanyRecruitmentProcess(companySlug, params);
+
       if (res.success) {
-        setItems((prev) => [...prev, ...(res.result ?? [])]);
+        const newItems = res.result ?? [];
+
+        // Hindari data duplikat
+        setItems((prev) => {
+          const ids = new Set(prev.map((item) => item.internshipDetailId));
+
+          const filtered = newItems.filter(
+            (item) => !ids.has(item.internshipDetailId)
+          );
+
+          return [...prev, ...filtered];
+        });
+
         setHasMore(res.meta?.hasMore ?? false);
-        const last = res.result?.at(-1);
-        if (last) setCursor(last.internshipDetailId);
+
+        const last = newItems.at(-1);
+
+        if (last) {
+          cursorRef.current = last.internshipDetailId;
+        }
       } else {
-        setError(res.message || "Gagal memuat data rekrutmen");
+        setError(res.message || "Failed to load datas");
       }
     } catch (err) {
-      setError(err.message || "Gagal memuat data rekrutmen");
+      setError(err.message || "Failed to load datas");
     } finally {
+      isFetchingRef.current = false;
       setLoading(false);
     }
   }, [companySlug]);
 
   useEffect(() => {
-    if (!companySlug || initializedRef.current) return;
+    if (!companySlug) return;
+
     initializedRef.current = true;
+    cursorRef.current = null;
+    setItems([]);
+    setHasMore(true);
+    setError(null);
+
     fetchMore(null);
   }, [companySlug, fetchMore]);
 
-  const loadMore = () => fetchMore(cursor);
+  const loadMore = useCallback(() => {
+    if (!hasMore) return;
 
-  return { items, loading, error, hasMore, loadMore };
+    fetchMore(cursorRef.current);
+  }, [fetchMore, hasMore]);
+
+  return {
+    items,
+    loading,
+    error,
+    hasMore,
+    loadMore,
+  };
 };

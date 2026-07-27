@@ -114,13 +114,13 @@ export function Navbar() {
           ) : (
             <>
               {/* Guest Links */}
-              <a href="/categories" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors hidden md:block px-2 py-2 min-h-[40px] inline-flex items-center">
+              <a href="/categories" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors md:block px-2 py-2 min-h-10 inline-flex items-center">
                 Categories
               </a>
-              <a href="/companies" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors hidden md:block px-2 py-2 min-h-[40px] inline-flex items-center">
+              <a href="/companies" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors md:block px-2 py-2 min-h-10 inline-flex items-center">
                 Companies
               </a>
-              <a href="/compare" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors hidden md:block px-2 py-2 min-h-[40px] inline-flex items-center">
+              <a href="/compare" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors md:block px-2 py-2 min-h-10 inline-flex items-center">
                 Compare
               </a>
               <Button asChild size="sm" className="bg-[#F97316] hover:bg-[#EA580C] text-white rounded-lg px-5">

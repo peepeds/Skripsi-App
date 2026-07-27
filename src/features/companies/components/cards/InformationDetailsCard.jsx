@@ -18,7 +18,7 @@ export const InformationDetailsCard = ({ data }) => {
     const FieldIcon = icon;
 
     return (
-      <div className="flex min-h-[96px] gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
+      <div className="flex min-h-24 gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-orange-50 text-orange-600">
           <FieldIcon className="h-5 w-5" strokeWidth={2} />
         </div>

@@ -27,20 +27,20 @@ export function HeroSection() {
           alt="Intern working on laptop"
           className="h-full w-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-l from-transparent via-white/30 to-white" />
+        <div className="absolute inset-0 bg-linear-to-l from-transparent via-white/30 to-white" />
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="relative z-10 flex min-h-[340px] items-center md:min-h-[380px] lg:min-h-[480px]">
-          <div className="w-full max-w-[640px] py-1 lg:w-[52%] lg:py-6">
+        <div className="relative z-10 flex min-h-85 items-center md:min-h-95 lg:min-h-120">
+          <div className="w-full max-w-160 py-1 lg:w-[52%] lg:py-6">
               <h1 className="font-plus-jakarta mb-4 text-[34px] font-bold leading-[1.15] tracking-[-0.015em] text-slate-900 md:text-[42px]">
               Temukan Tempat <br className="hidden md:block" /> Magang Impianmu
             </h1>
-            <p className="font-inter mb-5 max-w-[590px] text-[15px] leading-[1.65] text-slate-600 md:text-[17px]">
+            <p className="font-inter mb-5 max-w-140 text-[15px] leading-[1.65] text-slate-600 md:text-[17px]">
               Platform ulasan magang dari mahasiswa, untuk mahasiswa. Cari tahu tempat magang terbaik melalui ulasan mahasiswa dan tingkatkan pengalaman magangmu!
             </p>
 
-            <div className="mb-4 w-full max-w-[640px]">
+            <div className="mb-4 w-full max-w-160">
               <SearchBar />
             </div>
 

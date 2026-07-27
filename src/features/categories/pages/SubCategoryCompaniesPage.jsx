@@ -252,7 +252,7 @@ export const SubCategoryCompaniesPage = () => {
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-[186px] rounded-2xl" />
+                <Skeleton key={i} className="h-46.5 rounded-2xl" />
               ))}
             </div>
           </Container>
@@ -347,7 +347,7 @@ export const SubCategoryCompaniesPage = () => {
           </div>
 
           <div className="mb-4 flex w-full flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="relative w-full md:max-w-[520px]">
+            <div className="relative w-full md:max-w-130">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input
                 value={search}

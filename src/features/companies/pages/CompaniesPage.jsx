@@ -48,13 +48,13 @@ export const CompaniesPage = () => {
           <h1 className="font-plus-jakarta text-[30px] font-bold leading-[1.2] tracking-[-0.02em] text-slate-900 md:text-[36px] lg:text-[38px]">
             Explore Internship Companies
           </h1>
-          <p className="max-w-[560px] font-inter text-[14px] leading-6 text-slate-600 md:text-[15px]">
+          <p className="max-w-140 font-inter text-[14px] leading-6 text-slate-600 md:text-[15px]">
             Temukan perusahaan yang sesuai minatmu, baca pengalaman mahasiswa lain, dan mulai pencarian magangmu.
           </p>
         </div>
 
         <div className="flex w-full flex-col gap-3 md:flex-row md:items-center md:justify-end md:pt-1">
-          <div className="w-full md:w-[420px]">
+          <div className="w-full md:w-105">
             <SearchBar />
           </div>
           <CompanyFilterDropdown

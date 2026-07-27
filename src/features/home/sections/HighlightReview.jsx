@@ -75,9 +75,9 @@ export function HighlightReview() {
               ? Array.from({ length: 4 }).map((_, i) => (
                   <div
                     key={i}
-                    className="w-[320px] shrink-0 rounded-xl sm:w-[340px]"
+                    className="w-[320px] shrink-0 rounded-xl sm:w-85"
                   >
-                    <Skeleton className="h-[210px] rounded-xl" />
+                    <Skeleton className="h-52.5 rounded-xl" />
                   </div>
                 ))
               : reviews.map((review, i) => (
@@ -87,7 +87,7 @@ export function HighlightReview() {
                     }
                     {...review}
                     reviewerSlug={review.resolvedReviewerSlug}
-                    className="w-[320px] shrink-0 snap-start px-5 pt-5 pb-4 sm:w-[340px]"
+                    className="w-85 shrink-0 snap-start px-5 pt-5 pb-4 sm:w-85"
                   />
                 ))}
           </div>

@@ -99,11 +99,11 @@ const CompareRecruitmentSection = ({ leftStats, rightStats, leftLabel, rightLabe
       <p className="font-inter text-sm font-semibold text-slate-800 md:pt-2">{label}</p>
       <div className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
         <p className="mb-1 font-inter text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 md:hidden">{leftLabel}</p>
-        <p className="whitespace-pre-line break-words font-inter text-sm leading-7 text-slate-700">{leftValue}</p>
+        <p className="whitespace-pre-line wrap-break-word font-inter text-sm leading-7 text-slate-700">{leftValue}</p>
       </div>
       <div className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
         <p className="mb-1 font-inter text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 md:hidden">{rightLabel}</p>
-        <p className="whitespace-pre-line break-words font-inter text-sm leading-7 text-slate-700">{rightValue}</p>
+        <p className="whitespace-pre-line wrap-break-word font-inter text-sm leading-7 text-slate-700">{rightValue}</p>
       </div>
     </div>
   );
@@ -163,7 +163,7 @@ const CompareLoading = () => (
     <div className="space-y-4">
       <Skeleton className="h-7 w-52" />
       <Skeleton className="h-10 w-96" />
-      <Skeleton className="h-6 w-[500px]" />
+      <Skeleton className="h-6 w-125" />
     </div>
     <div className="mt-8 grid gap-4 lg:grid-cols-[1fr_auto_1fr]">
       <Skeleton className="h-24 rounded-2xl" />
@@ -305,7 +305,7 @@ export const CompareCompaniesPage = () => {
       </section>
 
       <Container className="py-7">
-        <div className="space-y-4 rounded-2xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)] md:p-6">
+        <div className="space-y-4 rounded-2xl border border-slate-200 bg-linear-to-b from-white to-slate-50 p-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)] md:p-6">
           <div className="grid items-center gap-4 lg:grid-cols-[1fr_auto_1fr]">
             <CompanyHeader data={leftCompanyData} />
             <div className="flex justify-center">

@@ -97,11 +97,11 @@ const CompareRecruitmentSection = ({ leftStats, rightStats, leftLabel, rightLabe
       <p className="font-inter text-sm font-semibold text-slate-800 md:pt-2">{label}</p>
       <div className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
         <p className="mb-1 font-inter text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 md:hidden">{leftLabel}</p>
-        <p className="whitespace-pre-line break-words font-inter text-sm leading-7 text-slate-700">{leftValue}</p>
+        <p className="whitespace-pre-line wrap-break-word font-inter text-sm leading-7 text-slate-700">{leftValue}</p>
       </div>
       <div className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
         <p className="mb-1 font-inter text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 md:hidden">{rightLabel}</p>
-        <p className="whitespace-pre-line break-words font-inter text-sm leading-7 text-slate-700">{rightValue}</p>
+        <p className="whitespace-pre-line wrap-break-word font-inter text-sm leading-7 text-slate-700">{rightValue}</p>
       </div>
     </div>
   );
@@ -155,7 +155,7 @@ const SelectionCard = ({ company, onClick }) => {
           </div>
         </div>
       ) : (
-        <div className="flex min-h-[84px] items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50">
+        <div className="flex min-h-21 items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50">
           <div className="flex flex-col items-center gap-2 text-slate-500">
             <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white">
               <Plus className="h-5 w-5" />
@@ -265,7 +265,7 @@ export const CompareLandingPage = () => {
       </section>
 
       <Container className="py-8 md:py-10">
-        <div className="rounded-2xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-4 shadow-[0_10px_30px_rgba(15,23,42,0.06)] md:p-6">
+        <div className="rounded-2xl border border-slate-200 bg-linear-to-b from-white to-slate-50 p-4 shadow-[0_10px_30px_rgba(15,23,42,0.06)] md:p-6">
           <div className="grid gap-4 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
             <SelectionCard
               company={leftDisplay}

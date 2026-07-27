@@ -7,7 +7,7 @@ import { CompanyLogo } from '@/components/common/CompanyLogo';
 
 const TopCompanyCard = ({ companyName, companyAbbreviation, website, subcategoryName, rating, totalReviews, companySlug }) => {
   return (
-    <Link to={`/company/${companySlug}`} className="group block h-full w-[250px] shrink-0 snap-start sm:w-[270px]">
+    <Link to={`/company/${companySlug}`} className="group block h-full w-62.5 shrink-0 snap-start sm:w-67">
       <div className="flex h-full flex-col rounded-xl border border-slate-200 bg-white p-5 transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
         <CompanyLogo
           website={website}
@@ -66,7 +66,7 @@ export function TopCompanies() {
           <div className="flex min-w-max snap-x snap-mandatory gap-3">
           {loading
             ? Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="w-[250px] shrink-0 rounded-xl border border-slate-200 bg-white p-5 sm:w-[270px]">
+                <div key={i} className="w-62.5 shrink-0 rounded-xl border border-slate-200 bg-white p-5 sm:w-67">
                   <Skeleton className="mb-3.5 h-12 w-12 rounded-xl" />
                   <Skeleton className="mb-2 h-4 w-2/3" />
                   <Skeleton className="mb-2.5 h-3 w-1/2" />
